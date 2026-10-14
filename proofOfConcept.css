@@ -1,0 +1,74 @@
+
+    body{
+        background-color: bisque;
+    }
+
+    h1{
+        text-align: center;
+    }
+
+    #taskInput{
+        background-color: bisque;
+        border: 2px solid darkolivegreen;
+        border-radius: 5px;
+        padding: 5px;
+    }
+
+    div.col-lg-6{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    div.inputWrapper{
+        display: inline-flex;
+        gap: 10px;
+    }
+    
+    .completed {
+        text-decoration: line-through;
+        color: gray;
+    }
+
+    li {
+        list-style-type: none;
+        background-color: bisque;
+        padding: 10px;
+
+    }
+
+    #addButton {
+        border-radius: 5px;
+        background-color: darkolivegreen;
+        border-color: darkolivegreen;
+        color: white;
+        display: inline; 
+    }
+
+    #buySword {
+        background-color: darkolivegreen;
+        border-color: darkolivegreen;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    p{
+        text-decoration: underline;
+        color:darkolivegreen;
+        text-align: center;
+    }
+
+    #image{
+        border: 2px solid darkolivegreen;
+        border-radius: 5px;
+    }
+
+    h2{
+        text-align: center;
+    }
+
+    #taskList{
+        display: block;
+    }
