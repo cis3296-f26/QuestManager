@@ -46,3 +46,19 @@ function addSword() {
     img.src = "with_shield.jpg";
     img.className = "img-fluid";
 }
+
+function route() {
+    var page = location.hash.replace("#", "") || "home";
+    if (!document.getElementById(page)) page = "home";
+
+    document.querySelectorAll(".page").forEach(function(p) {
+        p.hidden = p.id !== page;
+    });
+
+    document.querySelectorAll("#mainNav .nav-link").forEach(function(link) {
+        link.classList.toggle("active", link.getAttribute("href") === "#" + page);
+    });
+}
+
+window.addEventListener("hashchange", route);
+route();
