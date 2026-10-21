@@ -22,13 +22,37 @@
 <h2>My Tasks</h2>
 <p>Task Points: <span id="counter"></span></p>
 
+<!-- Calendar view: buttons to switch between the task list and a calendar -->
+<div>
+<button onclick="showTasks()">To-Do</button>
+<button onclick="showCalendar()">Calendar</button>
+</div>
+
+<div id="tasksView">
 <div class="inputWrapper">
 <input type="text" id="taskInput" placeholder="Add new...">
 <button id="addButton" onclick="addTask()">+</button>
 </div>
 
-
 <ul id="taskList"></ul>
+</div>
+
+<div id="calendarView" style="display: none;">
+<p>Pick a date:</p>
+<input type="date" id="calendarInput">
+</div>
+
+<script>
+    function showTasks() {
+        document.getElementById("tasksView").style.display = "block";
+        document.getElementById("calendarView").style.display = "none";
+    }
+
+    function showCalendar() {
+        document.getElementById("tasksView").style.display = "none";
+        document.getElementById("calendarView").style.display = "block";
+    }
+</script>
 
 <script>
     var counter = document.getElementById("counter");
