@@ -87,3 +87,21 @@ body{
     #taskList{
         display: block;
     }
+
+    .page[hidden] { display: none !important; }
+
+    #mainNav {
+        gap: 10px;
+        margin: 1rem;
+    }
+
+    #mainNav .nav-link {
+        color: darkolivegreen;
+        border: 2px solid darkolivegreen;
+        border-radius: 5px;
+    }
+
+    #mainNav .nav-link.active {
+        background-color: darkolivegreen;
+        color: white;
+    }
