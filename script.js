@@ -1,3 +1,4 @@
+import { supabase } from "./supabaseClient.js"; //Supabase client iimport
 var counter = document.getElementById("counter");
 var completedCount = 0;
 var input = document.getElementById("taskInput");
