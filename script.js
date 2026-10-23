@@ -1,5 +1,5 @@
 import { supabase } from "./supabaseClient.js"; //Supabase client iimport
-console.log("script.js started");
+
 var counter = document.getElementById("counter");
 var completedCount = 0;
 var input = document.getElementById("taskInput");
@@ -45,7 +45,7 @@ function addSword() {
     completedCount--;
     counter.textContent = completedCount;
     var img = document.getElementById("image");
-    img.src = "with_shield.jpg";
+    img.src = "assets/with_sword.jpg";
     img.className = "img-fluid";
 }
 
