@@ -1,4 +1,4 @@
-import { supabase } from "./supabaseClient.js"; //Supabase client iimport
+import { initLogin } from "./login.js";
 
 var counter = document.getElementById("counter");
 var completedCount = 0;
@@ -50,7 +50,7 @@ function addSword() {
 }
 
 function route() {
-    var page = location.hash.replace("#", "") || "home";
+    let page = location.hash.replace("#", "") || "home";
     if (!document.getElementById(page)) page = "home";
 
     document.querySelectorAll(".page").forEach(function(p) {
@@ -63,4 +63,6 @@ function route() {
 }
 
 window.addEventListener("hashchange", route);
+
+initLogin();
 route();
