@@ -1,4 +1,4 @@
-public class questObject {
+public class questObject implements Reward {
     private String taskID;
     private String userID;
     private String description;
@@ -71,6 +71,21 @@ public class questObject {
         this.rewarded = rewarded;
     }
     */
+
+    public int giveReward(){
+        String difficulty = getDifficulty();
+        if (difficulty.equals("Easy")) {
+            // Give easy reward
+            return 10;
+        } else if (difficulty.equals("Medium")) {
+            // Give medium reward
+            return 20;
+        } else if (difficulty.equals("Hard")) {
+            // Give hard reward
+            return 30;
+        }
+        return 0;
+    }
 
     public boolean isCompleted() {
         return completed;
