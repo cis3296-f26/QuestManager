@@ -49,6 +49,8 @@ function addSword() {
     img.className = "img-fluid";
 }
 
+
+
 function route() {
     let page = location.hash.replace("#", "") || "home";
     if (!document.getElementById(page)) page = "home";
@@ -61,6 +63,10 @@ function route() {
         link.classList.toggle("active", link.getAttribute("href") === "#" + page);
     });
 }
+
+
+document.getElementById("addButton").addEventListener("click", addTask);
+document.getElementById("buySword").addEventListener("click", addSword);
 
 window.addEventListener("hashchange", route);
 
