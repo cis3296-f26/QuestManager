@@ -47,14 +47,12 @@
                 </form>
             </div>
 
+            <div id="accountView" hidden>
+                <p><strong id="account-name"></strong></p>
+            </div>
 
             <h2>My Tasks</h2>
             <p>Task Points: <span id="counter"></span></p>
-
-            <div>
-                <button id="todoButton" type="button">To-Do</button>
-                <button id="calendarButton" type="button">Calendar</button>
-            </div>
 
             <div id="tasksView">
                 <div class="inputWrapper">
@@ -65,10 +63,19 @@
                 <ul id="taskList"></ul>
             </div>
 
+             <button class="btn btn-outline-secondary btn-sm" id="signout-button" type="button">
+                    Sign Out
+                </button>
+            <!--
+            <div>
+                <button id="todoButton" type="button">To-Do</button>
+                <button id="calendarButton" type="button">Calendar</button>
+            </div> 
+
             <div id="calendarView" style="display: none;">
                 <p>Pick a date:</p>
                 <input type="date" id="calendarInput">
-            </div>
+            </div> -->
         </aside>
 
         <main class="main">

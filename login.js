@@ -11,6 +11,9 @@ export function initLogin() {
   const button = document.getElementById("login-button");
   const toggle = document.getElementById("auth-toggle");
   const status = document.getElementById("login-status");
+  const accountView = document.getElementById("accountView");
+  const accountName = document.getElementById("account-name");
+  const signOutButton = document.getElementById("signout-button");
 
   let mode = "login";
 
@@ -48,7 +51,9 @@ export function initLogin() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { player_name: playerInput.value.trim() } }
+          options: {
+             emailRedirectTo: window.location.origin + window.location.pathname,
+             data: { player_name: playerInput.value.trim() } }
         });
 
         if (error) {
@@ -78,7 +83,29 @@ export function initLogin() {
     }
   });
 
+
+  signOutButton.addEventListener("click", async () => {
+  signOutButton.disabled = true;
+
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    console.error("Sign out failed:", error);
+  }
+
+  signOutButton.disabled = false;
+  });
+
+
   supabase.auth.onAuthStateChange((_event, session) => {
-    loginView.hidden = Boolean(session);
+  loginView.hidden = Boolean(session);
+  accountView.hidden = !session;
+
+  if (session) {
+    accountName.textContent =
+      session.user.user_metadata?.player_name || session.user.email;
+  } else {
+    status.textContent = "";
+  }
   });
 }
