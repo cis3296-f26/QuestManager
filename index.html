@@ -22,24 +22,11 @@
                 <h2>My Tasks</h2>
                 <p>Task Points: <span id="counter"></span></p>
 
-                <div>
-<button onclick="showTasks()">To-Do</button>
-<button onclick="showCalendar()">Calendar</button>
-</div>
-
-<div id="tasksView">
-<div class="inputWrapper">
-<input type="text" id="taskInput" placeholder="Add new...">
-<button id="addButton" onclick="addTask()">+</button>
-</div>
-
-<ul id="taskList"></ul>
-</div>
-
-<div id="calendarView" style="display: none;">
-<p>Pick a date:</p>
-<input type="date" id="calendarInput">
-</div>
+                <div class="inputWrapper">
+                    <input type="text" id="taskInput" placeholder="Add new...">
+                    <button id="addButton" onclick="addTask()">+</button>
+                </div>
+                <ul id="taskList"></ul>
             </aside>
 
             <main class="main">
