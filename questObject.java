@@ -75,13 +75,10 @@ public class questObject implements Reward {
     public int giveReward(){
         String difficulty = getDifficulty();
         if (difficulty.equals("Easy")) {
-            // Give easy reward
             return 10;
         } else if (difficulty.equals("Medium")) {
-            // Give medium reward
             return 20;
         } else if (difficulty.equals("Hard")) {
-            // Give hard reward
             return 30;
         }
         return 0;
@@ -93,6 +90,7 @@ public class questObject implements Reward {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+        giveReward(); //when the task is set to completed, it then calls give reward
     }
 
 
@@ -109,6 +107,7 @@ public class questObject implements Reward {
 
     public void abandonQuest() {
         this.completed = false;
+        //and then be able to delete this
     }
 
 
