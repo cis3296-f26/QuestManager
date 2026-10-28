@@ -1,20 +1,35 @@
 import { initLogin } from "./login.js";
 
+// Routing first, so the tabs work even if something below fails
+function route() {
+    let page = location.hash.replace("#", "") || "home";
+    if (!document.getElementById(page)) page = "home";
+
+    document.querySelectorAll(".page").forEach(function(p) {
+        p.hidden = p.id !== page;
+    });
+
+    document.querySelectorAll("#mainNav .nav-link").forEach(function(link) {
+        link.classList.toggle("active", link.getAttribute("href") === "#" + page);
+    });
+}
+window.addEventListener("hashchange", route);
+route();
+
 var counter = document.getElementById("counter");
 var completedCount = 0;
 var input = document.getElementById("taskInput");
 var list = document.getElementById("taskList");
+var calendar = null;
 
-input.addEventListener("keypress", function(event) {
+input?.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
         document.getElementById("addButton").click();
     }
 });
 
 function addTask() {
-    if (input.value.trim() === "") {
-        return;
-    }
+    if (input.value.trim() === "") return;
     var li = document.createElement("li");
     var checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -22,11 +37,7 @@ function addTask() {
     text.textContent = " " + input.value;
 
     checkbox.onclick = function() {
-        if (checkbox.checked) {
-            text.classList.add("completed");
-        } else {
-            text.classList.remove("completed");
-        }
+        text.classList.toggle("completed", checkbox.checked);
         completedCount = list.querySelectorAll('input[type="checkbox"]:checked').length;
         counter.textContent = completedCount;
     };
@@ -49,30 +60,6 @@ function addSword() {
     img.className = "img-fluid";
 }
 
-
-
-function route() {
-    let page = location.hash.replace("#", "") || "home";
-    if (!document.getElementById(page)) page = "home";
-
-    document.querySelectorAll(".page").forEach(function(p) {
-        p.hidden = p.id !== page;
-    });
-
-    document.querySelectorAll("#mainNav .nav-link").forEach(function(link) {
-        link.classList.toggle("active", link.getAttribute("href") === "#" + page);
-    });
-}
-
-
-document.getElementById("addButton").addEventListener("click", addTask);
-document.getElementById("buySword").addEventListener("click", addSword);
-
-window.addEventListener("hashchange", route);
-route();
-
-var calendar = null;
-
 function showTasks() {
     document.getElementById("tasksView").style.display = "block";
     document.getElementById("calendarView").style.display = "none";
@@ -93,14 +80,16 @@ function showCalendar() {
             },
             dateClick: function(info) {
                 var title = prompt("Add a task for " + info.dateStr + ":");
-                if (title) {
-                    calendar.addEvent({ title: title, start: info.dateStr });
-                }
+                if (title) calendar.addEvent({ title: title, start: info.dateStr });
             }
         });
     }
     calendar.render();
 }
 
+document.getElementById("addButton")?.addEventListener("click", addTask);
+document.getElementById("buySword")?.addEventListener("click", addSword);
+document.getElementById("todoButton")?.addEventListener("click", showTasks);
+document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
+
 initLogin();
-route();
