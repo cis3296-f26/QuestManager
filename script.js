@@ -62,3 +62,34 @@ function route() {
 
 window.addEventListener("hashchange", route);
 route();
+
+var calendar = null;
+
+function showTasks() {
+    document.getElementById("tasksView").style.display = "block";
+    document.getElementById("calendarView").style.display = "none";
+}
+
+function showCalendar() {
+    document.getElementById("tasksView").style.display = "none";
+    document.getElementById("calendarView").style.display = "block";
+
+    if (!calendar) {
+        calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
+            initialView: "dayGridMonth",
+            height: "auto",
+            headerToolbar: {
+                left: "prev,next today",
+                center: "title",
+                right: "dayGridMonth,timeGridWeek"
+            },
+            dateClick: function(info) {
+                var title = prompt("Add a task for " + info.dateStr + ":");
+                if (title) {
+                    calendar.addEvent({ title: title, start: info.dateStr });
+                }
+            }
+        });
+    }
+    calendar.render();
+}
