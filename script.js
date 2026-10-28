@@ -1,3 +1,5 @@
+import { initLogin } from "./login.js";
+
 var counter = document.getElementById("counter");
 var completedCount = 0;
 var input = document.getElementById("taskInput");
@@ -43,12 +45,14 @@ function addSword() {
     completedCount--;
     counter.textContent = completedCount;
     var img = document.getElementById("image");
-    img.src = "with_shield.jpg";
+    img.src = "assets/with_sword.jpg";
     img.className = "img-fluid";
 }
 
+
+
 function route() {
-    var page = location.hash.replace("#", "") || "home";
+    let page = location.hash.replace("#", "") || "home";
     if (!document.getElementById(page)) page = "home";
 
     document.querySelectorAll(".page").forEach(function(p) {
@@ -59,6 +63,10 @@ function route() {
         link.classList.toggle("active", link.getAttribute("href") === "#" + page);
     });
 }
+
+
+document.getElementById("addButton").addEventListener("click", addTask);
+document.getElementById("buySword").addEventListener("click", addSword);
 
 window.addEventListener("hashchange", route);
 route();
@@ -93,3 +101,6 @@ function showCalendar() {
     }
     calendar.render();
 }
+
+initLogin();
+route();
