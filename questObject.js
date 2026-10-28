@@ -22,7 +22,7 @@ export class QuestObject {
         if(difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
             this.#difficulty = difficulty;
         } else {
-            this.#difficulty = null;
+            throw new Error("Invalid Difficulty");
         }
         this.#completed = false;
         this.#rewarded = false;
@@ -67,7 +67,7 @@ export class QuestObject {
         if (difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
             this.#difficulty = difficulty;
         }else{
-            this.#difficulty = null; //so that it's not undefined 
+            throw new Error("Invalid Difficulty");
         }
     }
 
@@ -115,15 +115,9 @@ export class QuestObject {
 
     complete(){
         this.#completed = true;
-        if(!this.#rewarded) { //putting this in an if to check if a reward has been given already
-            amount = this.giveReward();
-            
-            //check = user.addBalance(amount); //uncomment after merge, not sure if addBalance returns anything
-            //if(check) {
-                //this.#rewarded = true;
-            //}
+    }
 
-            this.#rewarded = true;
-        }
+    markRewarded(){
+        this.#rewarded = true;
     }
 }
