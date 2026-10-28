@@ -1,15 +1,26 @@
-import { User } from "./User.js";
+import { getCurrentUser } from "./userSession.js";
 import { Shop } from "./Shop.js";
 import { SHOP_ITEMS, TASK_REWARD } from "./shopItems.js";
 
-// Temporary local user until login/database is connected.
-const user = new User("local", "Adventurer");
+
 const shop = new Shop(SHOP_ITEMS);
 
 const shopSection = document.getElementById("shop");
 
 function renderShop() {
-    document.getElementById("counter").textContent = user.balance;
+    
+    // Read the current account each time; it may change after sign-out.
+    const user = getCurrentUser();
+    document.getElementById("counter").textContent = user?.balance ?? 0;
+
+    if (!user) {
+        shopSection.innerHTML = `
+            <div class="shop-panel">
+                <h2>Shop</h2>
+                <p>Sign in to earn coins and buy items.</p>
+            </div>`;
+        return;
+    }
 
     const cards = shop.items.map((item) => {
         const owned = shop.owns(user, item.id);
@@ -37,6 +48,10 @@ shopSection.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-item-id]");
     if (!button) return;
 
+    // Purchases must use the currently signed-in account.
+    const user = getCurrentUser();
+    if (!user) return;
+
     const item = shop.getItem(button.dataset.itemId);
     if (shop.buy(user, item.id)) {
         document.getElementById("image").src = item.image;
@@ -46,10 +61,17 @@ shopSection.addEventListener("click", (event) => {
     renderShop();
 });
 
-// script.js sends this event the first time a task is checked off.
+// Credit the signed-in user when a task-completion event arrives.
 document.addEventListener("questmanager:taskCompleted", () => {
-    user.addBalance(TASK_REWARD);
-    renderShop();
+    const user = getCurrentUser();
+    if (!user) return;
+
+    if (user.addBalance(TASK_REWARD)) {
+        renderShop();
+    }
 });
+
+// Refresh the balance and shop when login state changes.
+document.addEventListener("questmanager:userChanged", renderShop);
 
 renderShop();
