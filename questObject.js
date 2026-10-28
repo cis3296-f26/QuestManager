@@ -2,7 +2,7 @@ const RewardInterface = {
     giveReward: () => {}
 }
 
-class QuestObject {
+export class QuestObject {
     #taskID;
     #userID;
     #description;
@@ -17,7 +17,13 @@ class QuestObject {
         this.#userID = userID;
         this.#title = title;
         this.#description = description;
-        this.#difficulty = difficulty;
+
+        //doing a check in the constructor just in case
+        if(difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
+            this.#difficulty = difficulty;
+        } else {
+            this.#difficulty = null;
+        }
         this.#completed = false;
         this.#rewarded = false;
         this.#repeatRule = null;
@@ -58,7 +64,11 @@ class QuestObject {
     }
 
     set difficulty(difficulty) {
-        this.#difficulty = difficulty;
+        if (difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
+            this.#difficulty = difficulty;
+        }else{
+            this.#difficulty = null; //so that it's not undefined 
+        }
     }
 
     get completed() {
@@ -106,7 +116,13 @@ class QuestObject {
     complete(){
         this.#completed = true;
         if(!this.#rewarded) { //putting this in an if to check if a reward has been given already
-            giveReward();
+            amount = this.giveReward();
+            
+            //check = user.addBalance(amount); //uncomment after merge, not sure if addBalance returns anything
+            //if(check) {
+                //this.#rewarded = true;
+            //}
+
             this.#rewarded = true;
         }
     }
