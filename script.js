@@ -69,7 +69,6 @@ function showCalender(){
 
 
 document.getElementById("addButton").addEventListener("click", addTask);
-document.getElementById("buySword").addEventListener("click", addSword);
 
 window.addEventListener("hashchange", route);
 
