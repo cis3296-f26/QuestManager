@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient.js";
+import { setUserFromSession } from "./userSession.js";
 
 export function initLogin() {
   const loginView = document.getElementById("loginView");
@@ -98,6 +99,10 @@ export function initLogin() {
 
 
   supabase.auth.onAuthStateChange((_event, session) => {
+
+  // Update the shared User when a session is restored, signed in, or signed out.
+  setUserFromSession(session);
+  
   loginView.hidden = Boolean(session);
   accountView.hidden = !session;
 
