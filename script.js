@@ -1,4 +1,7 @@
+import { initLogin } from "./login.js";
 
+var counter = document.getElementById("counter");
+var completedCount = 0;
 var input = document.getElementById("taskInput");
 var list = document.getElementById("taskList");
 
@@ -42,7 +45,7 @@ function addTask() {
 
 
 function route() {
-    var page = location.hash.replace("#", "") || "home";
+    let page = location.hash.replace("#", "") || "home";
     if (!document.getElementById(page)) page = "home";
 
     document.querySelectorAll(".page").forEach(function(p) {
@@ -54,9 +57,6 @@ function route() {
     });
 }
 
-window.addEventListener("hashchange", route);
-route();
-
 function showTasks(){
     document.getElementById("tasksView").style.display = "block";
     document.getElementById("calenderView").style.display = "none";
@@ -66,3 +66,12 @@ function showCalender(){
     document.getElementById("tasksView").style.display = "block";
     document.getElementById("calenderView").style.display = "none";
 }
+
+
+document.getElementById("addButton").addEventListener("click", addTask);
+document.getElementById("buySword").addEventListener("click", addSword);
+
+window.addEventListener("hashchange", route);
+
+initLogin();
+route();
