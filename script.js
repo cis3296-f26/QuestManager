@@ -1,5 +1,4 @@
-var counter = document.getElementById("counter");
-var completedCount = 0;
+
 var input = document.getElementById("taskInput");
 var list = document.getElementById("taskList");
 
@@ -25,8 +24,13 @@ function addTask() {
         } else {
             text.classList.remove("completed");
         }
-        completedCount = list.querySelectorAll('input[type="checkbox"]:checked').length;
-        counter.textContent = completedCount;
+                // Reward each task only once, even if it is unchecked and checked again.
+        if (checkbox.checked && li.dataset.rewarded !== "true") {
+            li.dataset.rewarded = "true";
+            document.dispatchEvent(new CustomEvent("questmanager:taskCompleted", {
+                detail: { taskName: text.textContent.trim() }
+            }));
+        }
     };
 
     li.appendChild(checkbox);
@@ -35,17 +39,7 @@ function addTask() {
     input.value = "";
 }
 
-function addSword() {
-    if (completedCount <= 0) {
-        alert("You need at least 1 task point to unlock the sword!");
-        return;
-    }
-    completedCount--;
-    counter.textContent = completedCount;
-    var img = document.getElementById("image");
-    img.src = "with_shield.jpg";
-    img.className = "img-fluid";
-}
+
 
 function route() {
     var page = location.hash.replace("#", "") || "home";
@@ -62,3 +56,13 @@ function route() {
 
 window.addEventListener("hashchange", route);
 route();
+
+function showTasks(){
+    document.getElementById("tasksView").style.display = "block";
+    document.getElementById("calenderView").style.display = "none";
+}
+
+function showCalender(){
+    document.getElementById("tasksView").style.display = "block";
+    document.getElementById("calenderView").style.display = "none";
+}

@@ -20,7 +20,7 @@
         <div class="app page" id="home">
             <aside class= "sidebar">
                 <h2>My Tasks</h2>
-                <p>Task Points: <span id="counter"></span></p>
+                <p>Task Points: <span id="counter">0</span></p>
 
                 <div class="inputWrapper">
                     <input type="text" id="taskInput" placeholder="Add new...">
@@ -34,12 +34,13 @@
                 <figure>
                     <img id="image" src="my_character.jpg" class="img-fluid" width="350px" alt="default character">
                 </figure>
-                <button id="buySword" onclick="addSword()">Unlock Sword!(1 Task Point)</button>
+                <a class="shop-link" href="#shop">Visit the Shop</a>
             </main>
         </div>
         <section class="page" id="journal" hidden></section>
         <section class="page" id="shop" hidden></section>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="script.js"></script>
+   <script type="module" src="shopPage.js"></script>
 </body>
 </html>

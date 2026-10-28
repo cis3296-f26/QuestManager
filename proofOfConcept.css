@@ -105,3 +105,76 @@ body{
         background-color: darkolivegreen;
         color: white;
     }
+
+        /*shop interface*/
+
+    .shop-link {
+        background-color: darkolivegreen;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+    .shop-link:hover {
+        color: white;
+        background-color: #3f4f22;
+    }
+
+    .shop-panel {
+        margin: 1rem;
+        padding: 1.5rem;
+        border: 2px solid #333;
+        background-color: #ffffff;
+    }
+
+    .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .shop-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 1rem;
+        border: 2px solid darkolivegreen;
+        border-radius: 5px;
+        background-color: bisque;
+    }
+
+    .shop-card-image {
+        width: 140px;
+        height: 180px;
+        object-fit: contain;
+        background-color: #ffffff;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .shop-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .shop-button {
+        background-color: darkolivegreen;
+        border: 2px solid darkolivegreen;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .shop-button:disabled {
+        background-color: #ccc;
+        border-color: #aaa;
+        color: #555;
+        cursor: not-allowed;
+    }
+
+    .shop-panel p {
+        text-decoration: none;
+        text-align: center;
+    }
