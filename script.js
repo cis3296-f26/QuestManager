@@ -40,6 +40,14 @@ function addTask() {
         text.classList.toggle("completed", checkbox.checked);
         completedCount = list.querySelectorAll('input[type="checkbox"]:checked').length;
         counter.textContent = completedCount;
+        
+     // Reward each task only once, even if it is unchecked and checked again.
+        if (checkbox.checked && li.dataset.rewarded !== "true") {
+            li.dataset.rewarded = "true";
+            document.dispatchEvent(new CustomEvent("questmanager:taskCompleted", {
+                detail: { taskName: text.textContent.trim() }
+            }));
+        }
     };
 
     li.appendChild(checkbox);
