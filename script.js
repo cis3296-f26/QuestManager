@@ -1,9 +1,35 @@
 import { initLogin } from "./login.js";
+import { getCurrentUser } from "./userSession.js";
 
-var counter = document.getElementById("counter");
-var completedCount = 0;
+
 var input = document.getElementById("taskInput");
 var list = document.getElementById("taskList");
+
+// Track account changes so repeated auth events don't erase current tasks.
+let activeUserId = null;
+
+function syncTaskSession() {
+    const user = getCurrentUser();
+    const nextUserId = user?.id ?? null;
+
+    if (nextUserId !== activeUserId) {
+        // Clear the previous account's temporary tasks and character display.
+        list.replaceChildren();
+        input.value = "";
+        document.getElementById("image").src = "assets/my_character.jpg";
+        activeUserId = nextUserId;
+    }
+
+    // Tasks require a signed-in account.
+    input.disabled = !user;
+    document.getElementById("addButton").disabled = !user;
+    list.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.disabled = !user;
+    });
+}
+
+document.addEventListener("questmanager:userChanged", syncTaskSession);
+syncTaskSession();
 
 input.addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
@@ -12,6 +38,10 @@ input.addEventListener("keypress", function(event) {
 });
 
 function addTask() {
+
+    // Also check here so code cannot add tasks while signed out.
+    if (!getCurrentUser()) return;
+
     if (input.value.trim() === "") {
         return;
     }
@@ -22,6 +52,12 @@ function addTask() {
     text.textContent = " " + input.value;
 
     checkbox.onclick = function() {
+
+        // Stop completion before the task can be marked rewarded.
+        if (!getCurrentUser()) {
+            checkbox.checked = false;
+            return;
+        }
         if (checkbox.checked) {
             text.classList.add("completed");
         } else {
