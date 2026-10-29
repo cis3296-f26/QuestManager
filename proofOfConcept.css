@@ -106,8 +106,16 @@ body{
         color: white;
     }
 
-        /*shop interface*/
+    .app {
+    grid-template-columns: minmax(380px, 1fr) 2fr;
+    padding: 2rem;
+    }
 
+    #calendar {
+        font-size: 0.75rem;
+        /*shop interface*/
+    }
+        
     .shop-link {
         background-color: darkolivegreen;
         color: white;
