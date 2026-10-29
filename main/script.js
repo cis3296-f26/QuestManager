@@ -1,5 +1,5 @@
-import { initLogin } from "./login.js";
-import { getCurrentUser } from "./userSession.js";
+import { initLogin } from "./users/login.js";
+import { getCurrentUser } from "./users/userSession.js";
 
 
 // Routing first, so the tabs work even if something below fails
