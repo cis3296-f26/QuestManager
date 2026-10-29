@@ -18,8 +18,7 @@ function route() {
 window.addEventListener("hashchange", route);
 route();
 
-var counter = document.getElementById("counter");
-var completedCount = 0;
+
 var input = document.getElementById("taskInput");
 var list = document.getElementById("taskList");
 var calendar = null;
@@ -79,8 +78,6 @@ function addTask() {
         }
 
         text.classList.toggle("completed", checkbox.checked);
-        completedCount = list.querySelectorAll('input[type="checkbox"]:checked').length;
-        counter.textContent = completedCount;
 
         // Reward each task only once, even if it is unchecked and checked again.
         if (checkbox.checked && li.dataset.rewarded !== "true") {
@@ -97,17 +94,6 @@ function addTask() {
     input.value = "";
 }
 
-function addSword() {
-    if (completedCount <= 0) {
-        alert("You need at least 1 task point to unlock the sword!");
-        return;
-    }
-    completedCount--;
-    counter.textContent = completedCount;
-    var img = document.getElementById("image");
-    img.src = "assets/with_sword.jpg";
-    img.className = "img-fluid";
-}
 
 function showTasks() {
     document.getElementById("tasksView").style.display = "block";
@@ -137,7 +123,6 @@ function showCalendar() {
 }
 
 document.getElementById("addButton")?.addEventListener("click", addTask);
-document.getElementById("buySword")?.addEventListener("click", addSword);
 document.getElementById("todoButton")?.addEventListener("click", showTasks);
 document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
 
