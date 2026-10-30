@@ -1,4 +1,4 @@
-import { supabase } from "./supabaseClient.js";
+import { supabase } from "../../supabase/supabaseClient.js";
 import { setUserFromSession } from "./userSession.js";
 
 export function initLogin() {

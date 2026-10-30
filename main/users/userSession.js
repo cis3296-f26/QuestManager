@@ -1,4 +1,4 @@
-import { User } from "./User.js";
+import { User } from "./users.js";
 
 // null means no account is currently signed in.
 let currentUser = null;

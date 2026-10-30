@@ -1,5 +1,5 @@
-import { getCurrentUser } from "./userSession.js";
-import { Shop } from "./Shop.js";
+import { getCurrentUser } from "../users/userSession.js";
+import { Shop } from "./shop.js";
 import { SHOP_ITEMS, TASK_REWARD } from "./shopItems.js";
 
 
