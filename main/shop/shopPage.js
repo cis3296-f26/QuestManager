@@ -67,13 +67,14 @@ document.addEventListener("questmanager:taskCompleted", (event) => {
     const task = event.detail?.task;
 
     // Only credit completed tasks belonging to the signed-in account.
-    if (!user || !task || task.userID !== user.id || !task.completed) {
+    if (!user || !task || task.userID !== user.id || !task.completed || task.rewarded) {
         return;
     }
 
     const amount = task.giveReward();
 
     if (user.addBalance(amount)) {
+        task.markRewarded();
         renderShop();
     }
 });

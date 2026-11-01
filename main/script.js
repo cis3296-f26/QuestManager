@@ -89,13 +89,15 @@ function addTask() {
 
         text.classList.toggle("completed", checkbox.checked);
 
-        // Reward each task only once, even if it is unchecked and checked again.
-        if (checkbox.checked && li.dataset.rewarded !== "true") {
+        // Retry unpaid tasks, but never request another reward after payment succeeds.
+        if (checkbox.checked) {
             task.complete();
-            li.dataset.rewarded = "true";
-            document.dispatchEvent(new CustomEvent("questmanager:taskCompleted", {
-                detail: { task }
-            }));
+
+            if (!task.rewarded) {
+                document.dispatchEvent(new CustomEvent("questmanager:taskCompleted", {
+                    detail: { task }
+                }));
+            }
         }
     };
 
