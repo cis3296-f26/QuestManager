@@ -1,6 +1,6 @@
 import { initLogin } from "./users/login.js";
 import { getCurrentUser } from "./users/userSession.js";
-
+import { QuestObject } from "./quests/questObject.js";
 
 // Routing first, so the tabs work even if something below fails
 function route() {
@@ -57,22 +57,32 @@ input.addEventListener("keypress", function(event) {
 
 function addTask() {
 
-    // Also check here so code cannot add tasks while signed out.
-    if (!getCurrentUser()) return;
+    const user = getCurrentUser();
+    if (!user) return;
 
-    if (input.value.trim() === "") {
-        return;
-    }
+    const title = input.value.trim();
+    if (title === "") return;
+
+    // Use easy until the task UI supplies the selected difficulty.
+    const task = new QuestObject(
+        crypto.randomUUID(),
+        user.id,
+        title,
+        "",
+        "easy"
+    );
+
     var li = document.createElement("li");
     var checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     var text = document.createElement("span");
-    text.textContent = " " + input.value;
+    text.textContent = " " + task.title;
 
     checkbox.onclick = function() {
 
-        // Stop completion before the task can be marked rewarded.
-        if (!getCurrentUser()) {
+        // Only the account that created this task can complete it.
+        const currentUser = getCurrentUser();
+        if (!currentUser || currentUser.id !== task.userID) {
             checkbox.checked = false;
             return;
         }
@@ -81,9 +91,10 @@ function addTask() {
 
         // Reward each task only once, even if it is unchecked and checked again.
         if (checkbox.checked && li.dataset.rewarded !== "true") {
+            task.complete();
             li.dataset.rewarded = "true";
             document.dispatchEvent(new CustomEvent("questmanager:taskCompleted", {
-                detail: { taskName: text.textContent.trim() }
+                detail: { task }
             }));
         }
     };
