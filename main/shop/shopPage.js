@@ -1,6 +1,6 @@
 import { getCurrentUser } from "../users/userSession.js";
 import { Shop } from "./shop.js";
-import { SHOP_ITEMS, TASK_REWARD } from "./shopItems.js";
+import { SHOP_ITEMS} from "./shopItems.js";
 
 
 const shop = new Shop(SHOP_ITEMS);
@@ -38,7 +38,7 @@ function renderShop() {
     shopSection.innerHTML = `
         <div class="shop-panel">
             <h2>Shop</h2>
-            <p>Task Points: ${user.balance} (earn ${TASK_REWARD} per completed task)</p>
+            <p>Task Points: ${user.balance} (Easy: 10, Medium: 20, Hard: 30 coins)</p>
             <div class="shop-grid">${cards.join("")}</div>
         </div>`;
 }
@@ -62,11 +62,19 @@ shopSection.addEventListener("click", (event) => {
 });
 
 // Credit the signed-in user when a task-completion event arrives.
-document.addEventListener("questmanager:taskCompleted", () => {
+document.addEventListener("questmanager:taskCompleted", (event) => {
     const user = getCurrentUser();
-    if (!user) return;
+    const task = event.detail?.task;
 
-    if (user.addBalance(TASK_REWARD)) {
+    // Only credit completed tasks belonging to the signed-in account.
+    if (!user || !task || task.userID !== user.id || !task.completed || task.rewarded) {
+        return;
+    }
+
+    const amount = task.giveReward();
+
+    if (user.addBalance(amount)) {
+        task.markRewarded();
         renderShop();
     }
 });
