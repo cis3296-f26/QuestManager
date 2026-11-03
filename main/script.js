@@ -20,6 +20,7 @@ route();
 
 
 var input = document.getElementById("taskInput");
+var difficultySelect = document.getElementById("difficultySelect");
 var list = document.getElementById("taskList");
 var calendar = null;
 
@@ -34,12 +35,14 @@ function syncTaskSession() {
         // Clear the previous account's temporary tasks and character display.
         list.replaceChildren();
         input.value = "";
+        difficultySelect.value = "easy";
         document.getElementById("image").src = "assets/my_character.jpg";
         activeUserId = nextUserId;
     }
 
     // Tasks require a signed-in account.
     input.disabled = !user;
+    difficultySelect.disabled = !user;
     document.getElementById("addButton").disabled = !user;
     list.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
         checkbox.disabled = !user;
@@ -63,13 +66,13 @@ function addTask() {
     const title = input.value.trim();
     if (title === "") return;
 
-    // Use easy until the task UI supplies the selected difficulty.
+    
     const task = new QuestObject(
         crypto.randomUUID(),
         user.id,
         title,
         "",
-        "easy"
+       difficultySelect.value
     );
 
     var li = document.createElement("li");
@@ -105,6 +108,7 @@ function addTask() {
     li.appendChild(text);
     list.appendChild(li);
     input.value = "";
+    difficultySelect.value = "easy";
 }
 
 
