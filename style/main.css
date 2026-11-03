@@ -35,7 +35,7 @@ body{
 
 
 
-    #taskInput{
+    #taskInput, #difficultySelect{
         background-color: bisque;
         border: 2px solid darkolivegreen;
         border-radius: 5px;
