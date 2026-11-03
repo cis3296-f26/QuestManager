@@ -107,6 +107,9 @@ export function initLogin() {
 
 
   supabase.auth.onAuthStateChange((_event, session) => {
+    // Move focus only when switching screens, not on repeated auth events.
+    const showingLogin = !loginView.hidden;
+    const showingApp = !appView.hidden;
 
     // Update the shared User when a session is restored, signed in, or signed out.
     setUserFromSession(session);
@@ -119,8 +122,16 @@ export function initLogin() {
     if (session) {
       accountName.textContent =
         session.user.user_metadata?.player_name || session.user.email;
+
+      if (!showingApp) {
+        document.querySelector("#mainNav .nav-link.active")?.focus();
+      }
     } else {
       status.textContent = "";
+
+      if (!showingLogin) {
+        emailInput.focus();
+      }
     }
   });
 }
