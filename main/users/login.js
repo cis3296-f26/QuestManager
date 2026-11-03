@@ -15,6 +15,7 @@ export function initLogin() {
   const accountView = document.getElementById("accountView");
   const accountName = document.getElementById("account-name");
   const signOutButton = document.getElementById("signout-button");
+  const subtitle = document.getElementById("auth-subtitle");
 
   let mode = "login";
 
@@ -22,7 +23,11 @@ export function initLogin() {
     mode = newMode;
     const signingUp = mode === "signup";
 
-    title.textContent = signingUp ? "Create Account" : "Log In";
+    title.textContent = signingUp ? "Get Started Now" : "Welcome back!";
+    subtitle.textContent = signingUp
+      ? "Create an account to begin your adventure."
+      : "Enter your credentials to access your account.";
+
     button.textContent = signingUp ? "Create Account" : "Log In";
     toggle.textContent = signingUp
       ? "Have an account? Log in"
@@ -33,6 +38,7 @@ export function initLogin() {
     passwordInput.autocomplete = signingUp ? "new-password" : "current-password";
     status.textContent = "";
   }
+  setMode("login");
 
   toggle.addEventListener("click", () => {
     setMode(mode === "login" ? "signup" : "login");
@@ -53,8 +59,9 @@ export function initLogin() {
           email,
           password,
           options: {
-             emailRedirectTo: window.location.origin + window.location.pathname,
-             data: { player_name: playerInput.value.trim() } }
+            emailRedirectTo: window.location.origin + window.location.pathname,
+            data: { player_name: playerInput.value.trim() }
+          }
         });
 
         if (error) {
@@ -86,31 +93,31 @@ export function initLogin() {
 
 
   signOutButton.addEventListener("click", async () => {
-  signOutButton.disabled = true;
+    signOutButton.disabled = true;
 
-  const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
 
-  if (error) {
-    console.error("Sign out failed:", error);
-  }
+    if (error) {
+      console.error("Sign out failed:", error);
+    }
 
-  signOutButton.disabled = false;
+    signOutButton.disabled = false;
   });
 
 
   supabase.auth.onAuthStateChange((_event, session) => {
 
-  // Update the shared User when a session is restored, signed in, or signed out.
-  setUserFromSession(session);
-  
-  loginView.hidden = Boolean(session);
-  accountView.hidden = !session;
+    // Update the shared User when a session is restored, signed in, or signed out.
+    setUserFromSession(session);
 
-  if (session) {
-    accountName.textContent =
-      session.user.user_metadata?.player_name || session.user.email;
-  } else {
-    status.textContent = "";
-  }
+    loginView.hidden = Boolean(session);
+    accountView.hidden = !session;
+
+    if (session) {
+      accountName.textContent =
+        session.user.user_metadata?.player_name || session.user.email;
+    } else {
+      status.textContent = "";
+    }
   });
 }
