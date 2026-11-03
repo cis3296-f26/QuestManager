@@ -1,0 +1,102 @@
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap");
+
+/* Fill the screen with the authentication background. */
+#loginView {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    overflow-y: auto;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: url("../assets/auth-background.png") center / cover no-repeat;
+}
+
+/* Keep the screen hidden when the login code sets hidden. */
+#loginView[hidden] {
+    display: none;
+}
+
+/* Keep these styles separate from the rest of the app. */
+#login-form {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 420px;
+    padding: 40px;
+    background: #faf0e6;
+    border: 2px solid #51452b;
+    border-radius: 12px;
+    color: #222;
+    font-family: Arial, sans-serif;
+}
+
+#auth-title {
+    margin-bottom: 28px;
+    font-family: "Abril Fatface", Georgia, serif;
+    font-size: 30px;
+    text-align: center;
+}
+
+#login-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+#login-form input {
+    width: 100%;
+    min-height: 44px;
+    margin-bottom: 18px;
+    padding: 10px 12px;
+    border: 1px solid #cfc5b8;
+    border-radius: 6px;
+    background: transparent;
+    font: inherit;
+}
+
+#login-form input:focus-visible {
+    outline: 3px solid #8ca66b;
+    outline-offset: 2px;
+}
+
+#login-button {
+    width: 100%;
+    min-height: 44px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 6px;
+    background: #3d5f26;
+    color: white;
+    font-weight: bold;
+}
+
+#login-button:hover {
+    background: #304c1e;
+}
+
+#login-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+#auth-toggle {
+    display: block;
+    margin: 20px auto 0;
+    color: #3d5f26;
+}
+
+#login-status {
+    margin-top: 16px;
+    overflow-wrap: anywhere;
+}
+
+/* Reduce panel spacing on smaller screens. */
+@media (max-width: 480px) {
+    #loginView {
+        padding: 16px;
+    }
+
+    #login-form {
+        padding: 28px 24px;
+    }
+}
