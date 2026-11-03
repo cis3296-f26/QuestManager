@@ -1,20 +1,57 @@
 import { User } from "./users.js";
+import { loadPlayer } from "./playerData.js";
 
 // null means no account is currently signed in.
 let currentUser = null;
+let currentAccount = null;
+
+let loadCounter = 0;
 
 export function getCurrentUser() {
     return currentUser;
 }
 
-export function setUserFromSession(session) {
+//THIS METHOD LOADS **FROM** THE DATABASE. Should be called after every good BUY or COMPLETE TASK.
+export async function refreshCurrentUser() {
+    const account = currentAccount;
+    if (!account) return null;
+
+    const thisLoad = ++loadCounter;
+
+    try {
+        const saved = await loadPlayer(account.id);
+        if (thisLoad !== loadCounter) return null; // a newer load started
+
+        currentUser = new User(
+            account.id,
+            saved.username || account.user_metadata?.player_name || account.email,
+            saved.balance,
+            saved.inventory
+        );
+    } catch (error) {
+        if (thisLoad !== loadCounter) return null;
+        console.error("Could not load player data:", error);
+        currentUser = null;
+    }
+
+    notify();
+    return currentUser;
+}
+
+export async function setUserFromSession(session) {
     const account = session?.user;
+    const previousId = currentAccount?.id;
+    currentAccount = account;
 
     if (!account) {
+        ++ loadCounter; //cancels load
         currentUser = null;
-    } else if (currentUser?.id !== account.id) {
-        // Only create a new User when the account changes.
-        // Repeated auth events must not reset earned coins or inventory.
+        notify();
+        return;
+    }
+
+    if (currentUser?.id !== account.id) {
+     
         currentUser = new User(
             account.id,
             account.user_metadata?.player_name || account.email
@@ -22,5 +59,10 @@ export function setUserFromSession(session) {
     }
 
     // Let the interface refresh when the authentication state changes.
+function notify() {
     document.dispatchEvent(new CustomEvent("questmanager:userChanged"));
+    }
+
+    notify();
+    await refreshCurrentUser();
 }
