@@ -16,6 +16,7 @@ export function initLogin() {
   const accountName = document.getElementById("account-name");
   const signOutButton = document.getElementById("signout-button");
   const subtitle = document.getElementById("auth-subtitle");
+  const appView = document.getElementById("appView");
 
   let mode = "login";
 
@@ -111,6 +112,8 @@ export function initLogin() {
     setUserFromSession(session);
 
     loginView.hidden = Boolean(session);
+    // Show the app only when an account is signed in.
+    appView.hidden = !session;
     accountView.hidden = !session;
 
     if (session) {
