@@ -1,6 +1,5 @@
-// Points earned for each completed task.
-// TODO: replace with QuestObject.giveReward() once the task-management PR is merged.
-export const TASK_REWARD = 10;
+// Prices here are for display only;
+// buy_shop_item charges the price in the Supabase shop_items table.
 
 // Items for sale. To add one add an object here and put its image in the repo.
 export const SHOP_ITEMS = [

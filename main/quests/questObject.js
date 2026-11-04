@@ -1,6 +1,3 @@
-const RewardInterface = {
-    giveReward: () => {}
-}
 
 export class QuestObject {
     #taskID;
@@ -103,13 +100,12 @@ export class QuestObject {
         switch(this.#difficulty){
             case "easy":
                 return 10
-                break;
             case "medium":
                 return 20
-                break;
             case "hard":
                 return 30
-                break;
+            default:
+                return 0
         }
     }
 
@@ -119,5 +115,14 @@ export class QuestObject {
 
     markRewarded(){
         this.#rewarded = true;
+    }
+
+    // Build a QuestObject from a row of the Supabase "tasks" table.
+    static fromRow(row) {
+        const quest = new QuestObject(row.id, row.user_id, row.title, row.description, row.difficulty);
+        if (row.completed) quest.complete();
+        if (row.rewarded) quest.markRewarded();
+        quest.repeatRule = row.repeat_rule;
+        return quest;
     }
 }
