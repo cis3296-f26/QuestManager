@@ -213,7 +213,7 @@ body {
 }
 
 /* Override the earlier span styling specifically for status badges. */
-#home #taskList > li > .quest-status,
+#home #taskList>li>.quest-status,
 #home .quest-status {
     display: inline-block;
     margin-top: 12px;
@@ -226,8 +226,28 @@ body {
     text-decoration: none;
 }
 
-#home #taskList > li > .quest-status.is-completed,
+#home #taskList>li>.quest-status.is-completed,
 #home .quest-status.is-completed {
     background: #dce8ca;
     color: #304c1e;
+}
+
+#home label[for="taskDescription"] {
+    display: block;
+    margin-top: 16px;
+    color: #403725;
+    font-size: 14px;
+}
+
+#home #taskDescription {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin-top: 6px;
+    padding: 10px;
+    border: 2px solid darkolivegreen;
+    border-radius: 5px;
+    background: #faedca;
+    resize: vertical;
+    font: inherit;
 }

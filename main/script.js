@@ -16,6 +16,7 @@ window.addEventListener("hashchange", route);
 route();
 
 var input = document.getElementById("taskInput");
+var descriptionInput = document.getElementById("taskDescription");
 var list = document.getElementById("taskList");
 var addButton = document.getElementById("addButton");
 var difficultySelect = document.getElementById("difficultySelect");
@@ -113,9 +114,9 @@ function renderTask(task, target = list) {
 }
 
 // ---------- Adding tasks ----------
-async function addTaskFor(title, difficulty, date) {
-    // The database creates the id and fills in user_id.
-    const row = await createTask(title, "", difficulty, date);
+async function addTaskFor(title, difficulty, date, description = "") {
+    // Save the description alongside the other task details.
+    const row = await createTask(title, description, difficulty, date);
     allTasks.push(QuestObject.fromRow(row));
     renderLists();
 }
@@ -130,8 +131,9 @@ async function addTask() {
     addButton.disabled = true; // stop double-clicks
 
     try {
-        await addTaskFor(title, difficultySelect.value, todayStr());
+        await addTaskFor(title, difficultySelect.value, todayStr(), descriptionInput.value.trim());
         input.value = "";
+        descriptionInput.value = "";
         difficultySelect.value = "easy";
     } catch (error) {
         console.error(error);
@@ -168,6 +170,7 @@ async function syncTaskSession() {
 
     // Tasks require a signed-in account.
     input.disabled = !user;
+    descriptionInput.disabled = !user;
     difficultySelect.disabled = !user;
     addButton.disabled = !user;
     const dayInput = document.getElementById("dayTaskInput");
@@ -186,6 +189,7 @@ async function syncTaskSession() {
     allTasks = [];
     renderLists();
     input.value = "";
+    descriptionInput.value = "";
     difficultySelect.value = "easy";
     document.getElementById("image").src = "assets/my_character.jpg";
     activeUserId = nextUserId;
