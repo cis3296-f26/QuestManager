@@ -189,3 +189,45 @@ body {
         grid-template-columns: minmax(0, 1fr);
     }
 }
+
+/* Task details stay readable inside the parchment cards. */
+#home .quest-title {
+    font-weight: bold;
+}
+
+#home .quest-description,
+#home .quest-difficulty {
+    margin: 12px 0;
+    color: #403725;
+    text-align: left;
+    text-decoration: none;
+}
+
+#home .quest-description {
+    white-space: pre-wrap;
+    font-size: 14px;
+}
+
+#home .quest-difficulty {
+    font-size: 13px;
+}
+
+/* Override the earlier span styling specifically for status badges. */
+#home #taskList > li > .quest-status,
+#home .quest-status {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #ffd0bd;
+    color: #713521;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+#home #taskList > li > .quest-status.is-completed,
+#home .quest-status.is-completed {
+    background: #dce8ca;
+    color: #304c1e;
+}

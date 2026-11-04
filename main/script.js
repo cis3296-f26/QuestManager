@@ -55,11 +55,30 @@ function renderTask(task, target = list) {
     checkbox.disabled = !getCurrentUser() || task.rewarded;
     checkbox.dataset.rewarded = String(task.rewarded);
 
+    // Give the completion checkbox an accessible name.
+    checkbox.setAttribute("aria-label", "Complete task: " + task.title);
+
     var text = document.createElement("span");
-    text.textContent = " " + task.title + " (" + task.difficulty + ")";
+    text.className = "quest-title";
+    text.textContent = task.title;
     text.classList.toggle("completed", task.completed);
 
-    checkbox.onclick = async function() {
+    var description = document.createElement("p");
+    description.className = "quest-description";
+    description.textContent = task.description || "";
+    description.hidden = !description.textContent.trim();
+
+    var difficulty = document.createElement("p");
+    difficulty.className = "quest-difficulty";
+    difficulty.textContent = "Difficulty: " + task.difficulty;
+
+    // This reflects completion; payment remains handled by the existing logic.
+    var badge = document.createElement("span");
+    badge.className = "quest-status";
+    badge.classList.toggle("is-completed", task.completed);
+    badge.textContent = task.completed ? "Completed" : "In progress";
+
+    checkbox.onclick = async function () {
 
         // Only the account that created this task can complete it, and only once.
         const currentUser = getCurrentUser();
@@ -87,6 +106,9 @@ function renderTask(task, target = list) {
 
     li.appendChild(checkbox);
     li.appendChild(text);
+    li.appendChild(description);
+    li.appendChild(difficulty);
+    li.appendChild(badge);
     target.appendChild(li);
 }
 
@@ -182,7 +204,7 @@ async function syncTaskSession() {
 
 document.addEventListener("questmanager:userChanged", syncTaskSession);
 
-input.addEventListener("keypress", function(event) {
+input.addEventListener("keypress", function (event) {
     if (event.key === "Enter") {
         addButton.click();
     }
