@@ -109,3 +109,45 @@ body {
         flex: 1 1 160px;
     }
 }
+/* Balance badge above the character. */
+#home .points-display {
+    align-self: flex-start;
+    margin: 0 0 16px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: #cbb69f;
+    color: #3d5f26;
+    font-family: "Abril Fatface", Georgia, serif;
+    text-decoration: none;
+}
+
+/* Let the character resize without stretching. */
+#home .main figure {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 0 16px;
+}
+
+#home #image {
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    max-height: 450px;
+    object-fit: contain;
+}
+
+#home .shop-link {
+    padding: 10px 32px;
+    border-radius: 999px;
+    background: #cbb69f;
+    color: #3d5f26;
+    font-family: "Abril Fatface", Georgia, serif;
+    text-align: center;
+}
+
+#home .shop-link:hover {
+    background: #baa087;
+}
