@@ -1,5 +1,4 @@
 
-
 export class QuestObject {
     #taskID;
     #userID;
@@ -101,13 +100,12 @@ export class QuestObject {
         switch(this.#difficulty){
             case "easy":
                 return 10
-                break;
             case "medium":
                 return 20
-                break;
             case "hard":
                 return 30
-                break;
+            default:
+                return 0
         }
     }
 
