@@ -35,7 +35,7 @@ body{
 
 
 
-    #taskInput{
+    #taskInput, #difficultySelect{
         background-color: bisque;
         border: 2px solid darkolivegreen;
         border-radius: 5px;
@@ -186,3 +186,19 @@ body{
         text-decoration: none;
         text-align: center;
     }
+
+    #taskInput, #difficultySelect, #dayTaskInput {
+    background-color: bisque;
+    border: 2px solid darkolivegreen;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+#addButton, #dayAddButton {
+    border-radius: 5px;
+    background-color: darkolivegreen;
+    border-color: darkolivegreen;
+    color: white;
+}
+
+#dayPanel { margin-top: 1rem; }

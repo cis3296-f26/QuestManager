@@ -1,6 +1,3 @@
-const RewardInterface = {
-    giveReward: () => {}
-}
 
 export class QuestObject {
     #taskID;
@@ -11,12 +8,14 @@ export class QuestObject {
     #difficulty;
     #repeatRule;
     #rewarded
+    #date;
 
     constructor(taskID, userID, title, description, difficulty) {
         this.#taskID = taskID;
         this.#userID = userID;
         this.#title = title;
         this.#description = description;
+        this.#date = null
 
         //doing a check in the constructor just in case
         if(difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
@@ -27,6 +26,7 @@ export class QuestObject {
         this.#completed = false;
         this.#rewarded = false;
         this.#repeatRule = null;
+        this.#date = null;
     }
 
     //getters and setters; the idea of the setters is that we'll connect them to buttons that the user can push
@@ -103,21 +103,42 @@ export class QuestObject {
         switch(this.#difficulty){
             case "easy":
                 return 10
-                break;
             case "medium":
                 return 20
-                break;
             case "hard":
                 return 30
-                break;
+            default:
+                return 0
         }
     }
 
     complete(){
         this.#completed = true;
     }
+    
+    get date() { 
+        return this.#date; 
+    }
+    
+    set date(d) { 
+        this.#date = d; 
+    }   // "YYYY-MM-DD"
+
+    uncomplete() {
+        this.#completed = false;
+    }
 
     markRewarded(){
         this.#rewarded = true;
+    }
+
+    // Build a QuestObject from a row of the Supabase "tasks" table.
+    static fromRow(row) {
+        const quest = new QuestObject(row.id, row.user_id, row.title, row.description, row.difficulty);
+        if (row.completed) quest.complete();
+        if (row.rewarded) quest.markRewarded();
+        quest.repeatRule = row.repeat_rule;
+        quest.date = row.task_date;
+        return quest;
     }
 }
