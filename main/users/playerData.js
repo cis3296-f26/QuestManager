@@ -25,7 +25,6 @@ export async function loadPlayer(userId) {
     };
 }
 
-
 // Saved tasks for this user
 export async function loadTasks(userId) {
     const { data, error } = await supabase
@@ -37,18 +36,18 @@ export async function loadTasks(userId) {
     return data;
 }
 
-
-export async function createTask(title, description, difficulty) {
+// taskDate is "YYYY-MM-DD"
+export async function createTask(title, description, difficulty, taskDate) {
     const { data, error } = await supabase
         .from("tasks")
-        .insert({ title, description, difficulty })
+        .insert({ title, description, difficulty, task_date: taskDate })
         .select()
         .single();
     if (error) throw error;
     return data;
 }
 
-// Marks the task done and pays its reward once. 
+// Marks the task done and pays its reward once.
 export async function completeTask(taskId) {
     const { data, error } = await supabase.rpc("complete_task", { p_task_id: taskId });
     if (error) throw error;

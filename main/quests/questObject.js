@@ -15,6 +15,7 @@ export class QuestObject {
         this.#userID = userID;
         this.#title = title;
         this.#description = description;
+        this.#date = null
 
         //doing a check in the constructor just in case
         if(difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
@@ -114,14 +115,14 @@ export class QuestObject {
     complete(){
         this.#completed = true;
     }
-
-        get date() {
-        return this.#date;
+    
+    get date() { 
+        return this.#date; 
     }
-
-    set date(date) {
-        this.#date = date;   // "YYYY-MM-DD"
-    }
+    
+    set date(d) { 
+        this.#date = d; 
+    }   // "YYYY-MM-DD"
 
     uncomplete() {
         this.#completed = false;
@@ -137,6 +138,7 @@ export class QuestObject {
         if (row.completed) quest.complete();
         if (row.rewarded) quest.markRewarded();
         quest.repeatRule = row.repeat_rule;
+        quest.date = row.task_date;
         return quest;
     }
 }
