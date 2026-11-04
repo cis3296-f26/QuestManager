@@ -1,10 +1,7 @@
 import { initLogin } from "./users/login.js";
-import { getCurrentUser } from "./users/userSession.js";
-import { loadTasks } from "./tasks/taskServices.js";
-import {
-    getTasks, getTasksFor, addTask as storeAdd, toggleTask,
-    setTasks, subscribe, todayStr
-} from "./tasks/taskStore.js";
+import { getCurrentUser, refreshCurrentUser } from "./users/userSession.js";
+import { QuestObject } from "./quests/questObject.js";
+import { loadTasks, createTask, completeTask } from "./users/playerData.js";
 
 // Routing first, so the tabs work even if something below fails
 function route() {
@@ -19,96 +16,120 @@ window.addEventListener("hashchange", route);
 route();
 
 var input = document.getElementById("taskInput");
-var difficultySelect = document.getElementById("difficultySelect");
 var list = document.getElementById("taskList");
+var addButton = document.getElementById("addButton");
+var difficultySelect = document.getElementById("difficultySelect");
 var calendar = null;
 let selectedDate = todayStr();
 let activeUserId = null;
 
-// ---------- Checklist ----------
-function renderChecklist() {
-    list.replaceChildren();
-    getTasksFor(selectedDate).forEach(task => list.appendChild(buildTaskItem(task)));
-}
-
-function buildTaskItem(task) {
-    const li = document.createElement("li");
-    const cb = document.createElement("input");
-    cb.type = "checkbox";
-    cb.checked = task.completed;
-    cb.disabled = !getCurrentUser();
-    const text = document.createElement("span");
-    text.textContent = " " + task.title;
-    text.classList.toggle("completed", task.completed);
-
-    cb.onclick = () => {
-        const user = getCurrentUser();
-        // Only the account that created this task can complete it.
-        if (!user || user.id !== task.userID) { cb.checked = false; return; }
-
-        toggleTask(task, cb.checked);
-
-        // Retry unpaid tasks, but never request another reward after payment succeeds.
-        if (task.completed && !task.rewarded) {
-            document.dispatchEvent(new CustomEvent("questmanager:taskCompleted", {
-                detail: { task }
-            }));
-        }
-    };
-    li.append(cb, text);
-    return li;
-}
-
-function addTask() {
-    if (!getCurrentUser()) return;
-    const title = input.value.trim();
-    if (title === "") return;
-    storeAdd(title, difficultySelect.value, selectedDate);
-    input.value = "";
-    difficultySelect.value = "easy";
-}
-
-// ---------- Session ----------
-function syncTaskSession() {
+async function syncTaskSession() {
     const user = getCurrentUser();
     const nextUserId = user?.id ?? null;
 
-    if (nextUserId !== activeUserId) {
-        activeUserId = nextUserId;
-        input.value = "";
-        difficultySelect.value = "easy";
-        document.getElementById("image").src = "assets/my_character.jpg";
-        loadTasks().then(setTasks);   // empty when signed out
-    }
+    addButton.disabled = !user;
+    list.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+        checkbox.disabled = !user || checkbox.dataset.rewarded === "true";
+    });
 
-    input.disabled = !user;
-    difficultySelect.disabled = !user;
-    document.getElementById("addButton").disabled = !user;
-    document.getElementById("dayAddButton").disabled = !user;
-    document.getElementById("dayTaskInput").disabled = !user;
+    // Same account (e.g. a balance refresh): keep the list as it is.
+    if (nextUserId === activeUserId) return;
+
+    // Clear the previous account
+    list.replaceChildren();
+    input.value = "";
+    document.getElementById("image").src = "assets/my_character.jpg";
+    activeUserId = nextUserId;
+
+    if (!user) return;
+
+    try {
+        const rows = await loadTasks(user.id);
+        if (activeUserId !== user.id) return; // switched accounts while loading
+        rows.map(QuestObject.fromRow).forEach(renderTask);
+    } catch (error) {
+        console.error("Could not load tasks:", error);
+    }
+}
+
+input.addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        addButton.click();
+    }
+});
+
+// Draw one task. Used for new tasks and for tasks loaded from the database.
+function renderTask(task) {
+    var li = document.createElement("li");
+    var checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.completed;
+    checkbox.disabled = task.rewarded;
+    checkbox.dataset.rewarded = String(task.rewarded);
+
+    var text = document.createElement("span");
+    text.textContent = " " + task.title + " (" + task.difficulty + ")";
+    text.classList.toggle("completed", task.completed);
+
+    checkbox.onclick = async function() {
+
+        // Only the account that created this task can complete it, and only once.
+        const currentUser = getCurrentUser();
+        if (!currentUser || currentUser.id !== task.userID || task.rewarded) {
+            checkbox.checked = task.completed;
+            return;
+        }
+
+        checkbox.disabled = true; // stop double-clicks
+
+        try {
+            // The database marks it done and pays the reward exactly once.
+            await completeTask(task.taskID);
+            task.complete();
+            task.markRewarded();
+            checkbox.dataset.rewarded = "true";
+            text.classList.add("completed");
+            await refreshCurrentUser(); // updates the coin counter and the shop
+        } catch (error) {
+            console.error(error);
+            checkbox.checked = false;
+            checkbox.disabled = false;
+            alert("Couldn't save that: " + error.message);
+        }
+    };
+
+    li.appendChild(checkbox);
+    li.appendChild(text);
+    list.appendChild(li);
+}
+
+async function addTask() {
+
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const title = input.value.trim();
+    if (title === "") return;
+
+    addButton.disabled = true; // stop double-clicks
+
+    try {
+        // The database creates the id and fills in user_id.
+        const row = await createTask(title, "", difficultySelect.value);
+        renderTask(QuestObject.fromRow(row));
+        input.value = "";
+    } catch (error) {
+        console.error(error);
+        alert("Couldn't save the task: " + error.message);
+    } finally {
+        addButton.disabled = !getCurrentUser();
+    }
 }
 
 document.addEventListener("questmanager:userChanged", syncTaskSession);
+syncTaskSession();
 
-input.addEventListener("keypress", e => {
-    if (e.key === "Enter") document.getElementById("addButton").click();
-});
-
-// ---------- Calendar day panel ----------
-function renderDayPanel() {
-    document.getElementById("dayPanelTitle").textContent = "Tasks for " + selectedDate;
-    const dayList = document.getElementById("dayTaskList");
-    dayList.replaceChildren();
-    getTasksFor(selectedDate).forEach(task => dayList.appendChild(buildTaskItem(task)));
-}
-
-function addDayTask() {
-    const dayInput = document.getElementById("dayTaskInput");
-    const title = dayInput.value.trim();
-    if (!getCurrentUser() || title === "") return;
-    storeAdd(title, "easy", selectedDate);
-    dayInput.value = "";
-}
+///////
 
 // ---------- Views ----------
 function showTasks() {
@@ -147,13 +168,7 @@ function showCalendar() {
     renderDayPanel();
 }
 
-// ---------- Wiring ----------
-subscribe(renderChecklist);
-subscribe(renderDayPanel);
-subscribe(() => calendar?.refetchEvents());
-
-document.getElementById("addButton")?.addEventListener("click", addTask);
-document.getElementById("dayAddButton")?.addEventListener("click", addDayTask);
+addButton.addEventListener("click", addTask);
 document.getElementById("todoButton")?.addEventListener("click", showTasks);
 document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
 
