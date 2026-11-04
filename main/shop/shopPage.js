@@ -1,6 +1,7 @@
 import { getCurrentUser } from "../users/userSession.js";
 import { Shop } from "./shop.js";
 import { SHOP_ITEMS} from "./shopItems.js";
+import { persist } from "../tasks/taskStore.js";
 
 
 const shop = new Shop(SHOP_ITEMS);
@@ -76,6 +77,7 @@ document.addEventListener("questmanager:taskCompleted", (event) => {
     if (user.addBalance(amount)) {
         task.markRewarded();
         renderShop();
+        persist(task);
     }
 });
 

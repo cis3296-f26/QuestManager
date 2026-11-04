@@ -11,6 +11,7 @@ export class QuestObject {
     #difficulty;
     #repeatRule;
     #rewarded
+    #date;
 
     constructor(taskID, userID, title, description, difficulty) {
         this.#taskID = taskID;
@@ -27,6 +28,7 @@ export class QuestObject {
         this.#completed = false;
         this.#rewarded = false;
         this.#repeatRule = null;
+        this.#date = null;
     }
 
     //getters and setters; the idea of the setters is that we'll connect them to buttons that the user can push
@@ -115,6 +117,18 @@ export class QuestObject {
 
     complete(){
         this.#completed = true;
+    }
+
+        get date() {
+        return this.#date;
+    }
+
+    set date(date) {
+        this.#date = date;   // "YYYY-MM-DD"
+    }
+
+    uncomplete() {
+        this.#completed = false;
     }
 
     markRewarded(){
