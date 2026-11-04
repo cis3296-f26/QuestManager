@@ -1,15 +1,48 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
-<head> 
+
+<head>
     <title>QuestManager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="style/auth.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-</head> 
+</head>
 
 <body>
-    <h1>Welcome to Quest Manager</h1>
+
+    <div id="loginView" hidden>
+        <form id="login-form">
+            <h3 id="auth-title">Welcome back!</h3>
+            <p id="auth-subtitle">Enter your credentials to access your account.</p>
+
+            <div id="playerNameGroup" hidden>
+                <label class="form-label" for="login-player">Username</label>
+                <input class="form-control form-control-sm mb-2" id="login-player" type="text" autocomplete="nickname"
+                    maxlength="20">
+            </div>
+
+            <label class="form-label" for="login-email">Email</label>
+            <input class="form-control form-control-sm mb-2" id="login-email" type="email" autocomplete="username"
+                required>
+
+            <label class="form-label" for="login-password">Password</label>
+            <input class="form-control form-control-sm mb-2" id="login-password" type="password"
+                autocomplete="current-password" minlength="6" required>
+
+            <button class="btn btn-primary btn-sm" id="login-button" type="submit">Log In</button>
+            <button class="btn btn-link btn-sm" id="auth-toggle" type="button">
+                Create Account
+            </button>
+
+            <p id="login-status" role="status" aria-live="polite"></p>
+        </form>
+    </div>
+
+    <!-- Keep the app hidden until authentication restores a session. -->
+    <div id="appView" hidden>
+        <h1>Welcome to Quest Manager</h1>
 
         <nav class="nav nav-pills nav-tabs-custom" id="mainNav">
             <a class="nav-link" href="#home">Home</a>
@@ -18,78 +51,63 @@
         </nav>
 
         <div class="app page" id="home">
-            <aside class= "sidebar">
+            <aside class="sidebar">
 
-            <div id="loginView" hidden>
-                <form id="login-form">
-                    <h3 id="auth-title" class="h6">Log In</h3>
-
-                    <div id="playerNameGroup" hidden>
-                        <label class="form-label" for="login-player">Username</label>
-                        <input class="form-control form-control-sm mb-2" id="login-player"
-                            type="text" autocomplete="nickname" maxlength="20">
-                    </div>
-
-                    <label class="form-label" for="login-email">Email</label>
-                    <input class="form-control form-control-sm mb-2" id="login-email"
-                        type="email" autocomplete="username" required>
-
-                    <label class="form-label" for="login-password">Password</label>
-                    <input class="form-control form-control-sm mb-2" id="login-password"
-                        type="password" autocomplete="current-password" minlength="6" required>
-
-                    <button class="btn btn-primary btn-sm" id="login-button" type="submit">Log In</button>
-                    <button class="btn btn-link btn-sm" id="auth-toggle" type="button">
-                        Create Account
+                <div id="accountView" hidden>
+                    <p><strong id="account-name"></strong></p>
+                    <button class="btn btn-outline-secondary btn-sm" id="signout-button" type="button">
+                        Sign Out
                     </button>
-
-                    <p id="login-status" role="status" aria-live="polite"></p>
-                </form>
-            </div>
-
-            <div id="accountView" hidden>
-                <p><strong id="account-name"></strong></p>
-                 <button class="btn btn-outline-secondary btn-sm" id="signout-button" type="button">
-                    Sign Out
-                </button>
-            </div>
-
-            <h2>My Tasks</h2>
-            <p>Task Points: <span id="counter"></span></p>
-            
-            <div>
-                <button id="todoButton" type="button">To-Do</button>
-                <button id="calendarButton" type="button">Calendar</button>
-            </div>
-
-            <div id="tasksView">
-                <div class="inputWrapper">
-                    <input type="text" id="taskInput" placeholder="Add new...">
-                    <button id="addButton" type="button">+</button>
                 </div>
-                <ul id="taskList"></ul>
-            </div>
-            
-            <div id="calendarView" style="display: none;">
-                <div id="calendar"></div>
-            </div>
-        </aside>
 
-        <main class="main">
-            <h2>My Character</h2>
-            <figure>
-                <img id="image" src="assets/my_character.jpg" class="img-fluid" width="350px" alt="default character">
-            </figure>
-            <a class="shop-link" href="#shop">Visit the Shop</a>
-        </main>
-    </div>
+                <h2>My Tasks</h2>
+                <p>Task Points: <span id="counter"></span></p>
 
-    <section class="page" id="journal" hidden><h2>Journal</h2></section>
-    <section class="page" id="shop" hidden><h2>Shop</h2></section>
+                <div>
+                    <button id="todoButton" type="button">To-Do</button>
+                    <button id="calendarButton" type="button">Calendar</button>
+                </div>
+
+                <div id="tasksView">
+                    <div class="inputWrapper">
+                        <input type="text" id="taskInput" placeholder="Add new...">
+                        <select id="difficultySelect" aria-label="Task difficulty">
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                        <button id="addButton" type="button">+</button>
+                    </div>
+                    <ul id="taskList"></ul>
+                </div>
+
+                <div id="calendarView" style="display: none;">
+                    <div id="calendar"></div>
+                </div>
+            </aside>
+
+            <main class="main">
+                <h2>My Character</h2>
+                <figure>
+                    <img id="image" src="assets/my_character.jpg" class="img-fluid" width="350px"
+                        alt="default character">
+                </figure>
+                <a class="shop-link" href="#shop">Visit the Shop</a>
+            </main>
+        </div>
+
+        <section class="page" id="journal" hidden>
+            <h2>Journal</h2>
+        </section>
+        <section class="page" id="shop" hidden>
+            <h2>Shop</h2>
+        </section>
+    </div> <!-- End appView -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script type="module" src="./main/shop/shopPage.js"></script>
     <script type="module" src="./main/script.js"></script>
-    
+
 </body>
+
 </html>
