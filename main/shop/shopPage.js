@@ -1,6 +1,7 @@
-import { getCurrentUser } from "../users/userSession.js";
+import { getCurrentUser, refreshCurrentUser } from "../users/userSession.js";
 import { Shop } from "./shop.js";
 import { SHOP_ITEMS} from "./shopItems.js";
+import { buyItem } from "../users/playerData.js";
 
 
 const shop = new Shop(SHOP_ITEMS);
@@ -44,39 +45,24 @@ function renderShop() {
 }
 
 // Clicking Buy: purchase the item and show it on the character.
-shopSection.addEventListener("click", (event) => {
+shopSection.addEventListener("click", async (event) => {
     const button = event.target.closest("button[data-item-id]");
     if (!button) return;
 
     // Purchases must use the currently signed-in account.
-    const user = getCurrentUser();
-    if (!user) return;
+    if (!getCurrentUser()) return;
 
     const item = shop.getItem(button.dataset.itemId);
-    if (shop.buy(user, item.id)) {
+    button.disabled = true;
+
+    try {
+        await buyItem(item.id);
+        await refreshCurrentUser();
         document.getElementById("image").src = item.image;
-    } else {
-        alert("Not enough task points for the " + item.name + ".");
-    }
-    renderShop();
-});
-
-// Credit the signed-in user when a task-completion event arrives.
-document.addEventListener("questmanager:taskCompleted", (event) => {
-    const user = getCurrentUser();
-    const task = event.detail?.task;
-
-    // Only credit completed tasks belonging to the signed-in account.
-    if (!user || !task || task.userID !== user.id || !task.completed || task.rewarded) {
-        return;
-    }
-
-    const amount = task.giveReward();
-
-    if (user.addBalance(amount)) {
-        task.markRewarded();
-        renderShop();
-    }
+        } catch(error) {
+            alert("Not enough task points for the " + item.name + ".");
+            renderShop();
+        }
 });
 
 // Refresh the balance and shop when login state changes.
