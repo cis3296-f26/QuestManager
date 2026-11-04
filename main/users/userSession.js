@@ -11,6 +11,11 @@ export function getCurrentUser() {
     return currentUser;
 }
 
+// Let the interface refresh when the authentication state changes.
+function notify() {
+    document.dispatchEvent(new CustomEvent("questmanager:userChanged"));
+    }
+
 //THIS METHOD LOADS **FROM** THE DATABASE. Should be called after every good BUY or COMPLETE TASK.
 export async function refreshCurrentUser() {
     const account = currentAccount;
@@ -30,7 +35,7 @@ export async function refreshCurrentUser() {
         );
     } catch (error) {
         if (thisLoad !== loadCounter) return null;
-        console.error("Could not load player data:", error);
+        console.error("Could not load player:", error);
         currentUser = null;
     }
 
@@ -50,18 +55,12 @@ export async function setUserFromSession(session) {
         return;
     }
 
-    if (currentUser?.id !== account.id) {
-     
-        currentUser = new User(
-            account.id,
-            account.user_metadata?.player_name || account.email
-        );
-    }
+    if (previousId === account.id && currentUser) return;
+    // Don't show the previous account's coins while the new one loads.
+        currentUser = null;
+        notify();
 
-    // Let the interface refresh when the authentication state changes.
-function notify() {
-    document.dispatchEvent(new CustomEvent("questmanager:userChanged"));
-    }
+
 
     notify();
     await refreshCurrentUser();
