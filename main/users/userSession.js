@@ -56,12 +56,10 @@ export async function setUserFromSession(session) {
     }
 
     if (previousId === account.id && currentUser) return;
+    
     // Don't show the previous account's coins while the new one loads.
-        currentUser = null;
-        notify();
-
-
-
+    currentUser = null;
     notify();
+
     await refreshCurrentUser();
 }
