@@ -61,7 +61,11 @@
                     </button>
                 </div>
 
-                <h2>Today’s Quest Board</h2>
+                <div class="quest-board-header">
+                    <h2>Today’s Quest Board</h2>
+                    <button id="toggleTaskForm" type="button" aria-label="Add a quest" aria-expanded="false"
+                        aria-controls="taskForm">+</button>
+                </div>
 
                 <div>
                     <button id="todoButton" type="button">To-Do</button>
@@ -69,17 +73,22 @@
                 </div>
 
                 <div id="tasksView">
-                    <div class="inputWrapper">
-                        <input type="text" id="taskInput" placeholder="Add new...">
-                        <select id="difficultySelect" aria-label="Task difficulty">
-                            <option value="easy">Easy</option>
-                            <option value="medium">Medium</option>
-                            <option value="hard">Hard</option>
-                        </select>
-                        <button id="addButton" type="button">+</button>
+                    <div id="taskForm" hidden>
+                        <div class="inputWrapper">
+                            <input type="text" id="taskInput" placeholder="Add new...">
+                            <select id="difficultySelect" aria-label="Task difficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                            <button id="addButton" type="button">+</button>
+                        </div>
+
+                        <label for="taskDescription">Description (optional)</label>
+                        <textarea id="taskDescription" rows="3"
+                            placeholder="Add details about your quest..."></textarea>
                     </div>
-                    <label for="taskDescription">Description (optional)</label>
-                    <textarea id="taskDescription" rows="3" placeholder="Add details about your quest..."></textarea>
+
                     <ul id="taskList"></ul>
                 </div>
 

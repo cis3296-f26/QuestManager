@@ -251,3 +251,39 @@ body {
     resize: vertical;
     font: inherit;
 }
+
+#home .quest-board-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+#home .quest-board-header h2 {
+    margin: 0;
+}
+
+#home #toggleTaskForm {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: #3d5f26;
+    color: white;
+    font-size: 28px;
+    line-height: 1;
+}
+
+#home #toggleTaskForm:disabled {
+    opacity: 0.5;
+}
+
+#home #taskForm {
+    margin-top: 16px;
+}
+
+#home #taskForm[hidden] {
+    display: none;
+}

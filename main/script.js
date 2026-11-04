@@ -20,6 +20,8 @@ var descriptionInput = document.getElementById("taskDescription");
 var list = document.getElementById("taskList");
 var addButton = document.getElementById("addButton");
 var difficultySelect = document.getElementById("difficultySelect");
+const taskForm = document.getElementById("taskForm");
+const toggleTaskForm = document.getElementById("toggleTaskForm");
 var calendar = null;
 
 // Local date as YYYY-MM-DD (toISOString would shift the day by timezone)
@@ -173,6 +175,7 @@ async function syncTaskSession() {
     descriptionInput.disabled = !user;
     difficultySelect.disabled = !user;
     addButton.disabled = !user;
+    toggleTaskForm.disabled = !user;
     const dayInput = document.getElementById("dayTaskInput");
     const dayButton = document.getElementById("dayAddButton");
     if (dayInput) dayInput.disabled = !user;
@@ -186,6 +189,7 @@ async function syncTaskSession() {
     if (nextUserId === activeUserId) return;
 
     // Clear the previous account
+    setTaskFormOpen(false);
     allTasks = [];
     renderLists();
     input.value = "";
@@ -221,6 +225,10 @@ function showTasks() {
 }
 
 function showCalendar() {
+
+    // Close the quest form when switching to Calendar.
+    setTaskFormOpen(false);
+
     document.getElementById("tasksView").style.display = "none";
     document.getElementById("calendarView").style.display = "block";
 
@@ -248,6 +256,31 @@ function showCalendar() {
     calendar.render();
     renderLists();
 }
+
+// Keep the form visibility and accessible button label in sync.
+function setTaskFormOpen(open) {
+    taskForm.hidden = !open;
+    toggleTaskForm.setAttribute("aria-expanded", String(open));
+    toggleTaskForm.setAttribute(
+        "aria-label",
+        open ? "Close quest form" : "Add a quest"
+    );
+    toggleTaskForm.textContent = open ? "−" : "+";
+}
+
+toggleTaskForm.addEventListener("click", () => {
+    if (!getCurrentUser()) return;
+
+    // The entry form lives in the To-Do view.
+    const calendarShowing =
+        document.getElementById("tasksView").style.display === "none";
+
+    showTasks();
+    const open = calendarShowing || taskForm.hidden;
+    setTaskFormOpen(open);
+
+    if (open) input.focus();
+});
 
 // ---------- Wiring ----------
 addButton.addEventListener("click", addTask);
