@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>QuestManager Adventure</title>
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap">
+    <link rel="stylesheet" href="./game.css">
+</head>
+
+<body>
+    <main class="game-shell">
+        <header class="game-header">
+            <div>
+                <p class="game-eyebrow">QuestManager Adventure</p>
+                <h1>Level 1: The First Steps</h1>
+            </div>
+        </header>
+
+        <p id="gameInstructions">
+            Move with A/D or the left/right arrows.
+            Jump with Space. Reach the flag to finish!
+        </p>
+
+        <canvas id="gameCanvas" width="960" height="540"
+            tabindex="0"
+            aria-label="Level 1 platform game"
+            aria-describedby="gameInstructions">
+            Your browser does not support the canvas needed for this game.
+        </canvas>
+
+        <p id="gameStatus" role="status" aria-live="polite">
+            Your adventure begins here.
+        </p>
+    </main>
+
+    <script type="module" src="./game.js"></script>
+</body>
+
+</html>
