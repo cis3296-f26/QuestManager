@@ -16,9 +16,12 @@ window.addEventListener("hashchange", route);
 route();
 
 var input = document.getElementById("taskInput");
+var descriptionInput = document.getElementById("taskDescription");
 var list = document.getElementById("taskList");
 var addButton = document.getElementById("addButton");
 var difficultySelect = document.getElementById("difficultySelect");
+const taskForm = document.getElementById("taskForm");
+const toggleTaskForm = document.getElementById("toggleTaskForm");
 var calendar = null;
 
 // Local date as YYYY-MM-DD (toISOString would shift the day by timezone)
@@ -55,11 +58,30 @@ function renderTask(task, target = list) {
     checkbox.disabled = !getCurrentUser() || task.rewarded;
     checkbox.dataset.rewarded = String(task.rewarded);
 
+    // Give the completion checkbox an accessible name.
+    checkbox.setAttribute("aria-label", "Complete task: " + task.title);
+
     var text = document.createElement("span");
-    text.textContent = " " + task.title + " (" + task.difficulty + ")";
+    text.className = "quest-title";
+    text.textContent = task.title;
     text.classList.toggle("completed", task.completed);
 
-    checkbox.onclick = async function() {
+    var description = document.createElement("p");
+    description.className = "quest-description";
+    description.textContent = task.description || "";
+    description.hidden = !description.textContent.trim();
+
+    var difficulty = document.createElement("p");
+    difficulty.className = "quest-difficulty";
+    difficulty.textContent = "Difficulty: " + task.difficulty;
+
+    // This reflects completion; payment remains handled by the existing logic.
+    var badge = document.createElement("span");
+    badge.className = "quest-status";
+    badge.classList.toggle("is-completed", task.completed);
+    badge.textContent = task.completed ? "Completed" : "In progress";
+
+    checkbox.onclick = async function () {
 
         // Only the account that created this task can complete it, and only once.
         const currentUser = getCurrentUser();
@@ -87,13 +109,16 @@ function renderTask(task, target = list) {
 
     li.appendChild(checkbox);
     li.appendChild(text);
+    li.appendChild(description);
+    li.appendChild(difficulty);
+    li.appendChild(badge);
     target.appendChild(li);
 }
 
 // ---------- Adding tasks ----------
-async function addTaskFor(title, difficulty, date) {
-    // The database creates the id and fills in user_id.
-    const row = await createTask(title, "", difficulty, date);
+async function addTaskFor(title, difficulty, date, description = "") {
+    // Save the description alongside the other task details.
+    const row = await createTask(title, description, difficulty, date);
     allTasks.push(QuestObject.fromRow(row));
     renderLists();
 }
@@ -108,8 +133,9 @@ async function addTask() {
     addButton.disabled = true; // stop double-clicks
 
     try {
-        await addTaskFor(title, difficultySelect.value, todayStr());
+        await addTaskFor(title, difficultySelect.value, todayStr(), descriptionInput.value.trim());
         input.value = "";
+        descriptionInput.value = "";
         difficultySelect.value = "easy";
     } catch (error) {
         console.error(error);
@@ -146,8 +172,10 @@ async function syncTaskSession() {
 
     // Tasks require a signed-in account.
     input.disabled = !user;
+    descriptionInput.disabled = !user;
     difficultySelect.disabled = !user;
     addButton.disabled = !user;
+    toggleTaskForm.disabled = !user;
     const dayInput = document.getElementById("dayTaskInput");
     const dayButton = document.getElementById("dayAddButton");
     if (dayInput) dayInput.disabled = !user;
@@ -161,9 +189,11 @@ async function syncTaskSession() {
     if (nextUserId === activeUserId) return;
 
     // Clear the previous account
+    setTaskFormOpen(false);
     allTasks = [];
     renderLists();
     input.value = "";
+    descriptionInput.value = "";
     difficultySelect.value = "easy";
     document.getElementById("image").src = "assets/my_character.jpg";
     activeUserId = nextUserId;
@@ -182,7 +212,7 @@ async function syncTaskSession() {
 
 document.addEventListener("questmanager:userChanged", syncTaskSession);
 
-input.addEventListener("keypress", function(event) {
+input.addEventListener("keypress", function (event) {
     if (event.key === "Enter") {
         addButton.click();
     }
@@ -195,6 +225,10 @@ function showTasks() {
 }
 
 function showCalendar() {
+
+    // Close the quest form when switching to Calendar.
+    setTaskFormOpen(false);
+
     document.getElementById("tasksView").style.display = "none";
     document.getElementById("calendarView").style.display = "block";
 
@@ -222,6 +256,31 @@ function showCalendar() {
     calendar.render();
     renderLists();
 }
+
+// Keep the form visibility and accessible button label in sync.
+function setTaskFormOpen(open) {
+    taskForm.hidden = !open;
+    toggleTaskForm.setAttribute("aria-expanded", String(open));
+    toggleTaskForm.setAttribute(
+        "aria-label",
+        open ? "Close quest form" : "Add a quest"
+    );
+    toggleTaskForm.textContent = open ? "−" : "+";
+}
+
+toggleTaskForm.addEventListener("click", () => {
+    if (!getCurrentUser()) return;
+
+    // The entry form lives in the To-Do view.
+    const calendarShowing =
+        document.getElementById("tasksView").style.display === "none";
+
+    showTasks();
+    const open = calendarShowing || taskForm.hidden;
+    setTaskFormOpen(open);
+
+    if (open) input.focus();
+});
 
 // ---------- Wiring ----------
 addButton.addEventListener("click", addTask);

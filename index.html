@@ -6,6 +6,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style/main.css">
     <link rel="stylesheet" href="style/auth.css">
+    <link rel="stylesheet" href="style/home.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -60,8 +61,11 @@
                     </button>
                 </div>
 
-                <h2>My Tasks</h2>
-                <p>Task Points: <span id="counter"></span></p>
+                <div class="quest-board-header">
+                    <h2>Today’s Quest Board</h2>
+                    <button id="toggleTaskForm" type="button" aria-label="Add a quest" aria-expanded="false"
+                        aria-controls="taskForm">+</button>
+                </div>
 
                 <div>
                     <button id="todoButton" type="button">To-Do</button>
@@ -69,15 +73,22 @@
                 </div>
 
                 <div id="tasksView">
-                    <div class="inputWrapper">
-                        <input type="text" id="taskInput" placeholder="Add new...">
-                        <select id="difficultySelect" aria-label="Task difficulty">
-                            <option value="easy">Easy</option>
-                            <option value="medium">Medium</option>
-                            <option value="hard">Hard</option>
-                        </select>
-                        <button id="addButton" type="button">+</button>
+                    <div id="taskForm" hidden>
+                        <div class="inputWrapper">
+                            <input type="text" id="taskInput" placeholder="Add new...">
+                            <select id="difficultySelect" aria-label="Task difficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                            <button id="addButton" type="button">+</button>
+                        </div>
+
+                        <label for="taskDescription">Description (optional)</label>
+                        <textarea id="taskDescription" rows="3"
+                            placeholder="Add details about your quest..."></textarea>
                     </div>
+
                     <ul id="taskList"></ul>
                 </div>
 
@@ -95,12 +106,14 @@
             </aside>
 
             <main class="main">
-                <h2>My Character</h2>
+                <p class="points-display">
+                    Your Points: <span id="counter">0</span>
+                </p>
                 <figure>
                     <img id="image" src="assets/my_character.jpg" class="img-fluid" width="350px"
                         alt="default character">
                 </figure>
-                <a class="shop-link" href="#shop">Visit the Shop</a>
+                <a class="shop-link" href="#shop">Go to shop!</a>
             </main>
         </div>
 
