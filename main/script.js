@@ -219,18 +219,26 @@ input.addEventListener("keypress", function (event) {
 });
 
 // ---------- Views ----------
+const VIEW_MAP = {
+    monthly: "dayGridMonth",
+    weekly: "timeGridWeek",
+    daily: "timeGridDay"
+};
+
+/*
 function showTasks() {
     document.getElementById("tasksView").style.display = "block";
     document.getElementById("calendarView").style.display = "none";
 }
+*/
 
 function showCalendar() {
 
     // Close the quest form when switching to Calendar.
-    setTaskFormOpen(false);
+    // setTaskFormOpen(false); //commenting out temporarily for changes
 
-    document.getElementById("tasksView").style.display = "none";
-    document.getElementById("calendarView").style.display = "block";
+    // document.getElementById("tasksView").style.display = "none";
+    // document.getElementById("calendarView").style.display = "block";
 
     if (!calendar) {
         calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
@@ -239,7 +247,7 @@ function showCalendar() {
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
-                right: "dayGridMonth,timeGridWeek"
+                right: "" //"dayGridMonth,timeGridWeek"; styled pills replace view buttons
             },
             events: (info, success) => success(
                 allTasks.map(t => ({
@@ -252,10 +260,25 @@ function showCalendar() {
                 renderLists();
             }
         });
+        calendar.render();
+    }else{
+        calendar.updateSize(); //page is hidden so need to remeasure for the calendar
     }
-    calendar.render();
+    
     renderLists();
 }
+
+function syncJournalPage(){
+    if(location.hash === "#journal") showCalendar();
+}
+
+document.querySelectorAll(".calendar-view__pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+        calendar?.changeView(VIEW_MAP[btn.dataset.view]);
+        document.querySelectorAll(".calendar-view__pill")
+            .forEach(b => b.classList.toggle("is-active", b === btn));
+    });
+});
 
 // Keep the form visibility and accessible button label in sync.
 function setTaskFormOpen(open) {
@@ -271,22 +294,26 @@ function setTaskFormOpen(open) {
 toggleTaskForm.addEventListener("click", () => {
     if (!getCurrentUser()) return;
 
-    // The entry form lives in the To-Do view.
-    const calendarShowing =
-        document.getElementById("tasksView").style.display === "none";
+    // // The entry form lives in the To-Do view.
+    // const calendarShowing =
+    //     document.getElementById("tasksView").style.display === "none";
 
-    showTasks();
-    const open = calendarShowing || taskForm.hidden;
+    // showTasks();
+    const open =  taskForm.hidden; //calendarShowing || taskForm.hidden;
     setTaskFormOpen(open);
-
     if (open) input.focus();
 });
+
+
+
 
 // ---------- Wiring ----------
 addButton.addEventListener("click", addTask);
 document.getElementById("dayAddButton")?.addEventListener("click", addDayTask);
-document.getElementById("todoButton")?.addEventListener("click", showTasks);
-document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
+window.addEventListener("hashchange", syncJournalPage);
+syncJournalPage();
+//document.getElementById("todoButton")?.addEventListener("click", showTasks);
+//document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
 
 syncTaskSession();
 initLogin();
