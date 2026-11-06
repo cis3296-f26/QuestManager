@@ -91,18 +91,6 @@
 
                     <ul id="taskList"></ul>
                 </div>
-
-                <div id="calendarView" style="display: none;">
-                    <div id="calendar"></div>
-                    <div id="dayPanel">
-                        <h3 id="dayPanelTitle"></h3>
-                        <div class="inputWrapper">
-                            <input type="text" id="dayTaskInput" placeholder="Add task for this day...">
-                            <button id="dayAddButton" type="button">+</button>
-                        </div>
-                        <ul id="dayTaskList"></ul>
-                    </div>
-                </div>
             </aside>
 
             <main class="main">
@@ -117,8 +105,31 @@
             </main>
         </div>
 
+        <!-- Journal Section -->
         <section class="page" id="journal" hidden>
-            <h2>Journal</h2>
+            <div class="journal-layout">
+                <section class="calendar-view">
+                    <header class="calendar-view-header">
+                        <h2 class="calendar-view-title">Calendar View</h2>
+                        <div class="calendar-view-toggle">
+                            <button type="button" class="calendar-view__pill is-active"
+                                data-view="monthly">Monthly</button>
+                            <button type="button" class="calendar-view__pill" data-view="weekly">Weekly</button>
+                            <button type="button" class="calendar-view__pill" data-view="daily">Daily</button>
+                        </div>
+                    </header>
+                    <div class="calendar-view-body">
+                        <div id="calendar"></div>
+                    </div>
+                    <div id="dayPanel">
+                        <h3 id="dayPanelTitle"></h3>
+                        <div class="inputWrapper">
+                            <input type="text" id="dayTaskInput" placeholder="Add task for this day...">
+                            <button id="dayAddButton" type="button">+</button>
+                        </div>
+                        <ul id="dayTaskList"></ul>
+                    </div>
+            </div>
         </section>
         <section class="page" id="shop" hidden>
             <h2>Shop</h2>
