@@ -1,0 +1,65 @@
+.calendar-view {
+  background-color: #cab6a2;
+  border-radius: 30px;
+  padding: 24px 22px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 549px;
+}
+
+.calendar-view__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.calendar-view__title {
+  margin: 0;
+  color: #3a5b22;
+  font-family: "Abril Fatface", Helvetica, serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.calendar-view__toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 126px;
+}
+
+.calendar-view__pill {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  text-align: center;
+  height: 25px;
+  line-height: 25px;
+  border-radius: 30px;
+  background-color: #fbf0e5;
+  color: #3a5b22;
+  font-family: "Abril Fatface", Helvetica, serif;
+  font-size: 16px;
+}
+
+.calendar-view__pill.is-active {
+  background-color: #3a5b22;
+  color: #fbf0e5;
+}
+
+/* White rounded frame with black border around the calendar itself */
+.calendar-view__body {
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.journal-page{
+    display: flex;
+    gap: 36px;
+    align-items: flex-start;
+    padding: 32px;
+}
