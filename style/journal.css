@@ -63,3 +63,45 @@
     align-items: flex-start;
     padding: 32px;
 }
+
+.journal-layout {
+  display: flex;
+  gap: 36px;
+  align-items: flex-start;
+  padding: 32px;
+}
+
+/* FullCalendar theming */
+#calendar {
+  --fc-border-color: #d9d9d9;
+  --fc-today-bg-color: #f3ead9;
+  --fc-event-bg-color: #3a5b22;
+  --fc-event-border-color: #3a5b22;
+  font-size: 0.8rem;
+}
+
+#calendar .fc-toolbar-title {
+  font-family: "Abril Fatface", serif;
+  font-size: 1rem;
+  color: #3a5b22;
+}
+
+#calendar .fc-col-header-cell {
+  background: #2b2b2b;
+}
+
+#calendar .fc-col-header-cell-cushion {
+  color: #fff;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+
+#calendar .fc-button {
+  background: #3a5b22;
+  border-color: #3a5b22;
+}
+
+#calendar .fc-event.completed {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
