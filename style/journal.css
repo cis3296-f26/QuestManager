@@ -1,10 +1,11 @@
 .calendar-view {
+  flex: 0 1 549px;
+  min-width: 0;
+  align-self: flex-start;
   background-color: #cab6a2;
   border-radius: 30px;
   padding: 24px 22px;
   box-sizing: border-box;
-  width: 100%;
-  max-width: 549px;
 }
 
 .calendar-view-header {
@@ -66,14 +67,19 @@
 
 .journal-layout {
   display: flex;
-  gap: 36px;
-  align-items: flex-start;
+  gap: 32px;
+  align-items: stretch;
   padding: 32px;
+  border: 3px solid #51452b;
+  border-radius: 18px;
+  background: #faf0e6;
 }
 
-#dayPanel{
+
+
+/* #dayPanel{
     margin-top: 16px;
-}
+} */
 
 /* FullCalendar theming */
 #calendar {
@@ -108,4 +114,153 @@
 #calendar .fc-event.completed {
   opacity: 0.5;
   text-decoration: line-through;
+}
+
+/* Tan frame around the Quest Board, as in the Figma */
+.journal-board {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 32px;
+  border-radius: 30px;
+  background: #cab6a2;
+}
+
+#journal .quest-board {
+  height: 100%;
+  min-height: 460px;
+  box-sizing: border-box;
+  padding: 24px;
+  border: 4px solid #483a13;
+  border-radius: 27px;
+  background: #fbf0e5;
+}
+
+#journal .quest-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+#journal #dayPanelTitle {
+  margin: 0;
+  color: #385026;
+  font-family: "Abril Fatface", Georgia, serif;
+  font-size: 40px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+#journal #toggleDayForm {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: #3d5f26;
+  color: white;
+  font-size: 28px;
+  line-height: 1;
+}
+
+#journal #toggleDayForm:disabled {
+  opacity: 0.5;
+}
+
+#journal #dayForm {
+  margin-bottom: 16px;
+}
+
+#journal #dayForm[hidden] {
+  display: none;
+}
+
+#journal .inputWrapper {
+  display: flex;
+  gap: 8px;
+}
+
+#journal #dayTaskInput {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 2px solid darkolivegreen;
+  border-radius: 5px;
+  background: #faedca;
+}
+
+/* Task cards, matching the Home board */
+#journal #dayTaskList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#journal #dayTaskList > li {
+  padding: 14px 16px;
+  border: 1px solid #9e9278;
+  background: #faedca;
+  overflow-wrap: anywhere;
+}
+
+#journal #dayTaskList input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  accent-color: #3d5f26;
+}
+
+#journal .quest-title {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#journal .quest-description,
+#journal .quest-difficulty {
+  margin: 8px 0 0;
+  color: #403725;
+  font-size: 13px;
+}
+
+#journal .quest-description {
+  white-space: pre-wrap;
+}
+
+#journal .quest-status {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #ffd0bd;
+  color: #713521;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+#journal .quest-status.is-completed {
+  background: #dce8ca;
+  color: #304c1e;
+}
+
+@media (max-width: 1000px) {
+  .journal-layout {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .calendar-view {
+    flex-basis: auto;
+    width: 100%;
+    max-width: none;
+  }
+
+  .journal-board {
+    padding: 16px;
+  }
 }

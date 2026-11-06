@@ -22,6 +22,8 @@ var addButton = document.getElementById("addButton");
 var difficultySelect = document.getElementById("difficultySelect");
 const taskForm = document.getElementById("taskForm");
 const toggleTaskForm = document.getElementById("toggleTaskForm");
+const toggleDayForm = document.getElementById("toggleDayForm");
+const dayForm = document.getElementById("dayForm");
 var calendar = null;
 
 // Local date as YYYY-MM-DD (toISOString would shift the day by timezone)
@@ -41,7 +43,9 @@ function renderLists() {
     const dayTitle = document.getElementById("dayPanelTitle");
     const dayList = document.getElementById("dayTaskList");
     if (dayTitle && dayList) {
-        dayTitle.textContent = "Tasks for " + selectedDate;
+        dayTitle.textContent = selectedDate === todayStr()
+            ? "Today's Quest Board"
+            : "Quests for " + selectedDate;
         dayList.replaceChildren();
         allTasks.filter(t => t.date === selectedDate).forEach(t => renderTask(t, dayList));
     }
@@ -180,6 +184,7 @@ async function syncTaskSession() {
     const dayButton = document.getElementById("dayAddButton");
     if (dayInput) dayInput.disabled = !user;
     if (dayButton) dayButton.disabled = !user;
+    if (toggleDayForm) toggleDayForm.disabled = !user;
     document.querySelectorAll("#taskList input[type='checkbox'], #dayTaskList input[type='checkbox']")
         .forEach((checkbox) => {
             checkbox.disabled = !user || checkbox.dataset.rewarded === "true";
@@ -261,6 +266,8 @@ function showCalendar() {
             }
         });
         calendar.render();
+        new ResizeObserver(() => calendar.updateSize())
+            .observe(document.getElementById("calendar"));
     }else{
         calendar.updateSize(); //page is hidden so need to remeasure for the calendar
     }
@@ -308,6 +315,20 @@ toggleTaskForm.addEventListener("click", () => {
 
 
 // ---------- Wiring ----------
+toggleDayForm.addEventListener("click", () => {
+    if (!getCurrentUser()) return;
+    const open = dayForm.hidden;
+    dayForm.hidden = !open;
+    toggleDayForm.setAttribute("aria-expanded", String(open));
+    toggleDayForm.textContent = open ? "−" : "+";
+    if (open) document.getElementById("dayTaskInput").focus();
+});
+
+document.getElementById("dayTaskInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") document.getElementById("dayAddButton").click();
+});
+
+
 addButton.addEventListener("click", addTask);
 document.getElementById("dayAddButton")?.addEventListener("click", addDayTask);
 window.addEventListener("hashchange", syncJournalPage);

@@ -113,7 +113,8 @@
                     <header class="calendar-view-header">
                         <h2 class="calendar-view-title">Calendar View</h2>
                         <div class="calendar-view-toggle">
-                            <button type="button" class="calendar-view__pill is-active" data-view="monthly">Monthly</button>
+                            <button type="button" class="calendar-view__pill is-active"
+                                data-view="monthly">Monthly</button>
                             <button type="button" class="calendar-view__pill" data-view="weekly">Weekly</button>
                             <button type="button" class="calendar-view__pill" data-view="daily">Daily</button>
                         </div>
@@ -122,22 +123,42 @@
                     <div class="calendar-view-body">
                         <div id="calendar"></div>
                     </div>
+                </section>
 
-                    <div id="dayPanel">
+                <section class="journal-board">
+                    <div class="quest-board">
+                        <div class="quest-board-header">
+                            <h2 id="dayPanelTitle">Today's Quest Board</h2>
+                            <button id="toggleDayForm" type="button" aria-label="Add a quest" aria-expanded="false"
+                                aria-controls="dayForm">+</button>
+                        </div>
+
+                        <div id="dayForm" hidden>
+                            <div class="inputWrapper">
+                                <input type="text" id="dayTaskInput" placeholder="Add new...">
+                                <button id="dayAddButton" type="button">Add</button>
+                            </div>
+                        </div>
+
+                        <ul id="dayTaskList"></ul>
+                    </div>
+                </section>
+            </div>
+        </section>
+        <!-- <div id="dayPanel">
                         <h3 id="dayPanelTitle"></h3>
                         <div class="inputWrapper">
                             <input type="text" id="dayTaskInput" placeholder="Add task for this day...">
                             <button id="dayAddButton" type="button">+</button>
                         </div>
                         <ul id="dayTaskList"></ul>
-                    </div>
-                </section>
-            </div>
-        </section>
+                    </div> -->
+    </div>
+    </section>
 
-        <section class="page" id="shop" hidden>
-            <h2>Shop</h2>
-        </section>
+    <section class="page" id="shop" hidden>
+        <h2>Shop</h2>
+    </section>
 
     </div> <!-- End appView -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
