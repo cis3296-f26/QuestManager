@@ -6,14 +6,18 @@ const groundY = 460;
 const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
+const worldWidth = 1800;
 
-// Each platform has a position and size.
-// The first platform is the ground.
 const platforms = [
-    { x: 0, y: groundY, width: canvas.width, height: 80 },
+    { x: 0, y: groundY, width: worldWidth, height: 80 },
     { x: 220, y: 370, width: 150, height: 24 },
     { x: 440, y: 280, width: 150, height: 24 },
-    { x: 660, y: 190, width: 150, height: 24 }
+    { x: 660, y: 190, width: 150, height: 24 },
+
+    // A second staircase, farther down the level.
+    { x: 920, y: 370, width: 150, height: 24 },
+    { x: 1140, y: 280, width: 150, height: 24 },
+    { x: 1360, y: 190, width: 150, height: 24 }
 ];
 
 const finishPlatform = platforms[platforms.length - 1];
@@ -72,7 +76,7 @@ function update(dt) {
 
     player.x = Math.max(
         0,
-        Math.min(canvas.width - player.width, player.x)
+        Math.min(worldWidth - player.width, player.x)
     );
 
     // Remember where the feet were before falling this frame.
@@ -168,6 +172,14 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
+    const cameraX = Math.max(
+        0,
+        Math.min(player.x - canvas.width / 2, worldWidth - canvas.width)
+    );
+
+    ctx.save();
+    ctx.translate(-cameraX, 0);
+
     // Draw the ground and floating platforms.
     for (const platform of platforms) {
         ctx.fillStyle = "#9e7954";
@@ -203,6 +215,7 @@ function draw() {
     ctx.fill();
 
     drawPlayer();
+    ctx.restore();
 }
 
 function gameLoop(time) {
