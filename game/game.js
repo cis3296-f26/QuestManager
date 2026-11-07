@@ -16,6 +16,10 @@ const platforms = [
     { x: 660, y: 190, width: 150, height: 24 }
 ];
 
+const finishPlatform = platforms[platforms.length - 1];
+const flagX = finishPlatform.x + finishPlatform.width - 40;
+let levelComplete = false;
+
 const player = {
     x: 80,
     y: groundY - 64,
@@ -60,6 +64,7 @@ canvas.addEventListener("blur", () => keys.clear());
 window.addEventListener("blur", () => keys.clear());
 
 function update(dt) {
+    if (levelComplete) return;
     const left = keys.has("ArrowLeft") || keys.has("KeyA");
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
@@ -100,6 +105,17 @@ function update(dt) {
         player.y = landingY - player.height;
         player.velocityY = 0;
         player.grounded = true;
+    }
+
+    // Finish when the player lands or walks onto the flag.
+    if (
+        player.grounded &&
+        player.y + player.height === finishPlatform.y &&
+        player.x <= flagX &&
+        player.x + player.width >= flagX
+    ) {
+        levelComplete = true;
+        status.textContent = "Level 1 complete! Refresh to play again.";
     }
 }
 
@@ -170,6 +186,21 @@ function draw() {
             10
         );
     }
+
+    const flagTop = finishPlatform.y - 60;
+
+    // Flagpole.
+    ctx.fillStyle = "#51452b";
+    ctx.fillRect(flagX, flagTop, 4, 60);
+
+    // Gold pennant.
+    ctx.fillStyle = "#e5b84b";
+    ctx.beginPath();
+    ctx.moveTo(flagX + 4, flagTop);
+    ctx.lineTo(flagX + 34, flagTop + 12);
+    ctx.lineTo(flagX + 4, flagTop + 24);
+    ctx.closePath();
+    ctx.fill();
 
     drawPlayer();
 }
