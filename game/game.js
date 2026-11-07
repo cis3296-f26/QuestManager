@@ -7,6 +7,15 @@ const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
 
+// Each platform has a position and size.
+// The first platform is the ground.
+const platforms = [
+    { x: 0, y: groundY, width: canvas.width, height: 80 },
+    { x: 220, y: 370, width: 150, height: 24 },
+    { x: 440, y: 280, width: 150, height: 24 },
+    { x: 660, y: 190, width: 150, height: 24 }
+];
+
 const player = {
     x: 80,
     y: groundY - 64,
@@ -56,19 +65,39 @@ function update(dt) {
 
     player.x += (Number(right) - Number(left)) * speed * dt;
 
-    // Keep the character inside the screen for this first step.
     player.x = Math.max(
         0,
         Math.min(canvas.width - player.width, player.x)
     );
 
-    // Gravity pulls the character downward.
+    // Remember where the feet were before falling this frame.
+    const previousBottom = player.y + player.height;
+
     player.velocityY += gravity * dt;
     player.y += player.velocityY * dt;
+    player.grounded = false;
 
-    // Stop falling when the feet reach the ground.
-    if (player.y + player.height >= groundY) {
-        player.y = groundY - player.height;
+    let landingY = Infinity;
+
+    // Only land on a platform while moving downward.
+    if (player.velocityY >= 0) {
+        for (const platform of platforms) {
+            const overlapsHorizontally =
+                player.x + player.width > platform.x &&
+                player.x < platform.x + platform.width;
+
+            const crossedTop =
+                previousBottom <= platform.y &&
+                player.y + player.height >= platform.y;
+
+            if (overlapsHorizontally && crossedTop) {
+                landingY = Math.min(landingY, platform.y);
+            }
+        }
+    }
+
+    if (landingY !== Infinity) {
+        player.y = landingY - player.height;
         player.velocityY = 0;
         player.grounded = true;
     }
@@ -123,12 +152,24 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
-    // Earth and grass.
-    ctx.fillStyle = "#9e7954";
-    ctx.fillRect(0, groundY, canvas.width, canvas.height - groundY);
+    // Draw the ground and floating platforms.
+    for (const platform of platforms) {
+        ctx.fillStyle = "#9e7954";
+        ctx.fillRect(
+            platform.x,
+            platform.y,
+            platform.width,
+            platform.height
+        );
 
-    ctx.fillStyle = "#5e744a";
-    ctx.fillRect(0, groundY, canvas.width, 14);
+        ctx.fillStyle = "#5e744a";
+        ctx.fillRect(
+            platform.x,
+            platform.y,
+            platform.width,
+            10
+        );
+    }
 
     drawPlayer();
 }
