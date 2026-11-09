@@ -59,3 +59,33 @@ export async function buyItem(itemId) {
     const { error } = await supabase.rpc("buy_shop_item", { p_item_id: itemId });
     if (error) throw error;
 }
+
+async function loadInventory(userId) {
+    const withEquipped = await supabase
+        .from("player_inventory")
+        .select("item_id, equipped")
+        .eq("user_id", userId);
+
+    if (!withEquipped.error) {
+        equipSavedInDatabase = true;
+        return withEquipped.data;
+    }
+    if (withEquipped.error.code !== MISSING_COLUMN) throw withEquipped.error;
+
+    // Older schema: read owned items only and use the local loadout.
+    equipSavedInDatabase = false;
+
+}
+
+export async function saveEquipped(userId, itemId, equipped, allEquippedIds) {
+    if (equipSavedInDatabase) {
+        const { error } = await supabase.rpc("set_item_equipped", {
+            p_item_id: itemId,
+            p_equipped: equipped
+        });
+        if (!error) return;
+        if (error.code !== MISSING_FUNCTION) throw error;
+        equipSavedInDatabase = false;
+    }
+    saveLocalEquipped(userId, allEquippedIds);
+}

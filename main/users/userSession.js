@@ -31,7 +31,8 @@ export async function refreshCurrentUser() {
             account.id,
             saved.username || account.user_metadata?.player_name || account.email,
             saved.balance,
-            saved.inventory
+            saved.inventory,
+            saved.equipped
         );
     } catch (error) {
         if (thisLoad !== loadCounter) return null;
@@ -42,6 +43,13 @@ export async function refreshCurrentUser() {
     notify();
     return currentUser;
 }
+
+export function setCurrentEquipped(equippedIds) {
+    if (!currentUser) return;
+    currentUser.equipped = [...equippedIds];
+    notify();  // fires "questmanager:userChanged"
+}
+
 
 export async function setUserFromSession(session) {
     const account = session?.user;

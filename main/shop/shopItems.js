@@ -17,7 +17,7 @@ export const CATEGORIES = [
         label: "Room",
         slots: [
             { id: "wallpaper", label: "Theme" },
-            { id: "dresser", label: "Dressers" },
+            { id: "furniture", label: "Furniture" },
             { id: "decoration", label: "Decorations" }
         ]
     }
@@ -38,10 +38,14 @@ export const SHOP_ITEMS = [
     {   id: "sword",
         name: "Sword", 
         price: 20, 
+        category: "avatar",
+        slot: "equipment",
         image: "assets/itemSprites/equipment/with_sword.jpg" },
 
     {   id: "shield", 
         name: "Shield", 
         price: 30, 
+        category: "avatar",
+        slot: "equipment",
         image: "assets/itemSprites/equipment/with_shield.jpg" }
 ];
