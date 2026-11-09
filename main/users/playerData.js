@@ -1,30 +1,70 @@
 import { supabase } from "./supabaseClient.js";
 
+// true once we know the database has the equipped column + set_item_equipped
+let equipSavedInDatabase = true;
+
+// ---------- Local (browser) fallback for equipped items ----------
+const localKey = (userId) => "equipped:" + userId;
+
+function loadLocalEquipped(userId) {
+    try {
+        return JSON.parse(localStorage.getItem(localKey(userId))) ?? [];
+    } catch {
+        return [];
+    }
+}
+
+function saveLocalEquipped(userId, ids) {
+    localStorage.setItem(localKey(userId), JSON.stringify(ids));
+}
+
+// ---------- Player ----------
+async function loadInventory(userId) {
+    const withEquipped = await supabase
+        .from("player_inventory")
+        .select("item_id, equipped")
+        .eq("user_id", userId);
+
+    if (!withEquipped.error) {
+        equipSavedInDatabase = true;
+        return withEquipped.data;
+    }
+    if (withEquipped.error.code !== MISSING_COLUMN) throw withEquipped.error;
+
+    // Older schema: read owned items only and use the local loadout.
+    equipSavedInDatabase = false;
+    const owned = await supabase
+        .from("player_inventory")
+        .select("item_id")
+        .eq("user_id", userId);
+    if (owned.error) throw owned.error;
+    return owned.data;
+}
+
 export async function loadPlayer(userId) {
-    const [profileResult, inventoryResult] = await Promise.all([
+    const [profileResult, inventory] = await Promise.all([
         supabase
             .from("profiles")
             .select("id, username, balance")
             .eq("id", userId)
             .single(),
-
-        supabase
-            .from("player_inventory")
-            .select("item_id")
-            .eq("user_id", userId)
+        loadInventory(userId)
     ]);
 
     if (profileResult.error) throw profileResult.error;
-    if (inventoryResult.error) throw inventoryResult.error;
 
     return {
         id: profileResult.data.id,
         username: profileResult.data.username,
         balance: profileResult.data.balance,
-        inventory: inventoryResult.data.map((row) => row.item_id)
+        inventory: inventory.map((row) => row.item_id),
+        equipped: equipSavedInDatabase
+            ? inventory.filter((row) => row.equipped).map((row) => row.item_id)
+            : loadLocalEquipped(userId)
     };
 }
 
+// ---------- Tasks ----------
 // Saved tasks for this user
 export async function loadTasks(userId) {
     const { data, error } = await supabase
@@ -54,29 +94,14 @@ export async function completeTask(taskId) {
     return data;
 }
 
+// ---------- Shop ----------
 // The database checks price, balance and IF OWNED
 export async function buyItem(itemId) {
     const { error } = await supabase.rpc("buy_shop_item", { p_item_id: itemId });
     if (error) throw error;
 }
 
-async function loadInventory(userId) {
-    const withEquipped = await supabase
-        .from("player_inventory")
-        .select("item_id, equipped")
-        .eq("user_id", userId);
-
-    if (!withEquipped.error) {
-        equipSavedInDatabase = true;
-        return withEquipped.data;
-    }
-    if (withEquipped.error.code !== MISSING_COLUMN) throw withEquipped.error;
-
-    // Older schema: read owned items only and use the local loadout.
-    equipSavedInDatabase = false;
-
-}
-
+// ---------- Equipped items ----------
 export async function saveEquipped(userId, itemId, equipped, allEquippedIds) {
     if (equipSavedInDatabase) {
         const { error } = await supabase.rpc("set_item_equipped", {
