@@ -24,6 +24,8 @@ const difficultyInputs = questForm.querySelectorAll('input[name="difficulty"]');
 const closeTaskForm = document.getElementById("closeTaskForm");
 const taskForm = document.getElementById("taskForm");
 const toggleTaskForm = document.getElementById("toggleTaskForm");
+const toggleDayForm = document.getElementById("toggleDayForm");
+const dayForm = document.getElementById("dayForm");
 var calendar = null;
 
 // Local date as YYYY-MM-DD (toISOString would shift the day by timezone)
@@ -43,7 +45,9 @@ function renderLists() {
     const dayTitle = document.getElementById("dayPanelTitle");
     const dayList = document.getElementById("dayTaskList");
     if (dayTitle && dayList) {
-        dayTitle.textContent = "Tasks for " + selectedDate;
+        dayTitle.textContent = selectedDate === todayStr()
+            ? "Today's Quest Board"
+            : "Quests for " + selectedDate;
         dayList.replaceChildren();
         allTasks.filter(t => t.date === selectedDate).forEach(t => renderTask(t, dayList));
     }
@@ -191,6 +195,7 @@ async function syncTaskSession() {
     const dayButton = document.getElementById("dayAddButton");
     if (dayInput) dayInput.disabled = !user;
     if (dayButton) dayButton.disabled = !user;
+    if (toggleDayForm) toggleDayForm.disabled = !user;
     document.querySelectorAll("#taskList input[type='checkbox'], #dayTaskList input[type='checkbox']")
         .forEach((checkbox) => {
             checkbox.disabled = !user || checkbox.dataset.rewarded === "true";
@@ -225,18 +230,26 @@ document.addEventListener("questmanager:userChanged", syncTaskSession);
 
 
 // ---------- Views ----------
+const VIEW_MAP = {
+    monthly: "dayGridMonth",
+    weekly: "timeGridWeek",
+    daily: "timeGridDay"
+};
+
+/*
 function showTasks() {
     document.getElementById("tasksView").style.display = "block";
     document.getElementById("calendarView").style.display = "none";
 }
+*/
 
 function showCalendar() {
 
     // Close the quest form when switching to Calendar.
-    setTaskFormOpen(false);
+    // setTaskFormOpen(false); //commenting out temporarily for changes
 
-    document.getElementById("tasksView").style.display = "none";
-    document.getElementById("calendarView").style.display = "block";
+    // document.getElementById("tasksView").style.display = "none";
+    // document.getElementById("calendarView").style.display = "block";
 
     if (!calendar) {
         calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
@@ -245,7 +258,7 @@ function showCalendar() {
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
-                right: "dayGridMonth,timeGridWeek"
+                right: "" //"dayGridMonth,timeGridWeek"; styled pills replace view buttons
             },
             events: (info, success) => success(
                 allTasks.map(t => ({
@@ -258,18 +271,35 @@ function showCalendar() {
                 renderLists();
             }
         });
+        calendar.render();
+        new ResizeObserver(() => calendar.updateSize())
+            .observe(document.getElementById("calendar"));
+    }else{
+        calendar.updateSize(); //page is hidden so need to remeasure for the calendar
     }
-    calendar.render();
+    
     renderLists();
 }
 
+function syncJournalPage(){
+    if (location.hash === "#journal") {
+        setTaskFormOpen(false);
+        showCalendar();
+    }
+}
+
+document.querySelectorAll(".calendar-view__pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+        calendar?.changeView(VIEW_MAP[btn.dataset.view]);
+        document.querySelectorAll(".calendar-view__pill")
+            .forEach(b => b.classList.toggle("is-active", b === btn));
+    });
+});
 
 // Open and close the native dialog.
 function setTaskFormOpen(open) {
     if (open) {
         if (!getCurrentUser()) return;
-
-        showTasks();
 
         if (!taskForm.open) {
             taskForm.showModal();
@@ -290,21 +320,36 @@ closeTaskForm.addEventListener("click", () => {
 
 // Return focus to + after closing, including with Escape.
 taskForm.addEventListener("close", () => {
-    const app = document.getElementById("appView");
-
-    if (getCurrentUser() && !app.hidden) {
+    if (getCurrentUser() && toggleTaskForm.getClientRects().length > 0) {
         toggleTaskForm.focus();
     }
 });
+
+
+
 
 // ---------- Wiring ----------
 questForm.addEventListener("submit", event => {
     event.preventDefault();
     addTask();
 });
+toggleDayForm.addEventListener("click", () => {
+    if (!getCurrentUser()) return;
+    const open = dayForm.hidden;
+    dayForm.hidden = !open;
+    toggleDayForm.setAttribute("aria-expanded", String(open));
+    toggleDayForm.textContent = open ? "−" : "+";
+    if (open) document.getElementById("dayTaskInput").focus();
+});
+
+document.getElementById("dayTaskInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") document.getElementById("dayAddButton").click();
+});
 document.getElementById("dayAddButton")?.addEventListener("click", addDayTask);
-document.getElementById("todoButton")?.addEventListener("click", showTasks);
-document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
+window.addEventListener("hashchange", syncJournalPage);
+syncJournalPage();
+//document.getElementById("todoButton")?.addEventListener("click", showTasks);
+//document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
 
 syncTaskSession();
 initLogin();
