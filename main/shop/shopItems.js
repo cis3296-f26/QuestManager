@@ -49,7 +49,15 @@ export const LAYER_ORDER = {
 // and add a matching row in the Supabase shop_items table.
 export const SHOP_ITEMS = [
     // ----- Wardrobe -----
-    { id: "wizard_hat",    name: "Wizard Hat",    price: 25, category: "avatar", slot: "hat",       sprite: "assets/itemSprites/equipment/shield.jpg" },
+    { id: "wizard_hat", name: "Wizard Hat", price: 25, category: "avatar", slot: "hat",
+  sprite: "assets/itemSprites/equipment/wizard/wizard1.png",
+  frames: [
+      "assets/itemSprites/equipment/wizard/wizard1.png",
+      "assets/itemSprites/equipment/wizard/wizard2.png",
+      "assets/itemSprites/equipment/wizard/wizard3.png",
+      "assets/itemSprites/equipment/wizard/wizard4.png"
+        ]
+    },
     { id: "gold_crown",    name: "Gold Crown",    price: 60, category: "avatar", slot: "hat",       sprite: "assets/itemSprites/equipment/shield.jpg" },
     { id: "leather_tunic", name: "Leather Tunic", price: 30, category: "avatar", slot: "armor",     sprite: "assets/itemSprites/equipment/shield.jpg" },
     { id: "sword",         name: "Sword",         price: 20, category: "avatar", slot: "equipment", sprite: "assets/itemSprites/equipment/sword.jpg" },

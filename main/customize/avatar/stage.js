@@ -58,12 +58,13 @@ export function renderStage(container, categoryId, itemIds, label = "") {
     if (label) container.setAttribute("aria-label", label);
 }
 
-// One shared timer moves every animated image to the same frame, so layers stay in sync.
+
 let tick = 0;
 setInterval(() => {
     tick++;
-    document.querySelectorAll("img[data-frames]").forEach((img) => {
+    document.querySelectorAll(".avatar-stage img[data-frames], .showcase-stage img[data-frames]").forEach((img) => {
         const frames = JSON.parse(img.dataset.frames);
-        img.src = frames[tick % frames.length];
+        const next = frames[tick % frames.length];
+        if (!img.src.endsWith(next)) img.src = next;
     });
 }, 300);
