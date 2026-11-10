@@ -64,7 +64,7 @@
 
                 <div class="quest-board-header">
                     <h2>Today’s Quest Board</h2>
-                    <button id="toggleTaskForm" type="button" aria-label="Add a quest" aria-expanded="false"
+                    <button id="toggleTaskForm" type="button" aria-label="Add a quest" aria-haspopup="dialog"
                         aria-controls="taskForm">+</button>
                 </div>
 
@@ -74,21 +74,49 @@
                 </div> -->
 
                 <div id="tasksView">
-                    <div id="taskForm" hidden>
-                        <div class="inputWrapper">
-                            <input type="text" id="taskInput" placeholder="Add new...">
-                            <select id="difficultySelect" aria-label="Task difficulty">
-                                <option value="easy">Easy</option>
-                                <option value="medium">Medium</option>
-                                <option value="hard">Hard</option>
-                            </select>
-                            <button id="addButton" type="button">+</button>
-                        </div>
+                    <dialog id="taskForm" aria-labelledby="questFormTitle">
+                        <form id="questForm">
+                            <div class="quest-modal-header">
+                                <h2 id="questFormTitle">New Quest</h2>
+                                <button id="closeTaskForm" type="button" aria-label="Close quest form">
+                                    ×
+                                </button>
+                            </div>
 
-                        <label for="taskDescription">Description (optional)</label>
-                        <textarea id="taskDescription" rows="3"
-                            placeholder="Add details about your quest..."></textarea>
-                    </div>
+                            <label for="taskInput">Quest title</label>
+                            <input id="taskInput" type="text" placeholder="Enter your quest..." required>
+
+                            <label for="taskDescription">Description (optional)</label>
+                            <textarea id="taskDescription" rows="3"
+                                placeholder="Add details about your quest..."></textarea>
+
+                            <div class="quest-date-row">
+                                <span>Due date (optional):</span>
+
+                                <!-- Visual placeholder. Date functionality will be added separately. -->
+                                <button id="questDueDate" type="button" disabled>
+                                    Choose date
+                                </button>
+                            </div>
+
+                            <fieldset class="quest-difficulty-options">
+                                <legend>Select Difficulty:</legend>
+
+                                <div class="difficulty-choices">
+                                    <input id="difficultyEasy" type="radio" name="difficulty" value="easy" checked>
+                                    <label for="difficultyEasy">Easy</label>
+
+                                    <input id="difficultyMedium" type="radio" name="difficulty" value="medium">
+                                    <label for="difficultyMedium">Medium</label>
+
+                                    <input id="difficultyHard" type="radio" name="difficulty" value="hard">
+                                    <label for="difficultyHard">Hard</label>
+                                </div>
+                            </fieldset>
+
+                            <button id="addButton" type="submit">Add Quest</button>
+                        </form>
+                    </dialog>
 
                     <ul id="taskList"></ul>
                 </div>
@@ -145,20 +173,9 @@
                 </section>
             </div>
         </section>
-        <!-- <div id="dayPanel">
-                        <h3 id="dayPanelTitle"></h3>
-                        <div class="inputWrapper">
-                            <input type="text" id="dayTaskInput" placeholder="Add task for this day...">
-                            <button id="dayAddButton" type="button">+</button>
-                        </div>
-                        <ul id="dayTaskList"></ul>
-                    </div> -->
-    </div>
-    </section>
-
-    <section class="page" id="shop" hidden>
-        <h2>Shop</h2>
-    </section>
+        <section class="page" id="shop" hidden>
+            <h2>Shop</h2>
+        </section>
 
     </div> <!-- End appView -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
