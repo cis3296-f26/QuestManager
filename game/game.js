@@ -143,7 +143,71 @@ function update(dt) {
     }
 }
 
+let avatarImages = [];
+
+async function loadGameAvatar() {
+    try {
+        const [
+            { supabase },
+            { loadPlayer },
+            { SHOP_ITEMS },
+            { cleanEquipped },
+            { stageLayers }
+        ] = await Promise.all([
+            import("../main/users/supabaseClient.js"),
+            import("../main/users/playerData.js"),
+            import("../main/shop/shopItems.js"),
+            import("../main/customize/avatar/loadout.js"),
+            import("../main/customize/avatar/stage.js")
+        ]);
+
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!data.session) return;
+
+        const saved = await loadPlayer(data.session.user.id);
+        const equipped = cleanEquipped(SHOP_ITEMS, saved.inventory, saved.equipped ?? []);
+        const layers = stageLayers("avatar", equipped);
+
+        const images = await Promise.all(layers.map(async ({ src }) => {
+            const image = new Image();
+
+            // Shop paths start at the app root, one folder above /game/.
+            image.src = new URL(`../${src}`, document.baseURI).href;
+
+            try {
+                await image.decode();
+                return image;
+            } catch {
+                return null;
+            }
+        }));
+
+        // Keep the stick figure if the base sprite couldn't load.
+        if (images[0]) avatarImages = images.filter(Boolean);
+    } catch (error) {
+        console.warn("Could not load the game avatar:", error);
+    }
+}
+
 function drawPlayer() {
+
+    if (avatarImages.length > 0) {
+        const size = player.height;
+        const centerX = player.x + player.width / 2;
+        const feetY = player.y + player.height;
+
+        for (const image of avatarImages) {
+            const scale = size / Math.max(image.naturalWidth, image.naturalHeight);
+            const width = image.naturalWidth * scale;
+            const height = image.naturalHeight * scale;
+
+            ctx.drawImage(image, centerX - width / 2, feetY - height, width, height);
+        }
+
+        return;
+    }
+
     // Temporary stick character, drawn without an image file.
     const centerX = player.x + player.width / 2;
     const top = player.y;
@@ -256,4 +320,5 @@ function gameLoop(time) {
 }
 
 status.textContent = "Click inside the game, then move and jump!";
+loadGameAvatar();
 requestAnimationFrame(gameLoop);
