@@ -41,7 +41,27 @@ canvas.addEventListener("pointerdown", () => {
     canvas.focus();
 });
 
+function restartLevel() {
+    player.x = 80;
+    player.y = groundY - player.height;
+    player.velocityY = 0;
+    player.grounded = true;
+    levelComplete = false;
+    keys.clear();
+
+    status.textContent = "Reach the flag! Press R to restart.";
+}
+
 canvas.addEventListener("keydown", event => {
+
+    if (event.code === "KeyR") {
+        event.preventDefault();
+        if (!event.repeat) restartLevel();
+        return;
+    }
+
+    if (levelComplete) return;
+
     const controls = ["ArrowLeft", "ArrowRight", "KeyA", "KeyD", "Space", "KeyW", "ArrowUp"];
     if (!controls.includes(event.code)) return;
 
@@ -119,7 +139,7 @@ function update(dt) {
         player.x + player.width >= flagX
     ) {
         levelComplete = true;
-        status.textContent = "Level 1 complete! Refresh to play again.";
+        status.textContent = "Level 1 complete! Press R to play again.";
     }
 }
 
