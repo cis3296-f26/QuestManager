@@ -1,6 +1,6 @@
 import { initLogin } from "./users/login.js";
 import { getCurrentUser, refreshCurrentUser } from "./users/userSession.js";
-import { QuestObject } from "./quests/questObject.js";
+import { QuestObject, PRIORITIES } from "./quests/questObject.js";
 import { loadTasks, createTask, completeTask } from "./users/playerData.js";
 
 // Routing first, so the tabs work even if something below fails
@@ -17,11 +17,15 @@ route();
 
 var input = document.getElementById("taskInput");
 var descriptionInput = document.getElementById("taskDescription");
-var list = document.getElementById("taskList");
+const priorityBoard = document.getElementById("priorityBoard");
 var addButton = document.getElementById("addButton");
-var difficultySelect = document.getElementById("difficultySelect");
+const questForm = document.getElementById("questForm");
+const difficultyInputs = questForm.querySelectorAll('input[name="difficulty"]');
+const closeTaskForm = document.getElementById("closeTaskForm");
 const taskForm = document.getElementById("taskForm");
 const toggleTaskForm = document.getElementById("toggleTaskForm");
+const toggleDayForm = document.getElementById("toggleDayForm");
+const dayForm = document.getElementById("dayForm");
 var calendar = null;
 
 // Local date as YYYY-MM-DD (toISOString would shift the day by timezone)
@@ -33,15 +37,30 @@ let allTasks = [];
 let selectedDate = todayStr();
 
 // ---------- Rendering ----------
+// Today's quests, split into High / Medium / Low.
+function renderPriorityBoard() {
+    const todays = allTasks.filter(t => t.date === todayStr());
+
+    PRIORITIES.forEach(priority => {
+        const section = priorityBoard.querySelector(`[data-priority="${priority}"]`);
+        const target = section.querySelector(".priority-list");
+        const tasks = todays.filter(t => t.priority === priority);
+
+        target.replaceChildren();
+        tasks.forEach(t => renderTask(t, target));
+        section.querySelector(".priority-count").textContent = tasks.length;
+    });
+}
 // Redraws the checklist (today), the day panel (selected date) and the calendar.
 function renderLists() {
-    list.replaceChildren();
-    allTasks.filter(t => t.date === todayStr()).forEach(t => renderTask(t));
+    renderPriorityBoard();
 
     const dayTitle = document.getElementById("dayPanelTitle");
     const dayList = document.getElementById("dayTaskList");
     if (dayTitle && dayList) {
-        dayTitle.textContent = "Tasks for " + selectedDate;
+        dayTitle.textContent = selectedDate === todayStr()
+            ? "Today's Quest Board"
+            : "Quests for " + selectedDate;
         dayList.replaceChildren();
         allTasks.filter(t => t.date === selectedDate).forEach(t => renderTask(t, dayList));
     }
@@ -50,7 +69,7 @@ function renderLists() {
 }
 
 // Draw one task into a list (the checklist by default).
-function renderTask(task, target = list) {
+function renderTask(task, target) {
     var li = document.createElement("li");
     var checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -125,18 +144,25 @@ async function addTaskFor(title, difficulty, date, description = "") {
 
 async function addTask() {
     const user = getCurrentUser();
-    if (!user) return;
+    if (!user || addButton.disabled) return;
 
     const title = input.value.trim();
-    if (title === "") return;
+    if (title === "") {
+        input.focus();
+        return;
+    }
 
-    addButton.disabled = true; // stop double-clicks
+    const difficulty =
+        questForm.querySelector('input[name="difficulty"]:checked').value;
+    const description = descriptionInput.value.trim();
+
+    addButton.disabled = true;
 
     try {
-        await addTaskFor(title, difficultySelect.value, todayStr(), descriptionInput.value.trim());
-        input.value = "";
-        descriptionInput.value = "";
-        difficultySelect.value = "easy";
+        // Keep the existing date behavior. The due date button has no logic.
+        await addTaskFor(title, difficulty, todayStr(), description);
+        questForm.reset();
+        setTaskFormOpen(false);
     } catch (error) {
         console.error(error);
         alert("Couldn't save the task: " + error.message);
@@ -173,14 +199,17 @@ async function syncTaskSession() {
     // Tasks require a signed-in account.
     input.disabled = !user;
     descriptionInput.disabled = !user;
-    difficultySelect.disabled = !user;
+    difficultyInputs.forEach(radio => {
+        radio.disabled = !user;
+    });
     addButton.disabled = !user;
     toggleTaskForm.disabled = !user;
     const dayInput = document.getElementById("dayTaskInput");
     const dayButton = document.getElementById("dayAddButton");
     if (dayInput) dayInput.disabled = !user;
     if (dayButton) dayButton.disabled = !user;
-    document.querySelectorAll("#taskList input[type='checkbox'], #dayTaskList input[type='checkbox']")
+    if (toggleDayForm) toggleDayForm.disabled = !user;
+    document.querySelectorAll("#priorityBoard input[type='checkbox'], #dayTaskList input[type='checkbox']")
         .forEach((checkbox) => {
             checkbox.disabled = !user || checkbox.dataset.rewarded === "true";
         });
@@ -194,7 +223,7 @@ async function syncTaskSession() {
     renderLists();
     input.value = "";
     descriptionInput.value = "";
-    difficultySelect.value = "easy";
+    questForm.reset();
     document.getElementById("image").src = "assets/my_character.jpg";
     activeUserId = nextUserId;
 
@@ -212,25 +241,28 @@ async function syncTaskSession() {
 
 document.addEventListener("questmanager:userChanged", syncTaskSession);
 
-input.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-        addButton.click();
-    }
-});
 
 // ---------- Views ----------
+const VIEW_MAP = {
+    monthly: "dayGridMonth",
+    weekly: "timeGridWeek",
+    daily: "timeGridDay"
+};
+
+/*
 function showTasks() {
     document.getElementById("tasksView").style.display = "block";
     document.getElementById("calendarView").style.display = "none";
 }
+*/
 
 function showCalendar() {
 
     // Close the quest form when switching to Calendar.
-    setTaskFormOpen(false);
+    // setTaskFormOpen(false); //commenting out temporarily for changes
 
-    document.getElementById("tasksView").style.display = "none";
-    document.getElementById("calendarView").style.display = "block";
+    // document.getElementById("tasksView").style.display = "none";
+    // document.getElementById("calendarView").style.display = "block";
 
     if (!calendar) {
         calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
@@ -239,7 +271,7 @@ function showCalendar() {
             headerToolbar: {
                 left: "prev,next today",
                 center: "title",
-                right: "dayGridMonth,timeGridWeek"
+                right: "" //"dayGridMonth,timeGridWeek"; styled pills replace view buttons
             },
             events: (info, success) => success(
                 allTasks.map(t => ({
@@ -252,41 +284,103 @@ function showCalendar() {
                 renderLists();
             }
         });
+        calendar.render();
+        new ResizeObserver(() => calendar.updateSize())
+            .observe(document.getElementById("calendar"));
+    } else {
+        calendar.updateSize(); //page is hidden so need to remeasure for the calendar
     }
-    calendar.render();
+
     renderLists();
 }
 
-// Keep the form visibility and accessible button label in sync.
+function syncJournalPage() {
+    if (location.hash === "#journal") {
+        setTaskFormOpen(false);
+        showCalendar();
+    }
+}
+
+document.querySelectorAll(".calendar-view__pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+        calendar?.changeView(VIEW_MAP[btn.dataset.view]);
+        document.querySelectorAll(".calendar-view__pill")
+            .forEach(b => b.classList.toggle("is-active", b === btn));
+    });
+});
+
+// Open and close the native dialog.
 function setTaskFormOpen(open) {
-    taskForm.hidden = !open;
-    toggleTaskForm.setAttribute("aria-expanded", String(open));
-    toggleTaskForm.setAttribute(
-        "aria-label",
-        open ? "Close quest form" : "Add a quest"
-    );
-    toggleTaskForm.textContent = open ? "−" : "+";
+    if (open) {
+        if (!getCurrentUser()) return;
+
+        if (!taskForm.open) {
+            taskForm.showModal();
+            input.focus();
+        }
+    } else if (taskForm.open) {
+        taskForm.close();
+    }
 }
 
 toggleTaskForm.addEventListener("click", () => {
-    if (!getCurrentUser()) return;
-
-    // The entry form lives in the To-Do view.
-    const calendarShowing =
-        document.getElementById("tasksView").style.display === "none";
-
-    showTasks();
-    const open = calendarShowing || taskForm.hidden;
-    setTaskFormOpen(open);
-
-    if (open) input.focus();
+    setTaskFormOpen(true);
 });
 
+closeTaskForm.addEventListener("click", () => {
+    setTaskFormOpen(false);
+});
+
+// Return focus to + after closing, including with Escape.
+taskForm.addEventListener("close", () => {
+    if (getCurrentUser() && toggleTaskForm.getClientRects().length > 0) {
+        toggleTaskForm.focus();
+    }
+});
+
+
+
+// ---------- Collapsing priority sections ----------
+// Open or close one section.
+function setSectionOpen(section, open) {
+    const toggle = section.querySelector(".priority-toggle");
+    const list = section.querySelector(".priority-list");
+
+    toggle.setAttribute("aria-expanded", String(open));
+    list.hidden = !open;
+    section.classList.toggle("is-collapsed", !open);
+}
+
+// Clicking a header flips its section.
+priorityBoard.querySelectorAll(".priority-toggle").forEach(toggle => {
+    toggle.addEventListener("click", () => {
+        const section = toggle.closest(".priority-section");
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        setSectionOpen(section, !isOpen);
+    });
+});
 // ---------- Wiring ----------
-addButton.addEventListener("click", addTask);
+questForm.addEventListener("submit", event => {
+    event.preventDefault();
+    addTask();
+});
+toggleDayForm.addEventListener("click", () => {
+    if (!getCurrentUser()) return;
+    const open = dayForm.hidden;
+    dayForm.hidden = !open;
+    toggleDayForm.setAttribute("aria-expanded", String(open));
+    toggleDayForm.textContent = open ? "−" : "+";
+    if (open) document.getElementById("dayTaskInput").focus();
+});
+
+document.getElementById("dayTaskInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") document.getElementById("dayAddButton").click();
+});
 document.getElementById("dayAddButton")?.addEventListener("click", addDayTask);
-document.getElementById("todoButton")?.addEventListener("click", showTasks);
-document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
+window.addEventListener("hashchange", syncJournalPage);
+syncJournalPage();
+//document.getElementById("todoButton")?.addEventListener("click", showTasks);
+//document.getElementById("calendarButton")?.addEventListener("click", showCalendar);
 
 syncTaskSession();
 initLogin();
