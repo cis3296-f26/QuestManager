@@ -304,16 +304,29 @@ async function loadGameAvatar() {
 function drawPlayer() {
     const centerX = player.x + player.width / 2;
     const feetY = player.y + player.height;
-    const isWalking = playerIsMoving && player.grounded &&
-        deathTimeLeft === 0 && !levelComplete;
+    const isActive = deathTimeLeft === 0 && !levelComplete;
+    const isWalking = isActive && playerIsMoving && player.grounded;
 
     const stride = isWalking ? Math.sin(playerWalkPhase) : 0;
     const bounce = Math.abs(stride) * 3;
 
+    let tilt = stride * 0.06;
+    let stretchX = 1;
+    let stretchY = 1;
+
+    if (isActive && !player.grounded) {
+        // Blend through a neutral pose at the top of the jump.
+        const airMotion = Math.max(-1, Math.min(1, player.velocityY / 350));
+        tilt = -airMotion * 0.14;
+        stretchX = 1 + airMotion * 0.08;
+        stretchY = 1 - airMotion * 0.10;
+    }
+
     ctx.save();
     ctx.translate(centerX, feetY - bounce);
     ctx.scale(playerFacing, 1);
-    ctx.rotate(stride * 0.06);
+    ctx.rotate(tilt);
+    ctx.scale(stretchX, stretchY);
     ctx.translate(-centerX, -feetY);
     drawPlayerArt();
     ctx.restore();
