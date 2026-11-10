@@ -1,5 +1,5 @@
 export class User {
-    constructor(id, username, balance = 0, inventory = []) {
+    constructor(id, username, balance = 0, inventory = [], equipped = []) {
 
         // Allow zero coins, but reject negative or invalid starting balances.
         if (!Number.isInteger(balance) || balance < 0) {
@@ -17,6 +17,7 @@ export class User {
         
         // Copy the array so each user has their own inventory list.
         this.inventory = [...inventory];
+        this.equipped = Array.isArray(equipped) ? [...equipped] : [];
     }
 
     // Add coins earned from completing a task.

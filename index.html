@@ -6,6 +6,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style/main.css">
     <link rel="stylesheet" href="style/auth.css">
+    <link rel="stylesheet" href="style/home.css">
+    <link rel="stylesheet" href="style/journal.css">
+    <link rel="stylesheet" href="style/customize.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -48,10 +51,11 @@
             <a class="nav-link" href="#home">Home</a>
             <a class="nav-link" href="#journal">Journal</a>
             <a class="nav-link" href="#shop">Shop</a>
+            <a class="nav-link" href="#customize">Customize</a>
         </nav>
 
         <div class="app page" id="home">
-            <aside class="sidebar">
+            <aside class="sidebar" id="questSidebar">
 
                 <div id="accountView" hidden>
                     <p><strong id="account-name"></strong></p>
@@ -60,60 +64,165 @@
                     </button>
                 </div>
 
-                <h2>My Tasks</h2>
-                <p>Task Points: <span id="counter"></span></p>
+                <div class="quest-board-header">
+                    <h2>Today’s Quest Board</h2>
+                    <button id="toggleTaskForm" type="button" aria-label="Add a quest" aria-haspopup="dialog"
+                        aria-controls="taskForm">+</button>
+                </div>
 
-                <div>
+                <!-- <div>
                     <button id="todoButton" type="button">To-Do</button>
                     <button id="calendarButton" type="button">Calendar</button>
-                </div>
+                </div> -->
 
                 <div id="tasksView">
-                    <div class="inputWrapper">
-                        <input type="text" id="taskInput" placeholder="Add new...">
-                        <select id="difficultySelect" aria-label="Task difficulty">
-                            <option value="easy">Easy</option>
-                            <option value="medium">Medium</option>
-                            <option value="hard">Hard</option>
-                        </select>
-                        <button id="addButton" type="button">+</button>
-                    </div>
+                    <dialog id="taskForm" aria-labelledby="questFormTitle">
+                        <form id="questForm">
+                            <div class="quest-modal-header">
+                                <h2 id="questFormTitle">New Quest</h2>
+                                <button id="closeTaskForm" type="button" aria-label="Close quest form">
+                                    ×
+                                </button>
+                            </div>
+
+                            <label for="taskInput">Quest title</label>
+                            <input id="taskInput" type="text" placeholder="Enter your quest..." required>
+
+                            <label for="taskDescription">Description (optional)</label>
+                            <textarea id="taskDescription" rows="3"
+                                placeholder="Add details about your quest..."></textarea>
+
+                            <div class="quest-date-row">
+                                <span>Due date (optional):</span>
+
+                                <!-- Visual placeholder. Date functionality will be added separately. -->
+                                <button id="questDueDate" type="button" disabled>
+                                    Choose date
+                                </button>
+                            </div>
+
+                            <fieldset class="quest-difficulty-options">
+                                <legend>Select Difficulty:</legend>
+
+                                <div class="difficulty-choices">
+                                    <input id="difficultyEasy" type="radio" name="difficulty" value="easy" checked>
+                                    <label for="difficultyEasy">Easy</label>
+
+                                    <input id="difficultyMedium" type="radio" name="difficulty" value="medium">
+                                    <label for="difficultyMedium">Medium</label>
+
+                                    <input id="difficultyHard" type="radio" name="difficulty" value="hard">
+                                    <label for="difficultyHard">Hard</label>
+                                </div>
+                            </fieldset>
+
+                            <button id="addButton" type="submit">Add Quest</button>
+                        </form>
+                    </dialog>
+
                     <ul id="taskList"></ul>
                 </div>
+            </aside>
 
-                <div id="calendarView" style="display: none;">
-                    <div id="calendar"></div>
-                    <div id="dayPanel">
+            <main class="main">
+                <p class="points-display">
+                    Your Points: <span id="counter">0</span>
+                </p>
+                    <figure>
+                        <div class="avatar-stage" id="homeAvatar">
+                            <img id="image" src="assets/character/1Idle01.png
+                            " class="stage-layer stage-base" alt="Your character">
+                        </div>
+                    </figure>
+                <a class="shop-link" href="#shop">Go to shop!</a>
+            </main>
+        </div>
+
+        <!-- Journal Section -->
+        <section class="page" id="journal" hidden>
+            <div class="journal-layout">
+                <section class="calendar-view">
+                    <header class="calendar-view-header">
+                        <h2 class="calendar-view-title">Calendar View</h2>
+                        <div class="calendar-view-toggle">
+                            <button type="button" class="calendar-view__pill is-active"
+                                data-view="monthly">Monthly</button>
+                            <button type="button" class="calendar-view__pill" data-view="weekly">Weekly</button>
+                            <button type="button" class="calendar-view__pill" data-view="daily">Daily</button>
+                        </div>
+                    </header>
+
+                    <div class="calendar-view-body">
+                        <div id="calendar"></div>
+                    </div>
+                </section>
+
+                <section class="journal-board">
+                    <div class="quest-board">
+                        <div class="quest-board-header">
+                            <h2 id="dayPanelTitle">Today's Quest Board</h2>
+                            <button id="toggleDayForm" type="button" aria-label="Add a quest" aria-expanded="false"
+                                aria-controls="dayForm">+</button>
+                        </div>
+
+                        <div id="dayForm" hidden>
+                            <div class="inputWrapper">
+                                <input type="text" id="dayTaskInput" placeholder="Add new...">
+                                <button id="dayAddButton" type="button">Add</button>
+                            </div>
+                        </div>
+
+                        <ul id="dayTaskList"></ul>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- <div id="dayPanel">
                         <h3 id="dayPanelTitle"></h3>
                         <div class="inputWrapper">
                             <input type="text" id="dayTaskInput" placeholder="Add task for this day...">
                             <button id="dayAddButton" type="button">+</button>
                         </div>
                         <ul id="dayTaskList"></ul>
-                    </div>
-                </div>
-            </aside>
+                    </div> -->
+  
+                    
+    <section class="page" id="customize" hidden>
+        <!-- Tab on the left edge that opens the quest drawer -->
+        <button class="quest-drawer-tab" id="questDrawerTab" type="button"
+                aria-expanded="false" aria-controls="questDrawer">
+            <span>Quests</span>
+        </button>
 
-            <main class="main">
-                <h2>My Character</h2>
-                <figure>
-                    <img id="image" src="assets/my_character.jpg" class="img-fluid" width="350px"
-                        alt="default character">
-                </figure>
-                <a class="shop-link" href="#shop">Visit the Shop</a>
-            </main>
+        <aside class="quest-drawer" id="questDrawer" aria-label="Quest board" hidden>
+            <div class="quest-drawer-header">
+                <span>Quest Board</span>
+                <button id="questDrawerClose" type="button" aria-label="Close quest board">&times;</button>
+            </div>
+            <div id="questDrawerBody"></div>
+        </aside>
+
+        <div class="customize-frame">
+            <section class="inventory-panel" id="inventoryPanel" aria-label="Inventory"></section>
+            <section class="showcase-panel" id="showcasePanel" aria-label="Showcase"></section>
         </div>
 
-        <section class="page" id="journal" hidden>
-            <h2>Journal</h2>
-        </section>
+        <p class="customize-status" id="customizeStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="page" id="shop" hidden>
+        <h2>Shop</h2>
+    </section>
         <section class="page" id="shop" hidden>
             <h2>Shop</h2>
         </section>
+
     </div> <!-- End appView -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script type="module" src="./main/shop/shopPage.js"></script>
+    <script type="module" src="./main/customize/customizePage.js"></script>
     <script type="module" src="./main/script.js"></script>
 
 </body>
