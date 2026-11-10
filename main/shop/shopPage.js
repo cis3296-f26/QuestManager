@@ -39,7 +39,7 @@ function renderShop() {
     shopSection.innerHTML = `
         <div class="shop-panel">
             <h2>Shop</h2>
-            <p>Task Points: ${user.balance} (Easy: 10, Medium: 20, Hard: 30 coins)</p>
+            <p>Task Points: ${user.balance}</p>
             <div class="shop-grid">${cards.join("")}</div>
         </div>`;
 }
