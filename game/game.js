@@ -58,6 +58,18 @@ let cameraX = 0;
 const deathDelay = 0.35;
 let deathTimeLeft = 0;
 
+const creature = {
+    startX: 1100,
+    x: 1100,
+    minX: 1040,
+    maxX: 1200,
+    width: 32,
+    height: 24,
+    speed: 70,
+    direction: 1,
+    walkTime: 0
+};
+
 // Click the game to give it keyboard focus.
 canvas.addEventListener("pointerdown", () => {
     canvas.focus();
@@ -67,6 +79,9 @@ function restartLevel() {
     player.x = 80;
     cameraX = 0;
     deathTimeLeft = 0;
+    creature.x = creature.startX;
+    creature.direction = 1;
+    creature.walkTime = 0;
     player.y = groundY - player.height;
     player.velocityY = 0;
     player.grounded = true;
@@ -111,6 +126,32 @@ canvas.addEventListener("keyup", event => {
 // Avoid stuck movement when switching tabs or clicking away.
 canvas.addEventListener("blur", () => keys.clear());
 window.addEventListener("blur", () => keys.clear());
+
+function startDeath(message) {
+    deathTimeLeft = deathDelay;
+    keys.clear();
+    status.textContent = message;
+}
+
+function updateCreature(dt) {
+    creature.walkTime += dt;
+    creature.x += creature.direction * creature.speed * dt;
+
+    if (creature.x >= creature.maxX) {
+        creature.x = creature.maxX;
+        creature.direction = -1;
+    } else if (creature.x <= creature.minX) {
+        creature.x = creature.minX;
+        creature.direction = 1;
+    }
+}
+
+function playerTouchesCreature() {
+    return player.x < creature.x + creature.width &&
+        player.x + player.width > creature.x &&
+        player.y < groundY &&
+        player.y + player.height > groundY - creature.height;
+}
 
 function update(dt) {
     if (levelComplete) return;
@@ -162,9 +203,13 @@ function update(dt) {
     }
 
     if (player.y >= canvas.height) {
-        deathTimeLeft = deathDelay;
-        keys.clear();
-        status.textContent = "You fell! Restarting…";
+        startDeath("You fell! Restarting…");
+        return;
+    }
+
+    updateCreature(dt);
+    if (playerTouchesCreature()) {
+        startDeath("A creature caught you! Restarting…");
         return;
     }
 
@@ -286,6 +331,28 @@ function drawPlayer() {
     ctx.stroke();
 }
 
+function drawCreature() {
+    const step = Math.sin(creature.walkTime * 14) * 3;
+
+    ctx.save();
+    ctx.translate(creature.x + creature.width / 2, groundY);
+    ctx.scale(creature.direction, 1);
+
+    ctx.fillStyle = "#40352b";
+    ctx.fillRect(-10, -5 - Math.max(0, step), 8, 5);
+    ctx.fillRect(3, -5 - Math.max(0, -step), 8, 5);
+
+    ctx.fillStyle = "#5e744a";
+    ctx.beginPath();
+    ctx.ellipse(0, -13, 16, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#faf0e6";
+    ctx.fillRect(2, -17, 4, 4);
+    ctx.fillRect(9, -17, 4, 4);
+    ctx.restore();
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -341,6 +408,7 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
+    drawCreature();
     drawPlayer();
     ctx.restore();
     if (deathTimeLeft > 0) {
