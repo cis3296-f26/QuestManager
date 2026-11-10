@@ -55,6 +55,9 @@ const player = {
 const keys = new Set();
 let lastTime = null;
 let cameraX = 0;
+let playerFacing = 1;
+let playerWalkPhase = 0;
+let playerIsMoving = false;
 const deathDelay = 0.35;
 let deathTimeLeft = 0;
 
@@ -78,6 +81,9 @@ canvas.addEventListener("pointerdown", () => {
 function restartLevel() {
     player.x = 80;
     cameraX = 0;
+    playerFacing = 1;
+    playerWalkPhase = 0;
+    playerIsMoving = false;
     deathTimeLeft = 0;
     creature.x = creature.startX;
     creature.direction = 1;
@@ -163,12 +169,24 @@ function update(dt) {
     const left = keys.has("ArrowLeft") || keys.has("KeyA");
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
+    const previousX = player.x;
     player.x += (Number(right) - Number(left)) * speed * dt;
 
     player.x = Math.max(
         0,
         Math.min(worldWidth - player.width, player.x)
     );
+
+    const distanceMoved = player.x - previousX;
+    playerIsMoving = distanceMoved !== 0;
+
+    if (playerIsMoving) {
+        playerFacing = Math.sign(distanceMoved);
+        playerWalkPhase = (playerWalkPhase + Math.abs(distanceMoved) / 12)
+            % (Math.PI * 2);
+    } else {
+        playerWalkPhase = 0;
+    }
 
     // Remember where the feet were before falling this frame.
     const previousBottom = player.y + player.height;
@@ -284,6 +302,24 @@ async function loadGameAvatar() {
 }
 
 function drawPlayer() {
+    const centerX = player.x + player.width / 2;
+    const feetY = player.y + player.height;
+    const isWalking = playerIsMoving && player.grounded &&
+        deathTimeLeft === 0 && !levelComplete;
+
+    const stride = isWalking ? Math.sin(playerWalkPhase) : 0;
+    const bounce = Math.abs(stride) * 3;
+
+    ctx.save();
+    ctx.translate(centerX, feetY - bounce);
+    ctx.scale(playerFacing, 1);
+    ctx.rotate(stride * 0.06);
+    ctx.translate(-centerX, -feetY);
+    drawPlayerArt();
+    ctx.restore();
+}
+
+function drawPlayerArt() {
 
     if (avatarImages.length > 0) {
         const size = player.height;
