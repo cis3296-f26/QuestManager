@@ -19,7 +19,9 @@ var input = document.getElementById("taskInput");
 var descriptionInput = document.getElementById("taskDescription");
 var list = document.getElementById("taskList");
 var addButton = document.getElementById("addButton");
-var difficultySelect = document.getElementById("difficultySelect");
+const questForm = document.getElementById("questForm");
+const difficultyInputs = questForm.querySelectorAll('input[name="difficulty"]');
+const closeTaskForm = document.getElementById("closeTaskForm");
 const taskForm = document.getElementById("taskForm");
 const toggleTaskForm = document.getElementById("toggleTaskForm");
 const toggleDayForm = document.getElementById("toggleDayForm");
@@ -129,18 +131,25 @@ async function addTaskFor(title, difficulty, date, description = "") {
 
 async function addTask() {
     const user = getCurrentUser();
-    if (!user) return;
+    if (!user || addButton.disabled) return;
 
     const title = input.value.trim();
-    if (title === "") return;
+    if (title === "") {
+        input.focus();
+        return;
+    }
 
-    addButton.disabled = true; // stop double-clicks
+    const difficulty =
+        questForm.querySelector('input[name="difficulty"]:checked').value;
+    const description = descriptionInput.value.trim();
+
+    addButton.disabled = true;
 
     try {
-        await addTaskFor(title, difficultySelect.value, todayStr(), descriptionInput.value.trim());
-        input.value = "";
-        descriptionInput.value = "";
-        difficultySelect.value = "easy";
+        // Keep the existing date behavior. The due date button has no logic.
+        await addTaskFor(title, difficulty, todayStr(), description);
+        questForm.reset();
+        setTaskFormOpen(false);
     } catch (error) {
         console.error(error);
         alert("Couldn't save the task: " + error.message);
@@ -177,7 +186,9 @@ async function syncTaskSession() {
     // Tasks require a signed-in account.
     input.disabled = !user;
     descriptionInput.disabled = !user;
-    difficultySelect.disabled = !user;
+    difficultyInputs.forEach(radio => {
+        radio.disabled = !user;
+    });
     addButton.disabled = !user;
     toggleTaskForm.disabled = !user;
     const dayInput = document.getElementById("dayTaskInput");
@@ -199,7 +210,7 @@ async function syncTaskSession() {
     renderLists();
     input.value = "";
     descriptionInput.value = "";
-    difficultySelect.value = "easy";
+    questForm.reset();
     document.getElementById("image").src = "assets/my_character.jpg";
     activeUserId = nextUserId;
 
@@ -217,11 +228,6 @@ async function syncTaskSession() {
 
 document.addEventListener("questmanager:userChanged", syncTaskSession);
 
-input.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-        addButton.click();
-    }
-});
 
 // ---------- Views ----------
 const VIEW_MAP = {
@@ -276,7 +282,10 @@ function showCalendar() {
 }
 
 function syncJournalPage(){
-    if(location.hash === "#journal") showCalendar();
+    if (location.hash === "#journal") {
+        setTaskFormOpen(false);
+        showCalendar();
+    }
 }
 
 document.querySelectorAll(".calendar-view__pill").forEach(btn => {
@@ -287,34 +296,43 @@ document.querySelectorAll(".calendar-view__pill").forEach(btn => {
     });
 });
 
-// Keep the form visibility and accessible button label in sync.
+// Open and close the native dialog.
 function setTaskFormOpen(open) {
-    taskForm.hidden = !open;
-    toggleTaskForm.setAttribute("aria-expanded", String(open));
-    toggleTaskForm.setAttribute(
-        "aria-label",
-        open ? "Close quest form" : "Add a quest"
-    );
-    toggleTaskForm.textContent = open ? "−" : "+";
+    if (open) {
+        if (!getCurrentUser()) return;
+
+        if (!taskForm.open) {
+            taskForm.showModal();
+            input.focus();
+        }
+    } else if (taskForm.open) {
+        taskForm.close();
+    }
 }
 
 toggleTaskForm.addEventListener("click", () => {
-    if (!getCurrentUser()) return;
+    setTaskFormOpen(true);
+});
 
-    // // The entry form lives in the To-Do view.
-    // const calendarShowing =
-    //     document.getElementById("tasksView").style.display === "none";
+closeTaskForm.addEventListener("click", () => {
+    setTaskFormOpen(false);
+});
 
-    // showTasks();
-    const open =  taskForm.hidden; //calendarShowing || taskForm.hidden;
-    setTaskFormOpen(open);
-    if (open) input.focus();
+// Return focus to + after closing, including with Escape.
+taskForm.addEventListener("close", () => {
+    if (getCurrentUser() && toggleTaskForm.getClientRects().length > 0) {
+        toggleTaskForm.focus();
+    }
 });
 
 
 
 
 // ---------- Wiring ----------
+questForm.addEventListener("submit", event => {
+    event.preventDefault();
+    addTask();
+});
 toggleDayForm.addEventListener("click", () => {
     if (!getCurrentUser()) return;
     const open = dayForm.hidden;
@@ -327,9 +345,6 @@ toggleDayForm.addEventListener("click", () => {
 document.getElementById("dayTaskInput").addEventListener("keypress", (e) => {
     if (e.key === "Enter") document.getElementById("dayAddButton").click();
 });
-
-
-addButton.addEventListener("click", addTask);
 document.getElementById("dayAddButton")?.addEventListener("click", addDayTask);
 window.addEventListener("hashchange", syncJournalPage);
 syncJournalPage();

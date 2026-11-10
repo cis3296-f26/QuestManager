@@ -280,10 +280,177 @@ body {
     opacity: 0.5;
 }
 
+/* Quest creation popup. */
 #home #taskForm {
-    margin-top: 16px;
+    box-sizing: border-box;
+    width: min(600px, calc(100% - 32px));
+    max-height: calc(100dvh - 32px);
+    margin: auto;
+    padding: 24px;
+    overflow-y: auto;
+    border: 2px solid #403725;
+    border-radius: 18px;
+    background: #5e744a;
+    color: #fff8ee;
 }
 
-#home #taskForm[hidden] {
+#home #taskForm:not([open]) {
     display: none;
+}
+
+#taskForm::backdrop {
+    background: rgb(30 35 20 / 35%);
+}
+
+#home .quest-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+#home #questFormTitle {
+    margin: 0;
+    color: #fff8ee;
+    font-size: 28px;
+}
+
+#home #closeTaskForm {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #a53636;
+    color: white;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#home #questForm > label {
+    display: block;
+    margin: 16px 0 6px;
+    color: #fff8ee;
+    font-size: 15px;
+}
+
+#home #taskForm #taskInput,
+#home #taskForm #taskDescription {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 12px;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    background: #faf0e6;
+    color: #304c1e;
+    font: inherit;
+}
+
+#home #taskForm #taskDescription {
+    min-height: 90px;
+    resize: vertical;
+}
+
+#home .quest-date-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+#home #questDueDate {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 999px;
+    background: #faf0e6;
+    color: #3d5f26;
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+#home .quest-difficulty-options {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+#home .quest-difficulty-options legend {
+    float: none;
+    width: auto;
+    margin-bottom: 12px;
+    font-size: 18px;
+}
+
+#home .difficulty-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Keep radios accessible while showing their labels as pills. */
+#home .difficulty-choices input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+#home .difficulty-choices label {
+    flex: 1 1 100px;
+    margin: 0;
+    padding: 10px 16px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: #faf0e6;
+    color: #3d5f26;
+    font-family: "Abril Fatface", Georgia, serif;
+    text-align: center;
+    cursor: pointer;
+}
+
+#home .difficulty-choices input:checked + label {
+    border-color: #e3d8bc;
+    background: #3d5f26;
+    color: #fff8ee;
+}
+
+#home #taskForm :is(input, textarea, button):focus-visible,
+#home .difficulty-choices input:focus-visible + label {
+    outline: 3px solid #ffe09a;
+    outline-offset: 3px;
+}
+
+#home #taskForm #addButton {
+    display: block;
+    width: min(100%, 240px);
+    min-height: 44px;
+    margin: 24px auto 0;
+    padding: 10px 24px;
+    border: 1px solid #e3d8bc;
+    border-radius: 999px;
+    background: #3d5f26;
+    color: #fff8ee;
+    font-family: "Abril Fatface", Georgia, serif;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#home #taskForm #addButton:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+@media (max-width: 480px) {
+    #home #taskForm {
+        padding: 18px;
+    }
 }
