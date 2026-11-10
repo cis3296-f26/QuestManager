@@ -5,19 +5,32 @@
 }
 
 .customize-frame {
+    min-height: 70vh;
+    box-sizing: border-box;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;   /* inventory left, showcase right */
+    grid-template-rows: minmax(0, 1fr);
     gap: 1rem;
-    max-width: 1100px;
-    margin: 0 auto;
+    align-items: stretch;             /* was: start, so both panels fill the frame */
+    padding: 32px;
+    border: 3px solid #51452b;
+    border-radius: 18px;
+    background: #faf0e6;
 }
 
-.inventory-panel,
-.showcase-panel {
+.showcase-panel,
+.inventory-panel {
     background: #f6ecd6;
     border: 3px solid #6e4a2a;
     border-radius: 10px;
     padding: 1rem;
+    min-height: 0;
+}
+
+.inventory-panel {
+    display: flex;
+    flex-direction: column;
+    contain: size;                    /* its content never makes the row taller */
 }
 
 .panel-header {
@@ -78,14 +91,7 @@
 .inv-item.is-equipped .inv-badge { color: #3d8b37; font-weight: 700; }
 
 .inv-empty { text-align: center; padding: 2rem 0; }
-.shop-button {
-    display: inline-block;
-    background: #6e4a2a;
-    color: #fff;
-    padding: 0.4rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-}
+
 
 /* ---------- Showcase (Wardrobe / Room switch) ---------- */
 .segmented { display: flex; margin-bottom: 0.75rem; }
