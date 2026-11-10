@@ -6,18 +6,37 @@ const groundY = 460;
 const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
-const worldWidth = 1800;
+
+const worldWidth = 3600;
 
 const platforms = [
-    { x: 0, y: groundY, width: worldWidth, height: 80 },
-    { x: 220, y: 370, width: 150, height: 24 },
-    { x: 440, y: 280, width: 150, height: 24 },
-    { x: 660, y: 190, width: 150, height: 24 },
 
-    // A second staircase, farther down the level.
-    { x: 920, y: 370, width: 150, height: 24 },
-    { x: 1140, y: 280, width: 150, height: 24 },
-    { x: 1360, y: 190, width: 150, height: 24 }
+    // Leave a 110-pixel pit between x = 820 and x = 930.
+    { x: 0, y: groundY, width: 820, height: 80 },
+    { x: 930, y: groundY, width: worldWidth - 930, height: 80 },
+
+    // Opening: wide platforms and gentle climbs.
+    { x: 220, y: 375, width: 170, height: 24 },
+    { x: 440, y: 305, width: 160, height: 24 },
+    { x: 650, y: 235, width: 150, height: 24 },
+
+    // Middle: alternating heights and smaller landings.
+    { x: 950, y: 380, width: 145, height: 24 },
+    { x: 1155, y: 305, width: 120, height: 24 },
+    { x: 1355, y: 335, width: 120, height: 24 },
+    { x: 1545, y: 250, width: 125, height: 24 },
+
+    // Upper route: more space between platforms.
+    { x: 1810, y: 380, width: 130, height: 24 },
+    { x: 2015, y: 300, width: 110, height: 24 },
+    { x: 2205, y: 220, width: 110, height: 24 },
+    { x: 2410, y: 255, width: 120, height: 24 },
+
+    // Final climb: narrower steps leading to the flag.
+    { x: 2660, y: 375, width: 120, height: 24 },
+    { x: 2860, y: 290, width: 110, height: 24 },
+    { x: 3050, y: 205, width: 100, height: 24 },
+    { x: 3230, y: 135, width: 150, height: 24 }
 ];
 
 const finishPlatform = platforms[platforms.length - 1];
@@ -35,6 +54,9 @@ const player = {
 
 const keys = new Set();
 let lastTime = null;
+let cameraX = 0;
+const deathDelay = 0.35;
+let deathTimeLeft = 0;
 
 // Click the game to give it keyboard focus.
 canvas.addEventListener("pointerdown", () => {
@@ -43,6 +65,8 @@ canvas.addEventListener("pointerdown", () => {
 
 function restartLevel() {
     player.x = 80;
+    cameraX = 0;
+    deathTimeLeft = 0;
     player.y = groundY - player.height;
     player.velocityY = 0;
     player.grounded = true;
@@ -61,6 +85,7 @@ canvas.addEventListener("keydown", event => {
     }
 
     if (levelComplete) return;
+    if (levelComplete || deathTimeLeft > 0) return;
 
     const controls = ["ArrowLeft", "ArrowRight", "KeyA", "KeyD", "Space", "KeyW", "ArrowUp"];
     if (!controls.includes(event.code)) return;
@@ -89,6 +114,11 @@ window.addEventListener("blur", () => keys.clear());
 
 function update(dt) {
     if (levelComplete) return;
+    if (deathTimeLeft > 0) {
+        deathTimeLeft -= dt;
+        if (deathTimeLeft <= 0) restartLevel();
+        return;
+    }
     const left = keys.has("ArrowLeft") || keys.has("KeyA");
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
@@ -130,6 +160,24 @@ function update(dt) {
         player.velocityY = 0;
         player.grounded = true;
     }
+
+    if (player.y >= canvas.height) {
+        deathTimeLeft = deathDelay;
+        keys.clear();
+        status.textContent = "You fell! Restarting…";
+        return;
+    }
+
+    // Keep the player slightly left of center so they can see what's ahead.
+    const playerCenter = player.x + player.width / 2;
+    const maxCameraX = Math.max(0, worldWidth - canvas.width);
+    const targetCameraX = Math.max(
+        0,
+        Math.min(maxCameraX, playerCenter - canvas.width * 0.45)
+    );
+
+    // Ease toward the target at the same rate across frame rates.
+    cameraX += (targetCameraX - cameraX) * (1 - Math.exp(-8 * dt));
 
     // Finish when the player lands or walks onto the flag.
     if (
@@ -256,11 +304,6 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
-    const cameraX = Math.max(
-        0,
-        Math.min(player.x - canvas.width / 2, worldWidth - canvas.width)
-    );
-
     ctx.save();
     ctx.translate(-cameraX, 0);
 
@@ -300,6 +343,11 @@ function draw() {
 
     drawPlayer();
     ctx.restore();
+    if (deathTimeLeft > 0) {
+        const fade = 1 - deathTimeLeft / deathDelay;
+        ctx.fillStyle = `rgba(17, 24, 39, ${fade * 0.8})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
 }
 
 function gameLoop(time) {
