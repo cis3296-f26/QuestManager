@@ -1,51 +1,21 @@
+import { level1 } from "./levels/Level1.js";
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const status = document.getElementById("gameStatus");
 
-const groundY = 460;
+const { groundY, worldWidth, platforms, spawn } = level1;
 const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
 
-const worldWidth = 3600;
-
-const platforms = [
-
-    // Leave a 110-pixel pit between x = 820 and x = 930.
-    { x: 0, y: groundY, width: 820, height: 80 },
-    { x: 930, y: groundY, width: worldWidth - 930, height: 80 },
-
-    // Opening: wide platforms and gentle climbs.
-    { x: 220, y: 375, width: 170, height: 24 },
-    { x: 440, y: 305, width: 160, height: 24 },
-    { x: 650, y: 235, width: 150, height: 24 },
-
-    // Middle: alternating heights and smaller landings.
-    { x: 950, y: 380, width: 145, height: 24 },
-    { x: 1155, y: 305, width: 120, height: 24 },
-    { x: 1355, y: 335, width: 120, height: 24 },
-    { x: 1545, y: 250, width: 125, height: 24 },
-
-    // Upper route: more space between platforms.
-    { x: 1810, y: 380, width: 130, height: 24 },
-    { x: 2015, y: 300, width: 110, height: 24 },
-    { x: 2205, y: 220, width: 110, height: 24 },
-    { x: 2410, y: 255, width: 120, height: 24 },
-
-    // Final climb: narrower steps leading to the flag.
-    { x: 2660, y: 375, width: 120, height: 24 },
-    { x: 2860, y: 290, width: 110, height: 24 },
-    { x: 3050, y: 205, width: 100, height: 24 },
-    { x: 3230, y: 135, width: 150, height: 24 }
-];
-
-const finishPlatform = platforms[platforms.length - 1];
-const flagX = finishPlatform.x + finishPlatform.width - 40;
+const finishPlatform = level1.finish.platform;
+const flagX = finishPlatform.x + finishPlatform.width - level1.finish.flagInset;
 let levelComplete = false;
 
 const player = {
-    x: 80,
-    y: groundY - 64,
+    x: spawn.x,
+    y: spawn.feetY - 64,
     width: 32,
     height: 64,
     velocityY: 0,
@@ -62,13 +32,8 @@ const deathDelay = 0.35;
 let deathTimeLeft = 0;
 
 const creature = {
-    startX: 1100,
-    x: 1100,
-    minX: 1040,
-    maxX: 1200,
-    width: 32,
-    height: 24,
-    speed: 70,
+    ...level1.creature,
+    x: level1.creature.startX,
     direction: 1,
     walkTime: 0
 };
@@ -79,7 +44,7 @@ canvas.addEventListener("pointerdown", () => {
 });
 
 function restartLevel() {
-    player.x = 80;
+    player.x = spawn.x;
     cameraX = 0;
     playerFacing = 1;
     playerWalkPhase = 0;
@@ -88,7 +53,7 @@ function restartLevel() {
     creature.x = creature.startX;
     creature.direction = 1;
     creature.walkTime = 0;
-    player.y = groundY - player.height;
+    player.y = spawn.feetY - player.height;
     player.velocityY = 0;
     player.grounded = true;
     levelComplete = false;
