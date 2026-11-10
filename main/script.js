@@ -1,6 +1,6 @@
 import { initLogin } from "./users/login.js";
 import { getCurrentUser, refreshCurrentUser } from "./users/userSession.js";
-import { QuestObject } from "./quests/questObject.js";
+import { QuestObject, PRIORITIES } from "./quests/questObject.js";
 import { loadTasks, createTask, completeTask } from "./users/playerData.js";
 
 // Routing first, so the tabs work even if something below fails
@@ -17,7 +17,7 @@ route();
 
 var input = document.getElementById("taskInput");
 var descriptionInput = document.getElementById("taskDescription");
-var list = document.getElementById("taskList");
+const priorityBoard = document.getElementById("priorityBoard");
 var addButton = document.getElementById("addButton");
 const questForm = document.getElementById("questForm");
 const difficultyInputs = questForm.querySelectorAll('input[name="difficulty"]');
@@ -37,10 +37,23 @@ let allTasks = [];
 let selectedDate = todayStr();
 
 // ---------- Rendering ----------
+// Today's quests, split into High / Medium / Low.
+function renderPriorityBoard() {
+    const todays = allTasks.filter(t => t.date === todayStr());
+
+    PRIORITIES.forEach(priority => {
+        const section = priorityBoard.querySelector(`[data-priority="${priority}"]`);
+        const target = section.querySelector(".priority-list");
+        const tasks = todays.filter(t => t.priority === priority);
+
+        target.replaceChildren();
+        tasks.forEach(t => renderTask(t, target));
+        section.querySelector(".priority-count").textContent = tasks.length;
+    });
+}
 // Redraws the checklist (today), the day panel (selected date) and the calendar.
 function renderLists() {
-    list.replaceChildren();
-    allTasks.filter(t => t.date === todayStr()).forEach(t => renderTask(t));
+    renderPriorityBoard();
 
     const dayTitle = document.getElementById("dayPanelTitle");
     const dayList = document.getElementById("dayTaskList");
@@ -56,7 +69,7 @@ function renderLists() {
 }
 
 // Draw one task into a list (the checklist by default).
-function renderTask(task, target = list) {
+function renderTask(task, target) {
     var li = document.createElement("li");
     var checkbox = document.createElement("input");
     checkbox.type = "checkbox";
@@ -196,7 +209,7 @@ async function syncTaskSession() {
     if (dayInput) dayInput.disabled = !user;
     if (dayButton) dayButton.disabled = !user;
     if (toggleDayForm) toggleDayForm.disabled = !user;
-    document.querySelectorAll("#taskList input[type='checkbox'], #dayTaskList input[type='checkbox']")
+    document.querySelectorAll("#priorityBoard input[type='checkbox'], #dayTaskList input[type='checkbox']")
         .forEach((checkbox) => {
             checkbox.disabled = !user || checkbox.dataset.rewarded === "true";
         });
@@ -274,14 +287,14 @@ function showCalendar() {
         calendar.render();
         new ResizeObserver(() => calendar.updateSize())
             .observe(document.getElementById("calendar"));
-    }else{
+    } else {
         calendar.updateSize(); //page is hidden so need to remeasure for the calendar
     }
-    
+
     renderLists();
 }
 
-function syncJournalPage(){
+function syncJournalPage() {
     if (location.hash === "#journal") {
         setTaskFormOpen(false);
         showCalendar();
@@ -327,7 +340,25 @@ taskForm.addEventListener("close", () => {
 
 
 
+// ---------- Collapsing priority sections ----------
+// Open or close one section.
+function setSectionOpen(section, open) {
+    const toggle = section.querySelector(".priority-toggle");
+    const list = section.querySelector(".priority-list");
 
+    toggle.setAttribute("aria-expanded", String(open));
+    list.hidden = !open;
+    section.classList.toggle("is-collapsed", !open);
+}
+
+// Clicking a header flips its section.
+priorityBoard.querySelectorAll(".priority-toggle").forEach(toggle => {
+    toggle.addEventListener("click", () => {
+        const section = toggle.closest(".priority-section");
+        const isOpen = toggle.getAttribute("aria-expanded") === "true";
+        setSectionOpen(section, !isOpen);
+    });
+});
 // ---------- Wiring ----------
 questForm.addEventListener("submit", event => {
     event.preventDefault();

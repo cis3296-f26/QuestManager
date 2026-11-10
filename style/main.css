@@ -84,7 +84,7 @@ body{
     }
 
 
-    #taskList{
+   .task-grid{
         display: block;
     }
 
