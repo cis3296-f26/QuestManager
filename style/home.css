@@ -153,7 +153,7 @@ body {
 }
 
 /* Arrange today's tasks as cards that wrap to fit the board. */
-#home #taskList {
+#home .task-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 20px;
@@ -162,7 +162,7 @@ body {
 }
 
 /* Give each task a parchment-style card. */
-#home #taskList>li {
+#home .task-grid>li {
     min-width: 0;
     min-height: 150px;
     padding: 18px;
@@ -171,12 +171,12 @@ body {
     overflow-wrap: anywhere;
 }
 
-#home #taskList>li>span {
+#home .task-grid>li>span {
     font-family: Georgia, serif;
     font-size: 18px;
 }
 
-#home #taskList input[type="checkbox"] {
+#home .task-grid input[type="checkbox"] {
     width: 18px;
     height: 18px;
     margin-right: 8px;
@@ -185,7 +185,7 @@ body {
 
 /* Keep the cards within very narrow screens. */
 @media (max-width: 400px) {
-    #home #taskList {
+    #home .task-grid {
         grid-template-columns: minmax(0, 1fr);
     }
 }
@@ -213,7 +213,7 @@ body {
 }
 
 /* Override the earlier span styling specifically for status badges. */
-#home #taskList>li>.quest-status,
+#home .task-grid>li>.quest-status,
 #home .quest-status {
     display: inline-block;
     margin-top: 12px;
@@ -226,7 +226,7 @@ body {
     text-decoration: none;
 }
 
-#home #taskList>li>.quest-status.is-completed,
+#home .task-grid>li>.quest-status.is-completed,
 #home .quest-status.is-completed {
     background: #dce8ca;
     color: #304c1e;
@@ -454,3 +454,46 @@ body {
         padding: 18px;
     }
 }
+/* .task-grid uses display:grid, which overrides "hidden", so force it. */
+.priority-list[hidden] {
+    display: none !important;
+}
+
+/* Arrow points down when open, right when collapsed. */
+.priority-caret {
+    display: inline-block;
+    transition: transform 0.15s;
+}
+
+.priority-section.is-collapsed .priority-caret {
+    transform: rotate(-90deg);
+}
+/* ---------- Priority sections ---------- */
+#priorityBoard {
+    display: grid;
+    gap: 14px;
+}
+
+/* Each section gets a colored left edge. */
+.priority-section {
+    padding: 4px 12px 12px;
+    border-left: 6px solid var(--priority-color);
+    border-radius: 12px;
+    background: rgb(255 255 255 / 35%);
+}
+
+.priority-section[data-priority="high"]   { --priority-color: #a53636; }
+.priority-section[data-priority="medium"] { --priority-color: #c98a1b; }
+.priority-section[data-priority="low"]    { --priority-color: #5e744a; }
+
+/* Plain, full-width header instead of a gray button. */
+.priority-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    background: none;
+    color: #3d5f26;
+    font-family: "Abril
