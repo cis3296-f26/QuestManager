@@ -18,7 +18,6 @@ html, body { height: 100%; margin: 0; }
 
 .main {
     min-width: 0;
-    background-color: #ffffff;
     margin: 1rem;                      
     overflow: auto;
     border: 2px solid #333;
@@ -118,7 +117,6 @@ body{
         
     .shop-link {
         background-color: darkolivegreen;
-        color: white;
         padding: 10px 20px;
         border-radius: 5px;
         text-decoration: none;
@@ -129,11 +127,24 @@ body{
         background-color: #3f4f22;
     }
 
-    .shop-panel {
-        margin: 1rem;
-        padding: 1.5rem;
-        border: 2px solid #333;
-        background-color: #ffffff;
+    /* One container for Home, Journal and Shop */
+    .shop-layout {
+        box-sizing: border-box;
+        min-height: 70vh;               /* same as #home.app */
+        padding: 32px;                  /* same as #home.app and .journal-layout */
+        border: 3px solid #51452b;
+        border-radius: 18px;
+        background: #faf0e6;
+    }
+
+    .shop-layout h2 {
+        color: #3d5f26;
+        font-family: "Abril Fatface", Georgia, serif;
+    }
+
+    #shop p {
+        text-decoration: none;
+        text-align: center;
     }
 
     .shop-grid {
@@ -142,16 +153,33 @@ body{
         gap: 1rem;
     }
 
-    .shop-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 1rem;
-        border: 2px solid darkolivegreen;
-        border-radius: 5px;
-        background-color: bisque;
-    }
+.shop-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid #9e9278;
+    border-radius: 8px;
+    background-color: #faedca;
+}
+
+.shop-button {
+    background-color: #3d5f26;
+    border: 2px solid #3d5f26;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-family: "Abril Fatface", Georgia, serif;
+    cursor: pointer;
+}
+
+.shop-button:disabled {
+    background-color: #ccc;
+    border-color: #aaa;
+    color: #555;
+    cursor: not-allowed;
+}
 
     .shop-card-image {
         width: 140px;
@@ -162,30 +190,6 @@ body{
         margin-bottom: 0.5rem;
     }
 
-    .shop-card h3 {
-        font-size: 1.2rem;
-    }
-
-    .shop-button {
-        background-color: darkolivegreen;
-        border: 2px solid darkolivegreen;
-        color: white;
-        padding: 8px 16px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .shop-button:disabled {
-        background-color: #ccc;
-        border-color: #aaa;
-        color: #555;
-        cursor: not-allowed;
-    }
-
-    .shop-panel p {
-        text-decoration: none;
-        text-align: center;
-    }
 
     #taskInput, #difficultySelect, #dayTaskInput {
     background-color: bisque;
