@@ -1,21 +1,18 @@
 import { level1 } from "./levels/Level1.js";
-import { Player } from "./entities/Player.js";
-import { Enemy } from "./entities/Enemy.js";
+import { LevelManager } from "./levels/LevelManager.js";
+import { followCamera } from "./engine/Camera.js";
+import { moveHorizontally, applyGravity, jump } from "./engine/Physics.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const status = document.getElementById("gameStatus");
 
-const { groundY, worldWidth, platforms, spawn } = level1;
+const level = new LevelManager(level1);
+const { groundY, worldWidth, platforms } = level.config;
+const { player, enemy: creature, flagX } = level;
 const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
-
-const finishPlatform = level1.finish.platform;
-const flagX = finishPlatform.x + finishPlatform.width - level1.finish.flagInset;
-let levelComplete = false;
-
-const player = new Player(spawn);
 
 const keys = new Set();
 let lastTime = null;
@@ -23,7 +20,6 @@ let cameraX = 0;
 const deathDelay = 0.35;
 let deathTimeLeft = 0;
 
-const creature = new Enemy(level1.creature, groundY);
 
 // Click the game to give it keyboard focus.
 canvas.addEventListener("pointerdown", () => {
@@ -31,11 +27,9 @@ canvas.addEventListener("pointerdown", () => {
 });
 
 function restartLevel() {
-    player.reset(spawn);
-    creature.reset();
+    level.restart();
     cameraX = 0;
     deathTimeLeft = 0;
-    levelComplete = false;
     keys.clear();
 
     status.textContent = "Reach the flag! Press R to restart.";
@@ -49,8 +43,7 @@ canvas.addEventListener("keydown", event => {
         return;
     }
 
-    if (levelComplete) return;
-    if (levelComplete || deathTimeLeft > 0) return;
+    if (level.complete || deathTimeLeft > 0) return;
 
     const controls = ["ArrowLeft", "ArrowRight", "KeyA", "KeyD", "Space", "KeyW", "ArrowUp"];
     if (!controls.includes(event.code)) return;
@@ -64,8 +57,7 @@ canvas.addEventListener("keydown", event => {
         !event.repeat &&
         player.grounded
     ) {
-        player.velocityY = -jumpStrength;
-        player.grounded = false;
+        jump(player, jumpStrength);
     }
 });
 
@@ -84,7 +76,7 @@ function startDeath(message) {
 }
 
 function update(dt) {
-    if (levelComplete) return;
+    if (level.complete) return;
     if (deathTimeLeft > 0) {
         deathTimeLeft -= dt;
         if (deathTimeLeft <= 0) restartLevel();
@@ -93,47 +85,8 @@ function update(dt) {
     const left = keys.has("ArrowLeft") || keys.has("KeyA");
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
-    const previousX = player.x;
-    player.x += (Number(right) - Number(left)) * speed * dt;
-
-    player.x = Math.max(
-        0,
-        Math.min(worldWidth - player.width, player.x)
-    );
-
-    player.trackMovement(previousX);
-
-    // Remember where the feet were before falling this frame.
-    const previousBottom = player.y + player.height;
-
-    player.velocityY += gravity * dt;
-    player.y += player.velocityY * dt;
-    player.grounded = false;
-
-    let landingY = Infinity;
-
-    // Only land on a platform while moving downward.
-    if (player.velocityY >= 0) {
-        for (const platform of platforms) {
-            const overlapsHorizontally =
-                player.x + player.width > platform.x &&
-                player.x < platform.x + platform.width;
-
-            const crossedTop =
-                previousBottom <= platform.y &&
-                player.y + player.height >= platform.y;
-
-            if (overlapsHorizontally && crossedTop) {
-                landingY = Math.min(landingY, platform.y);
-            }
-        }
-    }
-
-    if (landingY !== Infinity) {
-        player.y = landingY - player.height;
-        player.velocityY = 0;
-        player.grounded = true;
-    }
+    moveHorizontally(player, Number(right) - Number(left), speed, worldWidth, dt);
+    applyGravity(player, gravity, platforms, dt);
 
     if (player.y >= canvas.height) {
         startDeath("You fell! Restarting…");
@@ -146,26 +99,10 @@ function update(dt) {
         return;
     }
 
-    // Keep the player slightly left of center so they can see what's ahead.
-    const playerCenter = player.x + player.width / 2;
-    const maxCameraX = Math.max(0, worldWidth - canvas.width);
-    const targetCameraX = Math.max(
-        0,
-        Math.min(maxCameraX, playerCenter - canvas.width * 0.45)
-    );
+    cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
 
-    // Ease toward the target at the same rate across frame rates.
-    cameraX += (targetCameraX - cameraX) * (1 - Math.exp(-8 * dt));
-
-    // Finish when the player lands or walks onto the flag.
-    if (
-        player.grounded &&
-        player.y + player.height === finishPlatform.y &&
-        player.x <= flagX &&
-        player.x + player.width >= flagX
-    ) {
-        levelComplete = true;
-        status.textContent = "Level 1 complete! Press R to play again.";
+    if (level.checkCompletion()) {
+        status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
     }
 }
 
@@ -219,7 +156,7 @@ async function loadGameAvatar() {
 function drawPlayer() {
     const centerX = player.x + player.width / 2;
     const feetY = player.y + player.height;
-    const isActive = deathTimeLeft === 0 && !levelComplete;
+    const isActive = deathTimeLeft === 0 && !level.complete;
     const isWalking = isActive && player.isMoving && player.grounded;
 
     const stride = isWalking ? Math.sin(player.walkPhase) : 0;
@@ -357,7 +294,7 @@ function draw() {
         );
     }
 
-    const flagTop = finishPlatform.y - 60;
+    const flagTop = level.config.finish.platform.y - 60;
 
     // Flagpole.
     ctx.fillStyle = "#51452b";
