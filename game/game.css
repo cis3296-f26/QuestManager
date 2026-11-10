@@ -134,3 +134,116 @@ h1 {
     margin-top: 2px;
     font-weight: normal;
 }
+
+
+/* The map image is scenery; all navigation is accessible HTML. */
+[hidden] { display: none !important; }
+.map-header, .level-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.map-nav { display: flex; flex-wrap: wrap; gap: 8px; }
+.map-nav a {
+    border: 2px solid #51452b;
+    border-radius: 6px;
+    padding: 10px 20px;
+    background: #5e744a;
+    color: #faf0e6;
+    font-family: "Abril Fatface", Georgia, serif;
+    text-decoration: none;
+}
+.map-help { line-height: 1.5; }
+.map-scroll {
+    overflow-x: auto;
+    border: 2px solid #51452b;
+    border-radius: 12px;
+}
+.world-map {
+    position: relative;
+    aspect-ratio: 1672 / 706;
+    min-width: 640px;
+    overflow: hidden;
+    background: #faf0e6;
+}
+.map-art {
+    position: absolute;
+    top: -14.1643%;
+    left: 0;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+}
+.map-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: max(44px, 5.9%);
+    aspect-ratio: 1;
+    padding: 0;
+    border: 3px solid #51452b;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #faf0e6;
+    color: #403725;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    font-size: clamp(18px, 2.5vw, 34px);
+    line-height: 1;
+    cursor: pointer;
+}
+.map-node.is-selected {
+    background: #3d5f26;
+    border-color: #faf0e6;
+    color: #faf0e6;
+    box-shadow: 0 0 0 2px #51452b;
+}
+.map-node:disabled { cursor: default; opacity: 1; }
+.map-lock { font-size: 0.42em; margin-top: 2px; }
+.map-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-top: 20px;
+}
+.map-selection h2 {
+    margin: 0 0 6px;
+    color: #3d5f26;
+    font-family: "Abril Fatface", Georgia, serif;
+    font-size: clamp(20px, 3vw, 27px);
+}
+.map-selection p { margin: 0; }
+.adventure-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border: 2px solid #51452b;
+    border-radius: 8px;
+    padding: 10px 18px;
+    background: #3d5f26;
+    color: #faf0e6;
+    text-decoration: none;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+.adventure-button.secondary { background: #6c523b; }
+.adventure-button:hover { filter: brightness(1.1); }
+.map-node:focus-visible, .adventure-button:focus-visible, .map-nav a:focus-visible {
+    outline: 3px solid #403725;
+    outline-offset: 4px;
+}
+#mapHeading:focus { outline: none; }
+@media (max-width: 600px) {
+    .map-nav { width: 100%; }
+    .map-nav a { flex: 1; padding: 9px; text-align: center; }
+    .map-selection { order: -1; width: 100%; }
+}

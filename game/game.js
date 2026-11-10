@@ -1,3 +1,4 @@
+import { WorldMap } from "./ui/WorldMap.js";
 import { level1 } from "./levels/Level1.js";
 import { LevelManager } from "./levels/LevelManager.js";
 import { followCamera } from "./engine/Camera.js";
@@ -37,12 +38,31 @@ function restartLevel() {
     status.textContent = "Reach the flag! Press R to restart.";
 }
 
+const worldMap = new WorldMap({
+    onPlay() {
+        restartLevel();
+        lastTime = null;
+        canvas.focus();
+    },
+    onMap() {
+        if (completionDialog.open) completionDialog.close("");
+        keys.clear();
+        lastTime = null;
+    }
+});
+
 completionDialog.addEventListener("close", () => {
-    if (completionDialog.returnValue === "replay") restartLevel();
-    canvas.focus();
+    if (completionDialog.returnValue === "map") {
+        worldMap.openMap();
+    } else if (completionDialog.returnValue === "replay") {
+        worldMap.openLevel();
+    } else if (worldMap.playing) {
+        canvas.focus();
+    }
 });
 
 canvas.addEventListener("keydown", event => {
+    if (!worldMap.playing) return;
 
     if (event.code === "KeyR") {
         event.preventDefault();
@@ -83,6 +103,7 @@ function startDeath(message) {
 }
 
 function update(dt) {
+    if (!worldMap.playing) return;
     if (level.complete) return;
     if (deathTimeLeft > 0) {
         deathTimeLeft -= dt;
@@ -109,6 +130,7 @@ function update(dt) {
     cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
 
     if (level.checkCompletion()) {
+        worldMap.markCompleted();
         keys.clear();
         completionTitle.textContent = `Level ${level.config.id} Complete!`;
         status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
@@ -340,14 +362,14 @@ function gameLoop(time) {
     lastTime = time;
 
     // Pause movement when the game does not have keyboard focus.
-    if (document.activeElement === canvas) {
+    if (worldMap.playing && document.activeElement === canvas) {
         update(dt);
     }
 
-    draw();
+    if (worldMap.playing) draw();
     requestAnimationFrame(gameLoop);
 }
 
-status.textContent = "Click inside the game, then move and jump!";
+if (worldMap.playing) status.textContent = "Move and jump! Press R to restart.";
 loadGameAvatar();
 requestAnimationFrame(gameLoop);
