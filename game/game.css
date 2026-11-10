@@ -247,3 +247,6 @@ h1 {
     .map-nav a { flex: 1; padding: 9px; text-align: center; }
     .map-selection { order: -1; width: 100%; }
 }
+
+.adventure-button:disabled { opacity: 0.65; cursor: default; }
+.adventure-button:disabled:hover { filter: none; }

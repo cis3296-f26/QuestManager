@@ -1,5 +1,5 @@
-import { WorldMap } from "./ui/WorldMap.js";
-import { levels } from "./levels/levels.js";
+import { level1 } from "./levels/Level1.js";
+import { touchesHazard, drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
 import { followCamera } from "./engine/Camera.js";
 import { moveHorizontally, applyGravity, jump } from "./engine/Physics.js";
@@ -10,10 +10,9 @@ const status = document.getElementById("gameStatus");
 const completionDialog = document.getElementById("levelCompleteDialog");
 const completionTitle = document.getElementById("levelCompleteTitle");
 
-const level = new LevelManager(levels[0]);
-// These references change only when loading a different level.
-let { groundY, worldWidth, platforms } = level.config;
-let { player, enemies, flagX } = level;
+const level = new LevelManager(level1);
+const { groundY, worldWidth, platforms } = level.config;
+const { player, enemies, flagX } = level;
 const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
@@ -39,39 +38,13 @@ function restartLevel() {
     status.textContent = "Reach the flag! Press R to restart.";
 }
 
-const worldMap = new WorldMap({
-    levels,
-    onPlay(config) {
-        level.load(config);
-        ({ groundY, worldWidth, platforms } = level.config);
-        ({ player, enemies, flagX } = level);
-        document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
-        canvas.setAttribute("aria-label", `Level ${config.id} platform game`);
-        restartLevel();
-        lastTime = null;
-        canvas.focus();
-    },
-    onMap() {
-        if (completionDialog.open) completionDialog.close("");
-        keys.clear();
-        lastTime = null;
-    }
-});
-
+// Future navigation remains disabled while Level 1 is being playtested.
 completionDialog.addEventListener("close", () => {
-    if (completionDialog.returnValue === "map") {
-        worldMap.openMap();
-    } else if (completionDialog.returnValue === "next") {
-        worldMap.openNext();
-    } else if (completionDialog.returnValue === "replay") {
-        worldMap.openLevel(level.config.id);
-    } else if (worldMap.playing) {
-        canvas.focus();
-    }
+    if (completionDialog.returnValue === "replay") restartLevel();
+    canvas.focus();
 });
 
 canvas.addEventListener("keydown", event => {
-    if (!worldMap.playing) return;
 
     if (event.code === "KeyR") {
         event.preventDefault();
@@ -112,7 +85,6 @@ function startDeath(message) {
 }
 
 function update(dt) {
-    if (!worldMap.playing) return;
     if (level.complete) return;
     if (deathTimeLeft > 0) {
         deathTimeLeft -= dt;
@@ -136,14 +108,15 @@ function update(dt) {
         return;
     }
 
+    if (touchesHazard(player, level.config.hazards ?? [])) {
+        startDeath("You touched the thorns! Restarting…");
+        return;
+    }
+
     cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
 
     if (level.checkCompletion()) {
-        worldMap.markCompleted(level.config.id);
         keys.clear();
-        const nextButton = document.getElementById("nextLevel");
-        nextButton.disabled = !worldMap.hasNext();
-        nextButton.textContent = worldMap.hasNext() ? "Next Level" : "Next Level · Coming soon";
         completionTitle.textContent = `Level ${level.config.id} Complete!`;
         status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
         // Escape dismisses the dialog without replaying or advancing.
@@ -355,9 +328,23 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
+    drawHazards(ctx, level.config.hazards ?? []);
     enemies.forEach(drawCreature);
     drawPlayer();
     ctx.restore();
+
+    // Section names are drawn in screen space; they never collide with the player.
+    const section = [...(level.config.sections ?? [])].reverse().find((entry) => player.x >= entry.x);
+    if (section) {
+        ctx.fillStyle = "rgba(250, 240, 230, 0.95)";
+        ctx.fillRect(12, 12, canvas.width - 24, 55);
+        ctx.fillStyle = "#3d5f26";
+        ctx.font = "bold 17px Georgia";
+        ctx.fillText(section.title, 25, 34);
+        ctx.font = "13px Arial";
+        ctx.fillText(section.hint, 25, 55);
+    }
+
     if (deathTimeLeft > 0) {
         const fade = 1 - deathTimeLeft / deathDelay;
         ctx.fillStyle = `rgba(17, 24, 39, ${fade * 0.8})`;
@@ -374,14 +361,14 @@ function gameLoop(time) {
     lastTime = time;
 
     // Pause movement when the game does not have keyboard focus.
-    if (worldMap.playing && document.activeElement === canvas) {
+    if (document.activeElement === canvas) {
         update(dt);
     }
 
-    if (worldMap.playing) draw();
+    draw();
     requestAnimationFrame(gameLoop);
 }
 
-if (worldMap.playing) status.textContent = "Move and jump! Press R to restart.";
+status.textContent = "Click inside the game to begin The First Adventure.";
 loadGameAvatar();
 requestAnimationFrame(gameLoop);

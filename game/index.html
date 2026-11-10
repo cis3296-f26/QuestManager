@@ -9,7 +9,7 @@
 </head>
 <body>
     <main class="game-shell">
-        <section id="worldMapView" aria-labelledby="mapHeading">
+        <section id="worldMapView" hidden aria-labelledby="mapHeading">
             <header class="map-header">
                 <div>
                     <p class="game-eyebrow">QuestManager Adventure</p>
@@ -97,13 +97,13 @@
             </footer>
         </section>
 
-        <section id="levelView" hidden aria-labelledby="levelHeading">
+        <section id="levelView" aria-labelledby="levelHeading">
             <header class="game-header level-header">
                 <div>
                     <p class="game-eyebrow">QuestManager Adventure</p>
                     <h1 id="levelHeading">Level 1: The First Adventure</h1>
                 </div>
-                <button type="button" id="backToMap" class="adventure-button secondary">← World Map</button>
+                <button type="button" id="backToMap" class="adventure-button secondary" disabled title="World Map is unavailable during the Level 1 playtest">World Map · Coming soon</button>
             </header>
             <p id="gameInstructions">
                 Move with A/D or the left/right arrows.
@@ -120,11 +120,11 @@
         aria-labelledby="levelCompleteTitle" aria-describedby="levelCompleteDescription">
         <p class="game-eyebrow">Quest complete</p>
         <h2 id="levelCompleteTitle">Level 1 Complete!</h2>
-        <p id="levelCompleteDescription">You reached the flag! Replay or return to the map.</p>
+        <p id="levelCompleteDescription">You reached the flag! Replay The First Adventure to try again.</p>
         <form method="dialog" class="completion-actions">
             <button type="submit" value="replay" autofocus>Replay Level</button>
-            <button id="nextLevel" type="submit" value="next">Next Level</button>
-            <button type="submit" value="map">World Map</button>
+            <button id="nextLevel" type="button" disabled>Next Level <small>Coming soon</small></button>
+            <button type="button" disabled>World Map <small>Coming soon</small></button>
         </form>
     </dialog>
     <script type="module" src="./game.js"></script>
