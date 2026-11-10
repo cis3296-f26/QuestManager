@@ -6,6 +6,8 @@ import { moveHorizontally, applyGravity, jump } from "./engine/Physics.js";
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const status = document.getElementById("gameStatus");
+const completionDialog = document.getElementById("levelCompleteDialog");
+const completionTitle = document.getElementById("levelCompleteTitle");
 
 const level = new LevelManager(level1);
 const { groundY, worldWidth, platforms } = level.config;
@@ -34,6 +36,11 @@ function restartLevel() {
 
     status.textContent = "Reach the flag! Press R to restart.";
 }
+
+completionDialog.addEventListener("close", () => {
+    if (completionDialog.returnValue === "replay") restartLevel();
+    canvas.focus();
+});
 
 canvas.addEventListener("keydown", event => {
 
@@ -102,7 +109,12 @@ function update(dt) {
     cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
 
     if (level.checkCompletion()) {
+        keys.clear();
+        completionTitle.textContent = `Level ${level.config.id} Complete!`;
         status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
+        // Escape dismisses the dialog without replaying or advancing.
+        completionDialog.returnValue = "";
+        completionDialog.showModal();
     }
 }
 

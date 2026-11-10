@@ -38,6 +38,20 @@
         </p>
     </main>
 
+    <dialog id="levelCompleteDialog" class="completion-dialog"
+        aria-labelledby="levelCompleteTitle" aria-describedby="levelCompleteDescription">
+        <p class="game-eyebrow">Quest complete</p>
+        <h2 id="levelCompleteTitle">Level 1 Complete!</h2>
+        <p id="levelCompleteDescription">
+            You reached the flag! Replay this level for another run.
+        </p>
+        <form method="dialog" class="completion-actions">
+            <button type="submit" value="replay" autofocus>Replay Level</button>
+            <button type="button" disabled>Next Level <small>Coming soon</small></button>
+            <button type="button" disabled>World Map <small>Coming soon</small></button>
+        </form>
+    </dialog>
+
     <script type="module" src="./game.js"></script>
 </body>
 
