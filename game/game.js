@@ -1,5 +1,5 @@
 import { WorldMap } from "./ui/WorldMap.js";
-import { level1 } from "./levels/Level1.js";
+import { levels } from "./levels/levels.js";
 import { LevelManager } from "./levels/LevelManager.js";
 import { followCamera } from "./engine/Camera.js";
 import { moveHorizontally, applyGravity, jump } from "./engine/Physics.js";
@@ -10,9 +10,10 @@ const status = document.getElementById("gameStatus");
 const completionDialog = document.getElementById("levelCompleteDialog");
 const completionTitle = document.getElementById("levelCompleteTitle");
 
-const level = new LevelManager(level1);
-const { groundY, worldWidth, platforms } = level.config;
-const { player, enemies, flagX } = level;
+const level = new LevelManager(levels[0]);
+// These references change only when loading a different level.
+let { groundY, worldWidth, platforms } = level.config;
+let { player, enemies, flagX } = level;
 const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
@@ -39,7 +40,13 @@ function restartLevel() {
 }
 
 const worldMap = new WorldMap({
-    onPlay() {
+    levels,
+    onPlay(config) {
+        level.load(config);
+        ({ groundY, worldWidth, platforms } = level.config);
+        ({ player, enemies, flagX } = level);
+        document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
+        canvas.setAttribute("aria-label", `Level ${config.id} platform game`);
         restartLevel();
         lastTime = null;
         canvas.focus();
@@ -54,8 +61,10 @@ const worldMap = new WorldMap({
 completionDialog.addEventListener("close", () => {
     if (completionDialog.returnValue === "map") {
         worldMap.openMap();
+    } else if (completionDialog.returnValue === "next") {
+        worldMap.openNext();
     } else if (completionDialog.returnValue === "replay") {
-        worldMap.openLevel();
+        worldMap.openLevel(level.config.id);
     } else if (worldMap.playing) {
         canvas.focus();
     }
@@ -130,8 +139,11 @@ function update(dt) {
     cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
 
     if (level.checkCompletion()) {
-        worldMap.markCompleted();
+        worldMap.markCompleted(level.config.id);
         keys.clear();
+        const nextButton = document.getElementById("nextLevel");
+        nextButton.disabled = !worldMap.hasNext();
+        nextButton.textContent = worldMap.hasNext() ? "Next Level" : "Next Level · Coming soon";
         completionTitle.textContent = `Level ${level.config.id} Complete!`;
         status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
         // Escape dismisses the dialog without replaying or advancing.

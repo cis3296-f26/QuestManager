@@ -21,7 +21,7 @@
                     <a href="../#shop">Shop</a>
                 </nav>
             </header>
-            <p id="mapDescription" class="map-help">Select Level 1 to begin. Levels 2–10 are coming soon.</p>
+            <p id="mapDescription" class="map-help">Select Level 1 or Level 2 to play. Levels 3–10 are coming soon.</p>
             <div class="map-scroll">
                 <div class="world-map" role="group" aria-label="Adventure levels" aria-describedby="mapDescription">
                     <img class="map-art" src="./assets/adventure-map.webp" alt="" draggable="false">
@@ -33,9 +33,9 @@
                     </button>
                     <button type="button" class="map-node" data-level="2"
                         style="left:28.7081%;top:68.4136%"
-                        aria-label="Level 2: Grasslands, coming soon" disabled
-                        title="Grasslands — coming soon">
-                        <span>2</span><span class="map-lock" aria-hidden="true">🔒</span>
+                        aria-label="Level 2: The Winding Grove" aria-pressed="false"
+                        title="Select Level 2">
+                        <span>2</span>
                     </button>
                     <button type="button" class="map-node" data-level="3"
                         style="left:41.6866%;top:70.2550%"
@@ -90,7 +90,7 @@
             <footer class="map-footer">
                 <a class="adventure-button secondary" href="../#home">← Back to QuestManager</a>
                 <div class="map-selection">
-                    <h2>Level 1 · The First Steps</h2>
+                    <h2 id="mapLevelTitle">Level 1 · The First Steps</h2>
                     <p id="mapLevelStatus" role="status">Grasslands · Ready to explore</p>
                 </div>
                 <button type="button" id="playLevel" class="adventure-button">Play Level</button>
@@ -123,7 +123,7 @@
         <p id="levelCompleteDescription">You reached the flag! Replay or return to the map.</p>
         <form method="dialog" class="completion-actions">
             <button type="submit" value="replay" autofocus>Replay Level</button>
-            <button type="button" disabled>Next Level <small>Coming soon</small></button>
+            <button id="nextLevel" type="submit" value="next">Next Level</button>
             <button type="submit" value="map">World Map</button>
         </form>
     </dialog>

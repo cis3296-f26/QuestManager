@@ -1,18 +1,24 @@
-// Map navigation stays separate from level physics and rendering.
-// Only implemented levels can be opened; locked markers never start a level.
+// Map selection and hash navigation use the same registry as the game.
 export class WorldMap {
-    constructor({ onPlay, onMap }) {
+    constructor({ levels, onPlay, onMap }) {
+        this.levels = levels;
         this.onPlay = onPlay;
         this.onMap = onMap;
+        this.selectedId = levels[0].id;
+        this.completed = new Set();
         this.playing = false;
         this.map = document.getElementById("worldMapView");
         this.level = document.getElementById("levelView");
         this.heading = document.getElementById("mapHeading");
         this.playButton = document.getElementById("playLevel");
         this.levelStatus = document.getElementById("mapLevelStatus");
+        this.levelTitle = document.getElementById("mapLevelTitle");
+        this.nodes = document.querySelectorAll("[data-level]");
 
-        document.querySelector('[data-level="1"]').addEventListener("click", () => {
-            this.playButton.focus();
+        this.nodes.forEach((node) => {
+            const id = Number(node.dataset.level);
+            node.disabled = !this.findLevel(id);
+            if (!node.disabled) node.addEventListener("click", () => this.select(id));
         });
         this.playButton.addEventListener("click", () => this.openLevel());
         document.getElementById("backToMap").addEventListener("click", () => this.openMap());
@@ -20,9 +26,35 @@ export class WorldMap {
         this.render(false);
     }
 
-    openLevel() {
-        if (location.hash === "#level-1") this.render();
-        else location.hash = "level-1";
+    findLevel(id) {
+        return this.levels.find((config) => config.id === id);
+    }
+
+    select(id) {
+        const config = this.findLevel(id);
+        if (!config) return;
+        this.selectedId = id;
+        const done = this.completed.has(id);
+        this.levelTitle.textContent = `Level ${id} · ${config.name}`;
+        this.levelStatus.textContent = done ? "Completed · Replay anytime" : "Grasslands · Ready to explore";
+        this.playButton.textContent = done ? "Replay Level" : "Play Level";
+        this.nodes.forEach((node) => {
+            const nodeId = Number(node.dataset.level);
+            const selected = nodeId === id;
+            node.classList.toggle("is-selected", selected);
+            if (!node.disabled) {
+                node.setAttribute("aria-pressed", String(selected));
+                node.setAttribute("aria-label", `Level ${nodeId}: ${this.findLevel(nodeId).name}${this.completed.has(nodeId) ? ", completed" : ""}`);
+            }
+        });
+    }
+
+    openLevel(id = this.selectedId) {
+        if (!this.findLevel(id)) return;
+        this.select(id);
+        const hash = `#level-${id}`;
+        if (location.hash === hash) this.render();
+        else location.hash = hash;
     }
 
     openMap() {
@@ -30,21 +62,35 @@ export class WorldMap {
         else location.hash = "map";
     }
 
-    markCompleted() {
-        // Current page only: cross-session progress can be added with account storage.
-        this.levelStatus.textContent = "Completed · Replay anytime";
-        this.playButton.textContent = "Replay Level";
-        document.querySelector('[data-level="1"]').setAttribute("aria-label",
-            "Level 1: The First Steps, completed");
+    hasNext() {
+        const index = this.levels.findIndex((config) => config.id === this.selectedId);
+        return index >= 0 && index + 1 < this.levels.length;
+    }
+
+    openNext() {
+        if (!this.hasNext()) return;
+        const index = this.levels.findIndex((config) => config.id === this.selectedId);
+        this.openLevel(this.levels[index + 1].id);
+    }
+
+    markCompleted(id) {
+        // Progress lasts for this page session, matching the existing map.
+        this.completed.add(id);
+        this.select(id);
     }
 
     render(moveFocus = true) {
-        this.playing = location.hash === "#level-1";
+        const match = /^#level-(\d+)$/.exec(location.hash);
+        const config = match ? this.findLevel(Number(match[1])) : null;
+        this.playing = Boolean(config);
         this.map.hidden = this.playing;
         this.level.hidden = !this.playing;
 
-        if (this.playing) this.onPlay();
-        else {
+        if (config) {
+            this.select(config.id);
+            this.onPlay(config);
+        } else {
+            this.select(this.selectedId);
             this.onMap();
             if (moveFocus) this.heading.focus();
         }

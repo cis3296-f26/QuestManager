@@ -3,6 +3,10 @@ import { Enemy } from "../entities/Enemy.js";
 
 export class LevelManager {
     constructor(config) {
+        this.load(config);
+    }
+
+    load(config) {
         this.config = config;
         this.player = new Player(config.spawn);
         this.enemies = config.enemies.map((enemy) => new Enemy(enemy, enemy.feetY ?? config.groundY));
