@@ -1,4 +1,6 @@
 import { level1 } from "./levels/Level1.js";
+import { Player } from "./entities/Player.js";
+import { Enemy } from "./entities/Enemy.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -13,30 +15,15 @@ const finishPlatform = level1.finish.platform;
 const flagX = finishPlatform.x + finishPlatform.width - level1.finish.flagInset;
 let levelComplete = false;
 
-const player = {
-    x: spawn.x,
-    y: spawn.feetY - 64,
-    width: 32,
-    height: 64,
-    velocityY: 0,
-    grounded: true
-};
+const player = new Player(spawn);
 
 const keys = new Set();
 let lastTime = null;
 let cameraX = 0;
-let playerFacing = 1;
-let playerWalkPhase = 0;
-let playerIsMoving = false;
 const deathDelay = 0.35;
 let deathTimeLeft = 0;
 
-const creature = {
-    ...level1.creature,
-    x: level1.creature.startX,
-    direction: 1,
-    walkTime: 0
-};
+const creature = new Enemy(level1.creature, groundY);
 
 // Click the game to give it keyboard focus.
 canvas.addEventListener("pointerdown", () => {
@@ -44,18 +31,10 @@ canvas.addEventListener("pointerdown", () => {
 });
 
 function restartLevel() {
-    player.x = spawn.x;
+    player.reset(spawn);
+    creature.reset();
     cameraX = 0;
-    playerFacing = 1;
-    playerWalkPhase = 0;
-    playerIsMoving = false;
     deathTimeLeft = 0;
-    creature.x = creature.startX;
-    creature.direction = 1;
-    creature.walkTime = 0;
-    player.y = spawn.feetY - player.height;
-    player.velocityY = 0;
-    player.grounded = true;
     levelComplete = false;
     keys.clear();
 
@@ -104,26 +83,6 @@ function startDeath(message) {
     status.textContent = message;
 }
 
-function updateCreature(dt) {
-    creature.walkTime += dt;
-    creature.x += creature.direction * creature.speed * dt;
-
-    if (creature.x >= creature.maxX) {
-        creature.x = creature.maxX;
-        creature.direction = -1;
-    } else if (creature.x <= creature.minX) {
-        creature.x = creature.minX;
-        creature.direction = 1;
-    }
-}
-
-function playerTouchesCreature() {
-    return player.x < creature.x + creature.width &&
-        player.x + player.width > creature.x &&
-        player.y < groundY &&
-        player.y + player.height > groundY - creature.height;
-}
-
 function update(dt) {
     if (levelComplete) return;
     if (deathTimeLeft > 0) {
@@ -142,16 +101,7 @@ function update(dt) {
         Math.min(worldWidth - player.width, player.x)
     );
 
-    const distanceMoved = player.x - previousX;
-    playerIsMoving = distanceMoved !== 0;
-
-    if (playerIsMoving) {
-        playerFacing = Math.sign(distanceMoved);
-        playerWalkPhase = (playerWalkPhase + Math.abs(distanceMoved) / 12)
-            % (Math.PI * 2);
-    } else {
-        playerWalkPhase = 0;
-    }
+    player.trackMovement(previousX);
 
     // Remember where the feet were before falling this frame.
     const previousBottom = player.y + player.height;
@@ -190,8 +140,8 @@ function update(dt) {
         return;
     }
 
-    updateCreature(dt);
-    if (playerTouchesCreature()) {
+    creature.update(dt);
+    if (creature.touches(player)) {
         startDeath("A creature caught you! Restarting…");
         return;
     }
@@ -270,9 +220,9 @@ function drawPlayer() {
     const centerX = player.x + player.width / 2;
     const feetY = player.y + player.height;
     const isActive = deathTimeLeft === 0 && !levelComplete;
-    const isWalking = isActive && playerIsMoving && player.grounded;
+    const isWalking = isActive && player.isMoving && player.grounded;
 
-    const stride = isWalking ? Math.sin(playerWalkPhase) : 0;
+    const stride = isWalking ? Math.sin(player.walkPhase) : 0;
     const bounce = Math.abs(stride) * 3;
 
     let tilt = stride * 0.06;
@@ -289,7 +239,7 @@ function drawPlayer() {
 
     ctx.save();
     ctx.translate(centerX, feetY - bounce);
-    ctx.scale(playerFacing, 1);
+    ctx.scale(player.facing, 1);
     ctx.rotate(tilt);
     ctx.scale(stretchX, stretchY);
     ctx.translate(-centerX, -feetY);
@@ -349,7 +299,7 @@ function drawCreature() {
     const step = Math.sin(creature.walkTime * 14) * 3;
 
     ctx.save();
-    ctx.translate(creature.x + creature.width / 2, groundY);
+    ctx.translate(creature.x + creature.width / 2, creature.feetY);
     ctx.scale(creature.direction, 1);
 
     ctx.fillStyle = "#40352b";
