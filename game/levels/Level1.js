@@ -34,7 +34,7 @@ const platforms = [
 // Level geometry and starting positions. Runtime state lives in game.js.
 export const level1 = {
     id: 1,
-    name: "The First Steps",
+    name: "The First Adventure",
     groundY,
     worldWidth,
     platforms,
