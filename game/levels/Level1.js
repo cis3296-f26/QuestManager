@@ -2,9 +2,10 @@ const groundY = 460;
 const worldWidth = 3600;
 
 const platforms = [
-    // Leave a 110-pixel pit between x = 820 and x = 930.
+    // Solid ground is split at both pits; gaps are absent from collision geometry.
     { x: 0, y: groundY, width: 820, height: 80 },
-    { x: 930, y: groundY, width: worldWidth - 930, height: 80 },
+    { x: 930, y: groundY, width: 790, height: 80 },
+    { x: 1870, y: groundY, width: worldWidth - 1870, height: 80 },
 
     // Opening: wide platforms and gentle climbs.
     { x: 220, y: 375, width: 170, height: 24 },
@@ -38,6 +39,10 @@ export const level1 = {
     worldWidth,
     platforms,
     spawn: { x: 80, feetY: groundY },
-    creature: { startX: 1100, minX: 1040, maxX: 1200, width: 32, height: 24, speed: 70 },
+    enemies: [
+        // Wide patrols, with safe landing space between each route and the pits.
+        { startX: 1100, minX: 1000, maxX: 1610, width: 32, height: 24, speed: 70 },
+        { startX: 2280, minX: 2050, maxX: 2550, width: 32, height: 24, speed: 85 }
+    ],
     finish: { platform: platforms[platforms.length - 1], flagInset: 40 }
 };

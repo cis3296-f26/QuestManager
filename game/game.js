@@ -12,7 +12,7 @@ const completionTitle = document.getElementById("levelCompleteTitle");
 
 const level = new LevelManager(level1);
 const { groundY, worldWidth, platforms } = level.config;
-const { player, enemy: creature, flagX } = level;
+const { player, enemies, flagX } = level;
 const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
@@ -121,8 +121,8 @@ function update(dt) {
         return;
     }
 
-    creature.update(dt);
-    if (creature.touches(player)) {
+    enemies.forEach((enemy) => enemy.update(dt));
+    if (enemies.some((enemy) => enemy.touches(player))) {
         startDeath("A creature caught you! Restarting…");
         return;
     }
@@ -266,7 +266,7 @@ function drawPlayerArt() {
     ctx.stroke();
 }
 
-function drawCreature() {
+function drawCreature(creature) {
     const step = Math.sin(creature.walkTime * 14) * 3;
 
     ctx.save();
@@ -343,7 +343,7 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
-    drawCreature();
+    enemies.forEach(drawCreature);
     drawPlayer();
     ctx.restore();
     if (deathTimeLeft > 0) {

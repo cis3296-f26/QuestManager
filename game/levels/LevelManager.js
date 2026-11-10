@@ -5,7 +5,7 @@ export class LevelManager {
     constructor(config) {
         this.config = config;
         this.player = new Player(config.spawn);
-        this.enemy = new Enemy(config.creature, config.groundY);
+        this.enemies = config.enemies.map((enemy) => new Enemy(enemy, enemy.feetY ?? config.groundY));
         const { platform, flagInset } = config.finish;
         this.flagX = platform.x + platform.width - flagInset;
         this.complete = false;
@@ -13,7 +13,7 @@ export class LevelManager {
 
     restart() {
         this.player.reset(this.config.spawn);
-        this.enemy.reset();
+        this.enemies.forEach((enemy) => enemy.reset());
         this.complete = false;
     }
 
