@@ -92,13 +92,31 @@
                             <textarea id="taskDescription" rows="3"
                                 placeholder="Add details about your quest..."></textarea>
 
-                            <div class="quest-date-row">
-                                <span>Due date (optional):</span>
+                            <div class="quest-field-row">
+                                <div class="quest-field">
+                                    <label for="questDueDate">Due date</label>
+                                    <input id="questDueDate" type="date">
+                                </div>
 
-                                <!-- Visual placeholder. Date functionality will be added separately. -->
-                                <button id="questDueDate" type="button" disabled>
-                                    Choose date
-                                </button>
+                                <div class="quest-field">
+                                    <label for="questType">Task type</label>
+                                    <select id="questType">
+                                        <option value="school">School</option>
+                                        <option value="work">Work</option>
+                                        <option value="personal" selected>Personal</option>
+                                        <option value="health">Health</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="quest-field">
+                                    <label for="questPriority">Priority</label>
+                                    <select id="questPriority">
+                                        <option value="high">High</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <fieldset class="quest-difficulty-options">
@@ -120,7 +138,31 @@
                         </form>
                     </dialog>
 
-                    <ul id="taskList"></ul>
+                    <div id="priorityBoard">
+                        <section class="priority-section" data-priority="high">
+                            <button class="priority-toggle" type="button" aria-expanded="true">
+                                <span class="priority-caret" aria-hidden="true">▾</span>
+                                High Priority <span class="priority-count">0</span>
+                            </button>
+                            <ul class="task-grid priority-list"></ul>
+                        </section>
+
+                        <section class="priority-section" data-priority="medium">
+                            <button class="priority-toggle" type="button" aria-expanded="true">
+                                <span class="priority-caret" aria-hidden="true">▾</span>
+                                Medium Priority <span class="priority-count">0</span>
+                            </button>
+                            <ul class="task-grid priority-list"></ul>
+                        </section>
+
+                        <section class="priority-section" data-priority="low">
+                            <button class="priority-toggle" type="button" aria-expanded="true">
+                                <span class="priority-caret" aria-hidden="true">▾</span>
+                                Low Priority <span class="priority-count">0</span>
+                            </button>
+                            <ul class="task-grid priority-list"></ul>
+                        </section>
+                    </div>
                 </div>
             </aside>
 
