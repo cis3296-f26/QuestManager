@@ -7,6 +7,7 @@ import { touchesHazard, drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
 import { followCamera } from "./engine/Camera.js";
 import { moveHorizontally, applyGravity, jump } from "./engine/Physics.js";
+import { resolveEnemyInteractions } from "./engine/EnemyInteractions.js";
 import { CoinManager } from "./levels/CoinManager.js";
 import { LocalProgressStore } from "./progress/LocalProgressStore.js";
 import { LevelProgressManager } from "./progress/LevelProgressManager.js";
@@ -209,17 +210,19 @@ function update(dt) {
     const left = keys.has("ArrowLeft") || keys.has("KeyA");
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
+    const previousPlayer = { x: player.x, y: player.y, width: player.width, height: player.height };
     moveHorizontally(player, Number(right) - Number(left), speed, worldWidth, dt);
     applyGravity(player, gravity, platforms, dt);
 
-    if (player.y >= canvas.height) {
-        startDeath("You fell! Restarting…");
+    enemies.forEach((enemy) => enemy.update(dt));
+    const contact = resolveEnemyInteractions(player, previousPlayer, enemies, { dt, gravity, platforms });
+    if (contact.deadly) {
+        startDeath("A creature caught you! Restarting…");
         return;
     }
 
-    enemies.forEach((enemy) => enemy.update(dt));
-    if (enemies.some((enemy) => enemy.touches(player))) {
-        startDeath("A creature caught you! Restarting…");
+    if (player.y >= canvas.height) {
+        startDeath("You fell! Restarting…");
         return;
     }
 
@@ -346,6 +349,7 @@ connectGameSession(changeAccount).then((session) => {
     });
 });
 requestAnimationFrame(gameLoop);
+
 
 
 

@@ -12,6 +12,12 @@ export function jump(player, strength) {
     player.grounded = false;
 }
 
+// Shared stomp response, smaller than the normal 650-speed jump. No horizontal reset.
+export function bounce(player, surfaceY, strength = 420) {
+    player.y = surfaceY - player.height;
+    jump(player, strength);
+}
+
 export function applyGravity(player, gravity, platforms, dt) {
     const previousBottom = player.y + player.height;
     player.velocityY += gravity * dt;
@@ -25,3 +31,4 @@ export function applyGravity(player, gravity, platforms, dt) {
         player.grounded = true;
     }
 }
+

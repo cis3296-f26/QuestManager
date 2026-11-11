@@ -57,8 +57,8 @@ const ledges = [
 ].map(([x, y, width]) => ({ x, y, width, height: 24 }));
 
 const platforms = [...ground, ...ledges];
-const patrol = (appearance, startX, minX, maxX, speed, feetY = groundY) =>
-    ({ appearance, startX, minX, maxX, speed, feetY, width: 32, height: 24 });
+const patrol = (appearance, startX, minX, maxX, speed, { feetY = groundY, stompable = false } = {}) =>
+    ({ appearance, startX, minX, maxX, speed, feetY, stompable, width: 32, height: 24 });
 
 export const level2 = {
     id: 2,
@@ -79,17 +79,17 @@ export const level2 = {
         { id: "level-2-coin-3", x: 15910, y: 190 }
     ],
     enemies: [
-        patrol("slime", 1100, 1000, 1510, 80),
+        patrol("slime", 1100, 1000, 1510, 80, { stompable: true }),
         patrol("mushroom", 2190, 2040, 2610, 85),
-        patrol("slime", 3440, 3200, 3700, 80),
-        patrol("slime", 4840, 4770, 5460, 90),
-        patrol("mushroom", 5330, 5190, 5460, 55, 215),
+        patrol("slime", 3440, 3200, 3700, 80, { stompable: true }),
+        patrol("slime", 4840, 4770, 5460, 90, { stompable: true }),
+        patrol("mushroom", 5330, 5190, 5460, 55, { feetY: 215 }),
         patrol("mushroom", 6740, 6590, 7250, 90),
-        patrol("slime", 8400, 8200, 8850, 95),
+        patrol("slime", 8400, 8200, 8850, 95, { stompable: true }),
         patrol("mushroom", 10000, 9860, 10280, 90),
-        patrol("slime", 11600, 11390, 11960, 95),
+        patrol("slime", 11600, 11390, 11960, 95, { stompable: true }),
         patrol("mushroom", 13350, 13120, 13740, 90),
-        patrol("slime", 14680, 14550, 14950, 95),
+        patrol("slime", 14680, 14550, 14950, 95, { stompable: true }),
         patrol("mushroom", 16450, 16340, 16920, 95)
     ],
     hazards: [
@@ -112,3 +112,4 @@ export const level2 = {
     ],
     finish: { platform: platforms[platforms.length - 1], flagInset: 40 }
 };
+

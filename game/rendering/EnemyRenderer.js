@@ -1,11 +1,16 @@
 // Appearance only. Patrols, collision bounds and reset behavior live in Enemy.js.
 // These drawing helpers can be replaced with your own sprites later.
 export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
-    if (enemy.x + enemy.width < cameraX || enemy.x > cameraX + viewWidth) return;
+    if (enemy.state === "removed" || enemy.x + enemy.width < cameraX || enemy.x > cameraX + viewWidth) return;
     ctx.save();
-    ctx.translate(enemy.x + enemy.width / 2, enemy.feetY - enemy.height);
+    ctx.translate(enemy.x + enemy.width / 2, enemy.feetY);
     ctx.scale(enemy.direction, 1);
-    ctx.translate(-enemy.width / 2, 0);
+    if (enemy.state === "defeated") {
+        const progress = Math.min(1, enemy.defeatTime / enemy.defeatDuration);
+        ctx.scale(1 + progress * 0.2, 1 - progress * 0.9);
+        ctx.globalAlpha *= 1 - progress;
+    }
+    ctx.translate(-enemy.width / 2, -enemy.height);
     ctx.scale(enemy.width / 32, enemy.height / 24);
     // The artwork and its animation stay within the existing hitbox.
     ctx.beginPath();
@@ -80,3 +85,4 @@ function drawMushroom(ctx, time) {
     ctx.fillRect(16, 16 + bob, 2, 3);
     ctx.fillRect(21, 16 + bob, 2, 3);
 }
+
