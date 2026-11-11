@@ -30,7 +30,9 @@ function renderShop() {
         const label = owned ? "Owned" : canAfford ? "Buy" : "Too expensive";
         return `
             <article class="shop-card ${owned ? "is-owned" : ""}">
-                <img class="shop-card-image" src="${item.sprite}" alt="${item.name}">
+                <div class="shop-card-image" data-preview-category="${item.category}"
+                data-preview-item="${item.id}" role="img" aria-label="${item.name}">
+                </div>
                 <h3>${item.name}</h3>
                 <p>${item.price} points</p>
                 <button class="shop-button" data-item-id="${item.id}"
@@ -45,6 +47,10 @@ function renderShop() {
             <header class="panel-header"><h2>Shop</h2></header>
             <div class="shop-grid">${cards.join("")}</div>
         </div>`;
+
+    shopSection.querySelectorAll("[data-preview-item]").forEach((preview) => {
+    renderStage(preview, preview.dataset.previewCategory, [preview.dataset.previewItem]);
+});
 }
 
 // Clicking Buy: purchase the item. Equip it from the Customize tab.

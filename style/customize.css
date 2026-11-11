@@ -219,3 +219,8 @@
 @media (max-width: 800px) {
     .customize-frame { grid-template-columns: 1fr; }
 }
+
+.stage-sheet {
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+}

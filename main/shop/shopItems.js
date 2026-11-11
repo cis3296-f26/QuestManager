@@ -23,20 +23,9 @@ export const CATEGORIES = [
     }
 ];
 
-// Bottom layer drawn first for each category.
-export const BASE_FRAMES = {
-    avatar: [
-        "assets/character/1Idle01.png",
-        "assets/character/1Idle02.png",
-        "assets/character/1Idle03.png",
-        "assets/character/1Idle04.png"
-    ],
-    room: ["assets/room/base_room.png"]
-};
-
-export const BASE_IMAGES = {
-    avatar: BASE_FRAMES.avatar[0],
-    room: BASE_FRAMES.room[0]
+export const BASE_SHEETS = {
+    avatar: { src: "assets/character/1.1BaseCharacter.png", count: 4 },
+    room:   { src: "assets/room/base_room.png", count: 1 }
 };
 
 // Slot stacking order, back to front.
@@ -50,14 +39,8 @@ export const LAYER_ORDER = {
 export const SHOP_ITEMS = [
     // ----- Wardrobe -----
     { id: "wizard_hat", name: "Wizard Hat", price: 25, category: "avatar", slot: "hat",
-  sprite: "assets/itemSprites/equipment/wizard/wizard1.png",
-  frames: [
-      "assets/itemSprites/equipment/wizard/wizard1.png",
-      "assets/itemSprites/equipment/wizard/wizard2.png",
-      "assets/itemSprites/equipment/wizard/wizard3.png",
-      "assets/itemSprites/equipment/wizard/wizard4.png"
-        ]
-    },
+    sheet: "assets/itemSprites/equipment/wizard_hat.png", count: 4 },
+
     { id: "gold_crown",    name: "Gold Crown",    price: 60, category: "avatar", slot: "hat",       sprite: "assets/itemSprites/equipment/shield.jpg" },
     { id: "leather_tunic", name: "Leather Tunic", price: 30, category: "avatar", slot: "armor",     sprite: "assets/itemSprites/equipment/shield.jpg" },
     { id: "sword",         name: "Sword",         price: 20, category: "avatar", slot: "equipment", sprite: "assets/itemSprites/equipment/sword.jpg" },

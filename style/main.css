@@ -181,14 +181,12 @@ body{
     cursor: not-allowed;
 }
 
-    .shop-card-image {
-        width: 140px;
-        height: 180px;
-        object-fit: contain;
-        background-color: #ffffff;
-        border-radius: 5px;
-        margin-bottom: 0.5rem;
-    }
+   .shop-card-image {
+    position: relative;
+    width: 120px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+}
 
 
     #taskInput, #difficultySelect, #dayTaskInput {

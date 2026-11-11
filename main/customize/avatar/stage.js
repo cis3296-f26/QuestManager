@@ -1,26 +1,21 @@
-// Draws a layered avatar or room: a base image with item sprites stacked on top.
-// Used by the Home character panel, the Shop previews, and the Customize showcase.
-
-import { BASE_IMAGES, BASE_FRAMES, LAYER_ORDER, SHOP_ITEMS } from "../../shop/shopItems.js";
+import { BASE_SHEETS, LAYER_ORDER, SHOP_ITEMS } from "../../shop/shopItems.js";
 
 export function stageLayers(categoryId, itemIds, items = SHOP_ITEMS) {
+    const base = BASE_SHEETS[categoryId];
     const layers = [{
-        src: BASE_IMAGES[categoryId],
-        frames: BASE_FRAMES[categoryId],
-        alt: "",
-        base: true
+        src: base.src, count: base.count, alt: "", base: true
     }];
 
     for (const slotId of LAYER_ORDER[categoryId] ?? []) {
-        const item = items.find((candidate) =>
-            candidate.category === categoryId &&
-            candidate.slot === slotId &&
-            itemIds.includes(candidate.id)
+        const item = items.find((c) =>
+            c.category === categoryId &&
+            c.slot === slotId &&
+            itemIds.includes(c.id)
         );
-        if (item && item.sprite) {
-            layers.push({ src: item.sprite, frames: item.frames, alt: item.name, base: false });
-        }
+        const src = item && (item.sheet || item.sprite);
+        if (src) layers.push({ src, count: item.count || 1, alt: item.name, base: false });
     }
+    
     return layers;
 }
 
@@ -37,22 +32,18 @@ export function describeStage(categoryId, itemIds, items = SHOP_ITEMS) {
 
 // Fills a container with the base image plus one <img> per equipped item.
 export function renderStage(container, categoryId, itemIds, label = "") {
-    const layers = stageLayers(categoryId, itemIds);
-    const existingBase = container.querySelector("img.stage-base");
+    container.innerHTML = "";
 
-    container.querySelectorAll("img.stage-item").forEach((img) => img.remove());
-
-    for (const layer of layers) {
-        if (layer.base && existingBase) {
-            if (layer.frames?.length > 1) existingBase.dataset.frames = JSON.stringify(layer.frames);
-            continue;
-        }
-        const img = document.createElement("img");
-        img.src = layer.src;
-        img.alt = layer.alt;
-        img.className = "stage-layer " + (layer.base ? "stage-base" : "stage-item");
-        if (layer.frames?.length > 1) img.dataset.frames = JSON.stringify(layer.frames);
-        container.appendChild(img);
+    for (const layer of stageLayers(categoryId, itemIds)) {
+        const el = document.createElement("div");
+        el.className = "stage-layer stage-sheet " + (layer.base ? "stage-base" : "stage-item");
+        el.dataset.count = layer.count;
+        el.style.backgroundImage = `url("${layer.src}")`;
+        el.style.backgroundSize = `${layer.count * 100}% 100%`;
+        el.style.backgroundPositionX = "0%";
+        el.setAttribute("role", "img");
+        el.setAttribute("aria-label", layer.alt);
+        container.appendChild(el);
     }
 
     if (label) container.setAttribute("aria-label", label);
@@ -62,9 +53,8 @@ export function renderStage(container, categoryId, itemIds, label = "") {
 let tick = 0;
 setInterval(() => {
     tick++;
-    document.querySelectorAll(".avatar-stage img[data-frames], .showcase-stage img[data-frames]").forEach((img) => {
-        const frames = JSON.parse(img.dataset.frames);
-        const next = frames[tick % frames.length];
-        if (!img.src.endsWith(next)) img.src = next;
+    document.querySelectorAll(".avatar-stage .stage-sheet, .showcase-stage .stage-sheet").forEach((el) => {
+        const count = Number(el.dataset.count);
+        if (count > 1) el.style.backgroundPositionX = `${((tick % count) / (count - 1)) * 100}%`;
     });
 }, 300);
