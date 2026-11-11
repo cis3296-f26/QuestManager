@@ -114,6 +114,7 @@ export const level1 = {
     scenery: level1Scenery,
     enemies: [
         {
+            "appearance": "slime",
             "startX": 1100,
             "minX": 1000,
             "maxX": 1610,
@@ -122,6 +123,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "mushroom",
             "startX": 2280,
             "minX": 2050,
             "maxX": 2550,
@@ -130,6 +132,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "slime",
             "startX": 4650,
             "minX": 4550,
             "maxX": 5250,
@@ -138,6 +141,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "mushroom",
             "startX": 6680,
             "minX": 6430,
             "maxX": 7190,
@@ -146,6 +150,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "slime",
             "startX": 8300,
             "minX": 8120,
             "maxX": 8950,
@@ -154,6 +159,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "mushroom",
             "startX": 9900,
             "minX": 9800,
             "maxX": 10370,
@@ -162,6 +168,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "slime",
             "startX": 11800,
             "minX": 11540,
             "maxX": 12300,
@@ -170,6 +177,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "mushroom",
             "startX": 13550,
             "minX": 13400,
             "maxX": 14150,
@@ -178,6 +186,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "slime",
             "startX": 15000,
             "minX": 14900,
             "maxX": 15300,
@@ -186,6 +195,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "mushroom",
             "startX": 16650,
             "minX": 16500,
             "maxX": 17280,
@@ -194,6 +204,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "slime",
             "startX": 18600,
             "minX": 18480,
             "maxX": 19180,
@@ -202,6 +213,7 @@ export const level1 = {
             "height": 24
         },
         {
+            "appearance": "mushroom",
             "startX": 20220,
             "minX": 20200,
             "maxX": 20600,

@@ -1,6 +1,6 @@
 export class Enemy {
-    constructor({ startX, minX, maxX, width, height, speed }, feetY) {
-        Object.assign(this, { startX, minX, maxX, width, height, speed, feetY });
+    constructor({ startX, minX, maxX, width, height, speed, appearance = "slime" }, feetY) {
+        Object.assign(this, { startX, minX, maxX, width, height, speed, feetY, appearance });
         this.reset();
     }
 

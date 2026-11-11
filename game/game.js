@@ -1,3 +1,4 @@
+import { drawEnemy } from "./rendering/EnemyRenderer.js";
 import { GrasslandRenderer } from "./rendering/GrasslandRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { level1 } from "./levels/Level1.js";
@@ -135,28 +136,6 @@ function drawPlayer() {
     avatar.draw(ctx, player);
 }
 
-function drawCreature(creature) {
-    const step = Math.sin(creature.walkTime * 14) * 3;
-
-    ctx.save();
-    ctx.translate(creature.x + creature.width / 2, creature.feetY);
-    ctx.scale(creature.direction, 1);
-
-    ctx.fillStyle = "#40352b";
-    ctx.fillRect(-10, -5 - Math.max(0, step), 8, 5);
-    ctx.fillRect(3, -5 - Math.max(0, -step), 8, 5);
-
-    ctx.fillStyle = "#5e744a";
-    ctx.beginPath();
-    ctx.ellipse(0, -13, 16, 11, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#faf0e6";
-    ctx.fillRect(2, -17, 4, 4);
-    ctx.fillRect(9, -17, 4, 4);
-    ctx.restore();
-}
-
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -183,7 +162,7 @@ function draw() {
     ctx.fill();
 
     drawHazards(ctx, level.config.hazards ?? []);
-    enemies.forEach(drawCreature);
+    enemies.forEach((enemy) => drawEnemy(ctx, enemy, cameraX, canvas.width));
     drawPlayer();
     ctx.restore();
 
