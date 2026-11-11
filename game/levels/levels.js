@@ -1,6 +1,7 @@
 import { level1 } from "./Level1.js";
+import { level2 } from "./Level2.js";
 
-// Only playtest-ready levels appear here. Level2.js is preserved for future work.
-// Register future levels once their layout and three collectible locations are ready.
-export const levels = [level1];
+// Registered levels share the engine and unlock from the preceding level's completion.
+export const levels = [level1, level2];
+
 

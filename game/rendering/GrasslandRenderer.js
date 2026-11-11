@@ -1,6 +1,6 @@
 // Flat canvas scenery with gentle parallax. No physics or level state is changed.
 export class GrasslandRenderer {
-    drawBackground(ctx, viewWidth, viewHeight, cameraX, groundY) {
+    drawBackground(ctx, viewWidth, viewHeight, cameraX, groundY, theme = "grassland") {
         ctx.save();
         ctx.fillStyle = "#b9e1ef";
         ctx.fillRect(0, 0, viewWidth, viewHeight);
@@ -22,7 +22,26 @@ export class GrasslandRenderer {
             groundY + 8, 710, 175, "#a3c7b0");
         this.drawHills(ctx, viewWidth, viewHeight, cameraX * 0.32,
             groundY + 42, 530, 170, "#83ae8d");
+        if (theme === "forest") this.drawForest(ctx, viewWidth, cameraX, groundY);
         ctx.restore();
+    }
+
+    // Low-contrast tree silhouettes add depth to forest levels without hiding hazards.
+    drawForest(ctx, width, cameraX, groundY) {
+        const offset = cameraX * 0.45;
+        const first = Math.floor(offset / 180) - 1;
+        for (let i = first; i < first + Math.ceil(width / 180) + 3; i++) {
+            const x = i * 180 - offset;
+            const height = 145 + ((i % 3 + 3) % 3) * 20;
+            ctx.fillStyle = "#8aab91";
+            ctx.fillRect(x - 7, groundY - height + 35, 14, height - 35);
+            ctx.fillStyle = "#91b49a";
+            for (const [dx, dy, radius] of [[-25, 14, 36], [25, 9, 38], [0, -17, 40]]) {
+                ctx.beginPath();
+                ctx.arc(x + dx, groundY - height + dy, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
     }
 
     drawCloud(ctx, x, y) {
@@ -146,3 +165,4 @@ export class GrasslandRenderer {
         ctx.restore();
     }
 }
+

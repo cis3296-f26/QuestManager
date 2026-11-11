@@ -12,6 +12,7 @@ function fixture(hash = "") {
         setAttribute(key, value) { this.attributes[key] = value; },
         addEventListener(key, callback) { this.listeners[key] = callback; },
         focus() { this.focused = true; },
+        querySelector() { return null; },
         showModal() { this.open = true; }, close() { this.open = false; }
     });
     const elements = Object.fromEntries([
@@ -26,7 +27,8 @@ function fixture(hash = "") {
     globalThis.location = { hash };
     let saved = [], completed = false, plays = 0, returns = 0;
     const map = new WorldMap({ levels,
-        getProgress: (id) => ({ unlocked: id === 1, completed, coinIds: saved, fullyCompleted: saved.length === 3 }),
+        getProgress: (id) => ({ unlocked: id === 1 || (id === 2 && completed),
+            completed: id === 1 && completed, coinIds: id === 1 ? saved : [], fullyCompleted: id === 1 && saved.length === 3 }),
         getTotal: () => ({ earned: saved.length, possible: 30 }),
         onPlay: () => plays++, onMap: () => returns++
     });
@@ -67,7 +69,7 @@ test("default map, selection popup, play/replay and saved coin indicators share 
     } finally { f.restore(); }
 });
 
-test("deep links to Level 1 work; unfinished levels stay unavailable with no automatic advancement", () => {
+test("deep links to Level 1 work; locked and unimplemented levels stay unavailable", () => {
     const f = fixture("#level-1");
     try {
         assert.equal(f.map.playing, true);
@@ -81,5 +83,24 @@ test("deep links to Level 1 work; unfinished levels stay unavailable with no aut
         f.route("#level-99");
         assert.equal(f.map.playing, false);
         assert.equal(f.plays, 1);
+    } finally { f.restore(); }
+});
+
+test("finishing Level 1 unlocks Level 2 and explicit Next navigation without requiring coins", () => {
+    const f = fixture("#level-1");
+    try {
+        assert.equal(f.map.hasNext(), false);
+        f.save([]);
+        assert.equal(f.nodes[1].disabled, false);
+        assert.equal(f.map.hasNext(), true);
+        assert.equal(globalThis.location.hash, "#level-1", "completion must not advance automatically");
+        f.map.openNext();
+        assert.equal(globalThis.location.hash, "#level-2");
+        f.route("#level-2");
+        assert.equal(f.map.playing, true);
+        assert.match(f.elements.mapLevelTitle.textContent, /The Winding Grove/);
+        assert.match(f.elements.mapLevelStatus.textContent, /Forest/);
+        assert.equal(f.map.hasNext(), false);
+        assert.ok(f.nodes.slice(2).every((node) => node.disabled));
     } finally { f.restore(); }
 });

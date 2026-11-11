@@ -49,7 +49,8 @@ export class WorldMap {
         const progress = this.getProgress(id);
         document.getElementById("mapLevelTitle").textContent = `Level ${id} · ${config.name}`;
         document.getElementById("mapLevelStatus").textContent = progress.fullyCompleted
-            ? "Fully completed · All 3 coins earned" : progress.completed ? "Completed · Replay anytime" : "Grasslands · Ready to explore";
+            ? "Fully completed · All 3 coins earned" : progress.completed ? "Completed · Replay anytime" : !progress.unlocked
+                ? `Complete Level ${id - 1} to unlock` : config.mapSummary ?? "Grasslands · Ready to explore";
         renderCoinProgress(document.getElementById("mapLevelCoins"), config.coins, progress.coinIds);
         this.playButton.textContent = progress.completed ? "Replay Level" : "Play Level";
         this.playButton.disabled = !this.isPlayable(id);
@@ -59,6 +60,9 @@ export class WorldMap {
             node.classList.toggle("is-selected", nodeId === id);
             if (nodeConfig) {
                 const saved = this.getProgress(nodeId);
+                const lock = node.querySelector(".map-lock");
+                if (lock) lock.hidden = !node.disabled;
+                node.title = node.disabled ? `Complete Level ${nodeId - 1} to unlock` : `Select Level ${nodeId}`;
                 node.setAttribute("aria-pressed", String(nodeId === id));
                 node.setAttribute("aria-label", `Level ${nodeId}: ${nodeConfig.name}, ${saved.coinIds.length}/3 coins${saved.completed ? ", completed" : ""}${node.disabled ? ", locked" : ""}`);
             }
@@ -113,3 +117,4 @@ export class WorldMap {
         }
     }
 }
+

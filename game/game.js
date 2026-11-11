@@ -59,6 +59,10 @@ function changeAccount(userId) {
     }
     restartLevel(); // Discard the previous account's unfinished attempt, including coins.
     worldMap?.refresh();
+    if (worldMap && playing && !worldMap.isPlayable(level.config.id)) {
+        playing = false;
+        worldMap.openMap(); // A different account must unlock this level for itself.
+    }
     avatar.load(); // Also clear the previous account's avatar and reject stale image loads.
 }
 
@@ -73,7 +77,9 @@ async function finishLevel() {
         ? progress.completeLevel(level.config.id, attemptIds)
         : progress.getLevel(level.config.id);
     worldMap.refresh();
-    document.getElementById("nextLevel").disabled = !worldMap.hasNext();
+    const nextButton = document.getElementById("nextLevel");
+    nextButton.disabled = !worldMap.hasNext();
+    nextButton.textContent = nextButton.disabled ? "Next Level · Coming soon" : "Next Level";
     coins.reset(saved.coinIds);
     updateCoinHUD();
     completionTitle.textContent = `Level ${level.config.id} Complete!`;
@@ -241,7 +247,7 @@ function drawPlayer() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    grassland.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY);
+    grassland.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme);
 
     ctx.save();
     ctx.translate(-cameraX, 0);
@@ -340,5 +346,6 @@ connectGameSession(changeAccount).then((session) => {
     });
 });
 requestAnimationFrame(gameLoop);
+
 
 

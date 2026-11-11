@@ -1,8 +1,8 @@
 # Level 1 collectible coin playtest
 
 This feature is awaiting Victoria's gameplay approval. Level 1 is **The First Adventure**.
-The world map is enabled again. Level 2's prototype remains in the repository, but only
-Level 1 is registered as playable. This change does not add Supabase tables or spendable shop currency.
+The world map is enabled. Level 2 is now registered and unlocks after finishing Level 1.
+See `LEVEL2_PLAYTEST.md` for its course and checks. No Supabase tables or spendable shop currency were added.
 
 ## Start
 
@@ -35,7 +35,7 @@ the saved collection count; screen readers also receive pickup count announcemen
   Sign back into the first account to recover its own saved achievements.
 - Shop purchases must not affect collectible achievements or vice versa.
 - Replay and World Map work from the completion dialog. The in-game World Map button
-  discards unfinished pickups. Next Level stays disabled until another level is ready.
+  discards unfinished pickups. Next Level opens Level 2 only when you choose it after finishing Level 1.
 - Map selection shows the correct three earned slots and the saved total out of 30.
 
 ### Placement hints
@@ -54,7 +54,7 @@ Human testing still needs to confirm the challenge and presentation feel right.
 From the repository root, with Node installed:
 
 ```sh
-node --test game/tests/coins.test.mjs game/tests/session.test.mjs game/tests/map.test.mjs
+node --test game/tests/*.test.mjs
 ```
 
 Tests cover attempt discard, saving only completed runs, unique ID unions across replays,
