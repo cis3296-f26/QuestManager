@@ -109,9 +109,10 @@ export const level1 = defineLevel({
         {
             id: "finish", start: 14500, end: 16000, difficulty: "easy-medium",
             title: "One Last Climb", hint: "Follow the clear steps to the flag.",
-            purpose: "A readable final climb and safe finish, without another surprise enemy.",
+            purpose: "Jump the clearly visible entrance gap, then follow a readable final climb to a safe finish.",
             requiredRoute: ["l1-finish-step-1", "l1-finish-step-2", "l1-finish-step-3", "l1-finish-step-4", "l1-flag"], optionalRoutes: [],
-            platforms: [g("l1-finish-ground", 14500, 16000), p("l1-finish-step-1", 14700, 365, 180, "required"),
+            // A real 140px pit at the old ground seam; no hidden floor beneath it.
+            platforms: [g("l1-finish-ground", 14640, 16000), p("l1-finish-step-1", 14700, 365, 180, "required"),
                 p("l1-finish-step-2", 14960, 295, 170, "required"), p("l1-finish-step-3", 15210, 260, 180, "required"),
                 p("l1-finish-step-4", 15460, 260, 180, "required"), p("l1-flag", 15710, 260, 250, "finish")]
         }
