@@ -1,20 +1,39 @@
 // Platforms are solid only when the player crosses their top while descending.
 export function findLanding(player, platforms, previousBottom) {
-    let landingY = Infinity;
-    if (player.velocityY < 0) return landingY;
+    return findLandingSurface(player, platforms, previousBottom)?.platform.y ?? Infinity;
+}
+
+export function findLandingSurface(player, platforms, previousBottom, previousX = player.x, frameStart = 0) {
+    let landing = null;
+    if (player.velocityY < 0) return landing;
 
     for (const platform of platforms) {
+        if (platform.solid === false) continue;
+        if (platform.type === "moving" && platform.previousY !== undefined) {
+            const startY = platform.previousY + (platform.y - platform.previousY) * frameStart;
+            const startX = platform.previousX + (platform.x - platform.previousX) * frameStart;
+            const relativeFall = player.y + player.height - previousBottom - (platform.y - startY);
+            if (relativeFall <= 0 || previousBottom > startY + 1e-7 || player.y + player.height < platform.y) continue;
+            const time = Math.max(0, Math.min(1, (startY - previousBottom) / relativeFall));
+            const x = previousX + (player.x - previousX) * time;
+            const surfaceX = startX + (platform.x - startX) * time;
+            if (x + player.width <= surfaceX || x >= surfaceX + platform.width) continue;
+            if (!landing || time < landing.time) landing = { platform, time };
+            continue;
+        }
         const overlapsHorizontally = player.x + player.width > platform.x &&
             player.x < platform.x + platform.width;
         const crossedTop = previousBottom <= platform.y &&
             player.y + player.height >= platform.y;
 
         if (overlapsHorizontally && crossedTop) {
-            landingY = Math.min(landingY, platform.y);
+            const fall = player.y + player.height - previousBottom;
+            const time = fall > 0 ? (platform.y - previousBottom) / fall : 0;
+            if (!landing || time < landing.time) landing = { platform, time };
         }
     }
 
-    return landingY;
+    return landing;
 }
 
 // Continuous AABB contact using relative movement. This detects a fast object
@@ -50,4 +69,5 @@ export function sweepAABB(start, end, targetStart, targetEnd) {
         normalY: y.enter > x.enter + 1e-9 ? -Math.sign(dy) : 0
     };
 }
+
 

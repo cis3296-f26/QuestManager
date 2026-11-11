@@ -1,5 +1,6 @@
 import { Player } from "../entities/Player.js";
 import { Enemy } from "../entities/Enemy.js";
+import { Platform } from "../entities/Platform.js";
 
 export class LevelManager {
     constructor(config) {
@@ -9,6 +10,7 @@ export class LevelManager {
     load(config) {
         this.config = config;
         this.player = new Player(config.spawn);
+        this.platforms = config.platforms.map((platform) => platform.type ? new Platform(platform) : platform);
         this.enemies = config.enemies.map((enemy) => new Enemy(enemy, enemy.feetY ?? config.groundY));
         const { platform, flagInset } = config.finish;
         this.flagX = platform.x + platform.width - flagInset;
@@ -18,7 +20,12 @@ export class LevelManager {
     restart() {
         this.player.reset(this.config.spawn);
         this.enemies.forEach((enemy) => enemy.reset());
+        this.platforms.forEach((platform) => platform.reset?.());
         this.complete = false;
+    }
+
+    updatePlatforms(dt) {
+        this.platforms.forEach((platform) => platform.update?.(dt));
     }
 
     // Report the first contact with the flag while standing on its platform.
@@ -32,3 +39,4 @@ export class LevelManager {
         return this.complete;
     }
 }
+

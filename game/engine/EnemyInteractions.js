@@ -59,7 +59,8 @@ export function resolveEnemyInteractions(player, previous, enemies, { dt, gravit
         // Continue the smaller bounce for the unused part of this frame. Horizontal
         // movement is preserved, and a second enemy can still be dangerous afterward.
         const remaining = dt * (1 - time);
-        if (remaining > 0) applyGravity(player, gravity, platforms, remaining);
+        if (remaining > 0) applyGravity(player, gravity, platforms, remaining, { previousX: position.x, frameStart: time });
     }
     return { deadly: false, stomped };
 }
+

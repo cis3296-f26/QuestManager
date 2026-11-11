@@ -13,6 +13,7 @@ export class Player {
         this.y = spawn.feetY - this.height;
         this.velocityY = 0;
         this.grounded = true;
+        this.supportPlatform = null;
         this.facing = 1;
         this.walkPhase = 0;
         this.isMoving = false;
@@ -30,3 +31,4 @@ export class Player {
         }
     }
 }
+

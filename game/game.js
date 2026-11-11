@@ -1,12 +1,13 @@
 import { drawEnemy } from "./rendering/EnemyRenderer.js";
 import { GrasslandRenderer } from "./rendering/GrasslandRenderer.js";
+import { drawInteractivePlatforms } from "./rendering/PlatformRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { levels } from "./levels/levels.js";
 import { WorldMap } from "./ui/WorldMap.js";
 import { touchesHazard, drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
 import { followCamera } from "./engine/Camera.js";
-import { moveHorizontally, applyGravity, jump } from "./engine/Physics.js";
+import { moveHorizontally, applyGravity, jump, carryPlayer } from "./engine/Physics.js";
 import { resolveEnemyInteractions } from "./engine/EnemyInteractions.js";
 import { CoinManager } from "./levels/CoinManager.js";
 import { LocalProgressStore } from "./progress/LocalProgressStore.js";
@@ -21,7 +22,8 @@ const completionDialog = document.getElementById("levelCompleteDialog");
 const completionTitle = document.getElementById("levelCompleteTitle");
 
 const level = new LevelManager(levels[0]);
-let { groundY, worldWidth, platforms } = level.config;
+let { groundY, worldWidth } = level.config;
+let { platforms } = level;
 let { player, enemies, flagX } = level;
 const speed = 280;
 const gravity = 1800;
@@ -138,7 +140,8 @@ function closeCompletion() {
 function playLevel(config) {
     closeCompletion();
     level.load(config);
-    ({ groundY, worldWidth, platforms } = config);
+    ({ groundY, worldWidth } = config);
+    ({ platforms } = level);
     ({ player, enemies, flagX } = level);
     coins = new CoinManager(config.coins);
     restartLevel();
@@ -211,8 +214,11 @@ function update(dt) {
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
     const previousPlayer = { x: player.x, y: player.y, width: player.width, height: player.height };
+    level.updatePlatforms(dt);
+    carryPlayer(player, worldWidth);
+    const movementStartX = player.x;
     moveHorizontally(player, Number(right) - Number(left), speed, worldWidth, dt);
-    applyGravity(player, gravity, platforms, dt);
+    applyGravity(player, gravity, platforms, dt, { previousX: movementStartX });
 
     enemies.forEach((enemy) => enemy.update(dt));
     const contact = resolveEnemyInteractions(player, previousPlayer, enemies, { dt, gravity, platforms });
@@ -255,7 +261,8 @@ function draw() {
     ctx.save();
     ctx.translate(-cameraX, 0);
     grassland.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
-    grassland.drawPlatforms(ctx, platforms, cameraX, canvas.width);
+    grassland.drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
+    drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width);
 
     const flagTop = level.config.finish.platform.y - 60;
 
@@ -349,6 +356,7 @@ connectGameSession(changeAccount).then((session) => {
     });
 });
 requestAnimationFrame(gameLoop);
+
 
 
 

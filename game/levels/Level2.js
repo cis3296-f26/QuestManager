@@ -22,7 +22,7 @@ const ledges = [
 
     // Fern Walk: a rest clearing, then an optional ridge above the thorns.
     [3100, 375, 160], [3320, 295, 140], [3540, 215, 140],
-    [3780, 290, 150], [4030, 375, 160], [4270, 300, 150],
+    [3780, 290, 150], [4030, 375, 160, "collapsing"], [4270, 300, 150],
 
     // Canopy Crossing: the second coin sits beyond an elevated patrol.
     [4700, 375, 150], [4910, 295, 140], [5120, 215, 480],
@@ -47,16 +47,26 @@ const ledges = [
     // Sparrow Ledges: the optional third-coin route ends with an airborne pickup.
     [14520, 375, 150], [14740, 295, 140], [14970, 375, 130],
     [15140, 375, 130], [15350, 295, 115], [15560, 215, 110],
-    [15750, 300, 110],
+    [15750, 300, 110, "collapsing"],
 
     // The clearing after the coin jump gives room to recover before the flag.
     [16120, 375, 160], [16350, 295, 140], [16580, 215, 140],
     [16840, 300, 160], [17110, 375, 150],
     [17300, 375, 140], [17520, 295, 125], [17740, 215, 110],
     [17880, 215, 120]
-].map(([x, y, width]) => ({ x, y, width, height: 24 }));
+].map(([x, y, width, type]) => ({ x, y, width, height: 24,
+    ...(type ? { id: `grove-crumble-${x}`, type, collapseDelay: 1, appearance: "wood" } : {})
+}));
 
-const platforms = [...ground, ...ledges];
+// Optional ferry and lift routes supplement the original jumpable ground gaps.
+// Existing enemy patrols remain entirely on static terrain.
+const movingPlatforms = [
+    { id: "grove-ferry", type: "moving", x: 660, y: 330, width: 110, height: 24,
+        axis: "x", distance: 190, speed: 70, pause: 0.3, appearance: "wood" },
+    { id: "grove-lift", type: "moving", x: 2890, y: 375, width: 100, height: 24,
+        axis: "y", distance: -160, speed: 55, pause: 0.4, appearance: "wood" }
+];
+const platforms = [...ground, ...movingPlatforms, ...ledges];
 const patrol = (appearance, startX, minX, maxX, speed, { feetY = groundY, stompable = false } = {}) =>
     ({ appearance, startX, minX, maxX, speed, feetY, stompable, width: 32, height: 24 });
 
@@ -101,8 +111,8 @@ export const level2 = {
         { type: "spikes", x: 17040, y: 440, width: 45, height: 20 }
     ],
     sections: [
-        { x: 0, title: "The Winding Grove", hint: "Keep your rhythm. The upper paths reward exploring." },
-        { x: 2990, title: "Fern Walk", hint: "Take a breath. Jump the thorns or climb above them." },
+        { x: 0, title: "The Winding Grove", hint: "Marked wooden platforms move. Jump away if cracks appear." },
+        { x: 2990, title: "Fern Walk", hint: "Ride the lift or take the ground jump. Cracked ledges won't hold for long." },
         { x: 4620, title: "Canopy Crossing", hint: "A coin waits above. Give the mushroom room to pass." },
         { x: 6330, title: "Mushroom Bend", hint: "Watch the patrols before choosing your landing." },
         { x: 9490, title: "Root Hollow", hint: "The gaps are wider here. Jump near the edge." },
@@ -112,4 +122,5 @@ export const level2 = {
     ],
     finish: { platform: platforms[platforms.length - 1], flagInset: 40 }
 };
+
 
