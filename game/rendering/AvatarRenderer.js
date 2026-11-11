@@ -4,6 +4,8 @@ export class AvatarRenderer {
     constructor() { this.layers = []; }
 
     async load() {
+        const version = this.loadVersion = (this.loadVersion ?? 0) + 1;
+        this.layers = [];
         try {
             const [{ supabase }, { loadPlayer }, { SHOP_ITEMS }, { cleanEquipped }, { stageLayers }] =
                 await Promise.all([
@@ -42,7 +44,7 @@ export class AvatarRenderer {
                 };
             }));
             // A missing base keeps the animated stick figure as a fallback.
-            if (layers[0]) this.layers = layers.filter(Boolean);
+            if (layers[0] && version === this.loadVersion) this.layers = layers.filter(Boolean);
         } catch (error) {
             console.warn("Could not load the game avatar:", error);
         }
@@ -114,3 +116,4 @@ export class AvatarRenderer {
         limb(0, -22, 12, 20, pose.rightLeg);
     }
 }
+

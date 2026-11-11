@@ -109,6 +109,14 @@
                 Move with A/D or the left/right arrows.
                 Jump with Space, W, or the up arrow. Press R to restart. Reach the flag to finish!
             </p>
+            <div class="coin-hud" aria-label="Level collectible achievements">
+                <div class="coin-hud-summary">
+                    <strong id="coinCounter" role="status" aria-live="polite">Coins: 0/3</strong>
+                    <div id="hudCoins"></div>
+                </div>
+                <p id="coinSaveHint">Reach the flag to save new coins.</p>
+                <small id="progressStorageStatus">Checking account…</small>
+            </div>
             <canvas id="gameCanvas" width="960" height="540" tabindex="0"
                 aria-label="Level 1 platform game" aria-describedby="gameInstructions">
                 Your browser does not support the canvas needed for this game.
@@ -121,6 +129,12 @@
         <p class="game-eyebrow">Quest complete</p>
         <h2 id="levelCompleteTitle">Level 1 Complete!</h2>
         <p id="levelCompleteDescription">You reached the flag! Replay The First Adventure to try again.</p>
+        <section class="completion-coins" aria-label="Saved collectible progress">
+            <p id="completionCoinCount">Coin Collection: 0/3</p>
+            <div id="completionCoins"></div>
+            <p id="perfectCoins" hidden>Perfect! All 3 Coins Collected!</p>
+            <p id="completionSaveStatus"></p>
+        </section>
         <form method="dialog" class="completion-actions">
             <button type="submit" value="replay" autofocus>Replay Level</button>
             <button id="nextLevel" type="button" disabled>Next Level <small>Coming soon</small></button>
@@ -130,3 +144,4 @@
     <script type="module" src="./game.js"></script>
 </body>
 </html>
+

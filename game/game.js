@@ -6,6 +6,11 @@ import { touchesHazard, drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
 import { followCamera } from "./engine/Camera.js";
 import { moveHorizontally, applyGravity, jump } from "./engine/Physics.js";
+import { CoinManager } from "./levels/CoinManager.js";
+import { LocalProgressStore } from "./progress/LocalProgressStore.js";
+import { LevelProgressManager } from "./progress/LevelProgressManager.js";
+import { connectGameSession } from "./progress/GameSession.js";
+import { renderCoinProgress } from "./ui/CoinProgress.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -28,6 +33,63 @@ let deathTimeLeft = 0;
 const avatar = new AvatarRenderer();
 const grassland = new GrasslandRenderer();
 
+let storage = null;
+try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
+const progress = new LevelProgressManager(new LocalProgressStore(storage));
+progress.registerLevel(level.config);
+const coins = new CoinManager(level.config.coins);
+let accountSession;
+let sessionReady = false;
+let attemptRevision = 0;
+
+function updateCoinHUD() {
+    const saved = progress.getLevel(level.config.id);
+    document.getElementById("coinCounter").textContent = `Coins: ${coins.count}/3`;
+    renderCoinProgress(document.getElementById("hudCoins"), level.config.coins, coins.saved, coins.pending);
+    document.getElementById("coinSaveHint").textContent =
+        `Saved: ${saved.coinIds.length}/3 · Reach the flag to save new coins.`;
+    document.getElementById("progressStorageStatus").textContent = progress.persistent
+        ? "Saved on this browser for your signed-in account. Collectibles are not shop currency."
+        : progress.userId ? "Browser saving is unavailable. Progress is kept for this session only."
+            : "Session-only progress. Sign in on the homepage for account-specific browser saves.";
+}
+
+function changeAccount(userId) {
+    if (userId === progress.userId) return;
+    progress.setUser(userId);
+    if (completionDialog.open) {
+        completionDialog.returnValue = "";
+        completionDialog.close();
+    }
+    restartLevel(); // Discard the previous account's unfinished attempt, including coins.
+    avatar.load(); // Also clear the previous account's avatar and reject stale image loads.
+}
+
+async function finishLevel() {
+    const revision = attemptRevision;
+    const userId = progress.userId;
+    const attemptIds = [...coins.pending];
+    // Check identity again at the save boundary (including sign-outs in another tab).
+    const verified = await accountSession.verifyAccount(userId);
+    if (revision !== attemptRevision || !level.complete) return;
+    const saved = verified
+        ? progress.completeLevel(level.config.id, attemptIds)
+        : progress.getLevel(level.config.id);
+    coins.reset(saved.coinIds);
+    updateCoinHUD();
+    completionTitle.textContent = `Level ${level.config.id} Complete!`;
+    document.getElementById("completionCoinCount").textContent = `Coin Collection: ${saved.coinIds.length}/3`;
+    renderCoinProgress(document.getElementById("completionCoins"), level.config.coins, saved.coinIds);
+    document.getElementById("perfectCoins").hidden = !saved.fullyCompleted;
+    document.getElementById("completionSaveStatus").textContent = !verified
+        ? "Your account could not be verified. This attempt was not saved; replay to try again."
+        : progress.persistent ? "Progress saved for your account on this browser."
+            : "Progress kept for this session only; it will not survive closing or refreshing this page.";
+    status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
+    completionDialog.returnValue = "";
+    completionDialog.showModal();
+}
+
 
 // Click the game to give it keyboard focus.
 canvas.addEventListener("pointerdown", () => {
@@ -35,7 +97,10 @@ canvas.addEventListener("pointerdown", () => {
 });
 
 function restartLevel() {
+    attemptRevision++;
     level.restart();
+    coins.reset(progress.getLevel(level.config.id).coinIds);
+    updateCoinHUD();
     cameraX = 0;
     deathTimeLeft = 0;
     keys.clear();
@@ -50,6 +115,8 @@ completionDialog.addEventListener("close", () => {
 });
 
 canvas.addEventListener("keydown", event => {
+
+    if (!sessionReady) return;
 
     if (event.code === "KeyR") {
         event.preventDefault();
@@ -85,6 +152,8 @@ window.addEventListener("blur", () => keys.clear());
 
 function startDeath(message) {
     if (deathTimeLeft > 0) return;
+    coins.discard();
+    updateCoinHUD();
     player.animation.beginDeath(player, canvas.height);
     deathTimeLeft = deathDelay;
     keys.clear();
@@ -122,13 +191,13 @@ function update(dt) {
 
     cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
 
+    // Hazards win over collection when both are touched in the same frame.
+    if (coins.update(player, dt)) updateCoinHUD();
+
     if (level.checkCompletion()) {
         keys.clear();
-        completionTitle.textContent = `Level ${level.config.id} Complete!`;
-        status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
-        // Escape dismisses the dialog without replaying or advancing.
-        completionDialog.returnValue = "";
-        completionDialog.showModal();
+        status.textContent = "Flag reached! Saving collectible progress…";
+        void finishLevel();
     }
 }
 
@@ -163,6 +232,7 @@ function draw() {
 
     drawHazards(ctx, level.config.hazards ?? []);
     enemies.forEach((enemy) => drawEnemy(ctx, enemy, cameraX, canvas.width));
+    coins.draw(ctx, cameraX, canvas.width);
     drawPlayer();
     ctx.restore();
 
@@ -199,7 +269,7 @@ function gameLoop(time) {
     lastTime = time;
 
     // Pause movement when the game does not have keyboard focus.
-    if (document.activeElement === canvas) {
+    if (sessionReady && document.activeElement === canvas) {
         update(dt);
         player.animation.update(player, dt, {
             dead: deathTimeLeft > 0,
@@ -212,6 +282,20 @@ function gameLoop(time) {
     requestAnimationFrame(gameLoop);
 }
 
-status.textContent = "Click inside the game to begin The First Adventure.";
-avatar.load();
+// Leaving never commits an attempt. This also clears attempts restored from the back/forward cache.
+window.addEventListener("pagehide", () => {
+    if (completionDialog.open) {
+        completionDialog.returnValue = "";
+        completionDialog.close();
+    }
+    restartLevel();
+});
+
+status.textContent = "Checking your account before the adventure begins…";
+connectGameSession(changeAccount).then((session) => {
+    accountSession = session;
+    sessionReady = true;
+    updateCoinHUD();
+    status.textContent = "Click inside the game to begin The First Adventure.";
+});
 requestAnimationFrame(gameLoop);

@@ -112,6 +112,16 @@ export const level1 = {
     platforms,
     spawn: { x: 80, feetY: groundY },
     scenery: level1Scenery,
+    // Stable achievement IDs: do not rename or reorder these after release.
+    coins: [
+        // Easy: on the opening ground path, before the first pit or creature.
+        { id: "level-1-coin-1", x: 540, y: 434 },
+        // Medium: optional three-step climb above Meadow Trail.
+        { id: "level-1-coin-2", x: 6930, y: 190 },
+        // Challenging: jump from the optional x=19220 ledge across the last wide pit.
+        // Too high to collect from the ground; the upper Home Stretch route leads here.
+        { id: "level-1-coin-3", x: 19480, y: 190 }
+    ],
     enemies: [
         {
             "appearance": "slime",
@@ -240,3 +250,4 @@ export const level1 = {
     ],
     finish: { platform: platforms[platforms.length - 1], flagInset: 40 }
 };
+

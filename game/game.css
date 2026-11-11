@@ -250,3 +250,41 @@ h1 {
 
 .adventure-button:disabled { opacity: 0.65; cursor: default; }
 .adventure-button:disabled:hover { filter: none; }
+
+/* Collectible achievements are separate from the spendable shop balance. */
+.coin-hud {
+    margin: 0 0 12px;
+    padding: 12px 16px;
+    border: 1px solid #9e9278;
+    border-radius: 10px;
+    background: #faedca;
+    color: #403725;
+}
+.coin-hud-summary { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.coin-hud p { margin: 6px 0; }
+.coin-hud small, #completionSaveStatus { color: #66553d; font-size: 13px; line-height: 1.5; }
+.coin-slots { display: flex; align-items: center; gap: 10px; }
+.coin-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 2px solid #746b5b;
+    border-radius: 50%;
+    background: #c8c1b3;
+    color: #746b5b;
+    font: bold 20px Georgia, serif;
+    box-shadow: inset 0 0 0 3px #ffffff30;
+}
+.coin-slot.is-earned, .coin-slot.is-pending {
+    border-color: #795b29;
+    background: #efbd43;
+    color: #795b29;
+}
+.coin-slot.is-pending { border-style: dashed; }
+.completion-coins { margin: 20px 0; }
+.completion-coins .coin-slots { justify-content: center; }
+.completion-coins .coin-slot { width: 40px; height: 40px; font-size: 28px; }
+#completionCoinCount, #perfectCoins { color: #3d5f26; font-weight: bold; }
+
