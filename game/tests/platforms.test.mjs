@@ -163,7 +163,7 @@ test("a collapsed board above safe terrain drops the player onto that terrain wi
 
 test("Level 2 runtime platforms reset after an attempt and leave enemy supports static", () => {
     const level = new LevelManager(levels[1]);
-    assert.equal(level.platforms.filter((platform) => platform.type === "moving").length, 2);
+    assert.equal(level.platforms.filter((platform) => platform.type === "moving").length, 3);
     assert.equal(level.platforms.filter((platform) => platform.type === "collapsing").length, 2);
     for (const enemy of level.enemies) assert.ok(level.platforms.some((platform) => !platform.type &&
         platform.y === enemy.feetY && enemy.minX >= platform.x && enemy.maxX + enemy.width <= platform.x + platform.width));

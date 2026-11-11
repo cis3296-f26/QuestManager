@@ -3,6 +3,7 @@ import { levels } from "../levels/levels.js";
 import { validateLevel, jumpEnvelope } from "../levels/design/validateLevel.js";
 import { platformReachability } from "../levels/design/platformReachability.js";
 import { simulateRoute } from "../levels/design/simulateRoute.js";
+import { simulateExploration } from "../levels/design/simulateExploration.js";
 
 let failed = false;
 console.log("Measured jump envelope (world pixels; player 32 × 64):");
@@ -28,9 +29,21 @@ for (const config of levels) {
             const routes = JSON.parse(readFileSync(new URL(`../tests/fixtures/level${config.id}-${suffix}.json`, import.meta.url)));
             if (routes.length !== 3 || [30, 60, 120].some((fps) => !routes.some((route) => route.fps === fps))) throw new Error(`Missing ${collection} route proof at a required frame rate.`);
             for (const route of routes) {
-                const result = simulateRoute(config, route, { collection });
+                const result = simulateRoute(config, route, { collection, mainRoute: collection === "none" });
                 if (!result.success) { failed = true; console.error(`  ERROR ${route.fps} FPS ${collection} route: ${JSON.stringify(result)}`); }
                 else console.log(`  PASS ${route.fps} FPS spawn → ${collection === "all" ? "all 3 coins" : "zero coins"} → flag (${result.seconds.toFixed(1)}s optimized input trace)`);
+            }
+        }
+    } catch (error) { failed = true; console.error(`  ERROR: ${error.message}`); }
+    try {
+        const witnesses = JSON.parse(readFileSync(new URL("../tests/fixtures/exploration-routes.json", import.meta.url)));
+        for (const area of config.explorationAreas ?? []) {
+            const routes = witnesses.filter((route) => route.levelId === config.id && route.areaId === area.id);
+            if (routes.length !== 3 || [30, 60, 120].some((fps) => !routes.some((route) => route.fps === fps))) throw new Error(`Missing exploration witness for ${area.id}.`);
+            for (const route of routes) {
+                const result = simulateExploration(config, route);
+                if (!result.success) { failed = true; console.error(`  ERROR ${area.id}, ${route.fps} FPS: ${JSON.stringify(result)}`); }
+                else console.log(`  PASS ${route.fps} FPS local entrance → ${area.title}${area.coinId ? " + coin" : ""} → safe reconnection`);
             }
         }
     } catch (error) { failed = true; console.error(`  ERROR: ${error.message}`); }

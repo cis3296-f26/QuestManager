@@ -16,5 +16,7 @@ export function stepLevel(level, direction, dt) {
     const contact = resolveEnemyInteractions(player, previous, enemies, { dt, gravity: movement.gravity, platforms });
     const death = contact.deadly ? "enemy" : player.y >= movement.viewHeight ? "fall" :
         touchesHazard(player, config.hazards ?? []) ? "thorns" : null;
-    return { death, stomped: contact.stomped };
+    const discovered = death ? [] : level.exploration.update(player, dt);
+    return { death, stomped: contact.stomped, discovered };
 }
+

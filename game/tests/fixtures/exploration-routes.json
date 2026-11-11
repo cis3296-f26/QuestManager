@@ -1,0 +1,288 @@
+[
+  {
+    "fps": 30,
+    "totalFrames": 115,
+    "jumpFrames": [
+      6,
+      21,
+      39,
+      69
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3820,
+      "feetY": 460
+    },
+    "areaId": "l1-meadow-canopy",
+    "levelId": 1
+  },
+  {
+    "fps": 60,
+    "totalFrames": 229,
+    "jumpFrames": [
+      12,
+      42,
+      78,
+      138
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3820,
+      "feetY": 460
+    },
+    "areaId": "l1-meadow-canopy",
+    "levelId": 1
+  },
+  {
+    "fps": 120,
+    "totalFrames": 458,
+    "jumpFrames": [
+      12,
+      84,
+      156,
+      276
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3820,
+      "feetY": 460
+    },
+    "areaId": "l1-meadow-canopy",
+    "levelId": 1
+  },
+  {
+    "fps": 30,
+    "totalFrames": 58,
+    "jumpFrames": [
+      0
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4350,
+      "feetY": 460
+    },
+    "areaId": "l1-clover-hollow",
+    "levelId": 1
+  },
+  {
+    "fps": 60,
+    "totalFrames": 116,
+    "jumpFrames": [
+      0
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4350,
+      "feetY": 460
+    },
+    "areaId": "l1-clover-hollow",
+    "levelId": 1
+  },
+  {
+    "fps": 120,
+    "totalFrames": 231,
+    "jumpFrames": [
+      0
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4350,
+      "feetY": 460
+    },
+    "areaId": "l1-clover-hollow",
+    "levelId": 1
+  },
+  {
+    "fps": 30,
+    "totalFrames": 140,
+    "jumpFrames": [
+      0,
+      15,
+      33,
+      54,
+      75,
+      96
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4625,
+      "feetY": 460
+    },
+    "areaId": "l2-leafy-canopy",
+    "levelId": 2
+  },
+  {
+    "fps": 60,
+    "totalFrames": 280,
+    "jumpFrames": [
+      0,
+      30,
+      66,
+      144,
+      192
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4625,
+      "feetY": 460
+    },
+    "areaId": "l2-leafy-canopy",
+    "levelId": 2
+  },
+  {
+    "fps": 120,
+    "totalFrames": 559,
+    "jumpFrames": [
+      0,
+      72,
+      144,
+      288,
+      384
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4625,
+      "feetY": 460
+    },
+    "areaId": "l2-leafy-canopy",
+    "levelId": 2
+  },
+  {
+    "fps": 30,
+    "totalFrames": 62,
+    "jumpFrames": [
+      15
+    ],
+    "inputs": [],
+    "start": {
+      "x": 7300,
+      "feetY": 365
+    },
+    "areaId": "l2-ferry-branch",
+    "levelId": 2
+  },
+  {
+    "fps": 60,
+    "totalFrames": 125,
+    "jumpFrames": [
+      30
+    ],
+    "inputs": [],
+    "start": {
+      "x": 7300,
+      "feetY": 365
+    },
+    "areaId": "l2-ferry-branch",
+    "levelId": 2
+  },
+  {
+    "fps": 120,
+    "totalFrames": 251,
+    "jumpFrames": [
+      60
+    ],
+    "inputs": [],
+    "start": {
+      "x": 7300,
+      "feetY": 365
+    },
+    "areaId": "l2-ferry-branch",
+    "levelId": 2
+  },
+  {
+    "fps": 30,
+    "totalFrames": 63,
+    "jumpFrames": [
+      0,
+      15,
+      36
+    ],
+    "inputs": [
+      {
+        "from": 15,
+        "to": 18,
+        "direction": 0
+      },
+      {
+        "from": 18,
+        "to": 21,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 15460,
+      "feetY": 460
+    },
+    "areaId": "l2-root-gallery",
+    "levelId": 2
+  },
+  {
+    "fps": 60,
+    "totalFrames": 133,
+    "jumpFrames": [
+      0,
+      30,
+      78
+    ],
+    "inputs": [
+      {
+        "from": 30,
+        "to": 36,
+        "direction": 0
+      },
+      {
+        "from": 36,
+        "to": 42,
+        "direction": 0
+      },
+      {
+        "from": 42,
+        "to": 48,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 15460,
+      "feetY": 460
+    },
+    "areaId": "l2-root-gallery",
+    "levelId": 2
+  },
+  {
+    "fps": 120,
+    "totalFrames": 278,
+    "jumpFrames": [
+      0,
+      72,
+      168
+    ],
+    "inputs": [
+      {
+        "from": 60,
+        "to": 72,
+        "direction": 0
+      },
+      {
+        "from": 72,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 84,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 108,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 15460,
+      "feetY": 460
+    },
+    "areaId": "l2-root-gallery",
+    "levelId": 2
+  }
+]

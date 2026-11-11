@@ -71,9 +71,10 @@ test("both main routes reach the flag with zero coins at 30/60/120 FPS", () => {
         const routes = JSON.parse(readFileSync(new URL(`./fixtures/level${config.id}-main-routes.json`, import.meta.url)));
         assert.deepEqual(routes.map((route) => route.fps), [30, 60, 120]);
         for (const route of routes) {
-            const result = simulateRoute(config, route, { collection: "none" });
+            const result = simulateRoute(config, route, { collection: "none", mainRoute: true });
             assert.equal(result.success, true, `Level ${config.id}, ${route.fps} FPS: ${JSON.stringify(result)}`);
             assert.deepEqual(result.coinIds, []);
+            assert.deepEqual(result.discovered, [], "main-route proof must not require a secret landing");
         }
     }
 });

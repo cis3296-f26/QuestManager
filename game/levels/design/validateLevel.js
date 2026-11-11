@@ -2,6 +2,7 @@ import { movement } from "../../engine/Movement.js";
 import { jump, moveHorizontally, applyGravity } from "../../engine/Physics.js";
 import { Player } from "../../entities/Player.js";
 import { Platform } from "../../entities/Platform.js";
+import { validateExploration } from "./validateExploration.js";
 
 const overlaps = (a, b) => a.x < b.x + b.width && a.x + a.width > b.x &&
     a.y < b.y + b.height && a.y + a.height > b.y;
@@ -24,7 +25,7 @@ export function jumpEnvelope(fps) {
 // Structural checks never edit level definitions, runtime state, saves, or the database.
 // Successful route simulations are still required: a geometric check cannot establish fairness.
 export function validateLevel(config) {
-    const errors = [], warnings = [];
+    const errors = validateExploration(config), warnings = [];
     const fail = (message) => errors.push(message);
     const { platforms = [], enemies = [], coins = [], hazards = [], stages = [] } = config;
     const ids = new Set();
@@ -108,3 +109,4 @@ export function validateLevel(config) {
             "Route proofs show one successful timing, not every possible moving-platform phase or enemy encounter."],
         counts: { sections: stages.length, platforms: platforms.length, enemies: enemies.length, coins: coins.length } };
 }
+

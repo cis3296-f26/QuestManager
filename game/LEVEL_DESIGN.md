@@ -13,8 +13,8 @@ that `LevelManager`, the renderer and progress system already consume.
 
 | Level | Before | Now | Main design changes |
 | --- | --- | --- | --- |
-| 1 · The First Adventure | 22,000px, 87 platforms, 12 enemies | 16,000px, 44 platforms, 9 enemies | Remove repeated staircase padding; introduce isolated enemies; give mushrooms visible bypasses; separate thorn encounters from recovery landings; finish without a surprise enemy. |
-| 2 · The Winding Grove | 18,000px, 81 platforms, 12 enemies | 18,000px, 67 platforms, 12 enemies | Keep ground islands, shorten repeated climbs, vary bypass shapes, add raised takeoffs near wide gaps, make the canopy guard and collapsing coin takeoff deliberate optional challenges. |
+| 1 · The First Adventure | 22,000px, 87 platforms, 12 enemies | 16,000px, 45 platforms, 9 enemies | Remove repeated staircase padding; introduce isolated enemies; give mushrooms visible bypasses; separate thorn encounters from recovery landings; finish without a surprise enemy. |
+| 2 · The Winding Grove | 18,000px, 81 platforms, 12 enemies | 18,000px, 69 platforms, 12 enemies | Keep ground islands, shorten repeated climbs, vary bypass shapes, add raised takeoffs near wide gaps, make the canopy guard and collapsing coin takeoff deliberate optional challenges. |
 
 Low static ledges have enough clearance for the 64px player to walk underneath.
 High ledges stop at y=260, leaving the player's head below the HUD even at the
@@ -124,3 +124,7 @@ Future design intentions remain grassland → forest → deep forest → cave �
 → ruins → ice → mountains → volcano → castle. They are guidance only, and adding
 a future level still requires authored data, route proofs and a human playtest.
 
+
+Secret-area configuration, local route proofs and the new canopy bough are described
+in [EXPLORATION_PLAYTEST.md](EXPLORATION_PLAYTEST.md). Their discoveries are attempt-only;
+main-route proofs explicitly reject optional secret landings.

@@ -4,6 +4,29 @@ import { defineLevel, ground as g, ledge as p, creature as e, thorns as h } from
 export const level1 = defineLevel({
     id: 1, name: "The First Adventure", worldWidth: 16000,
     spawn: { x: 80, feetY: 460 }, scenery: level1Scenery, finishId: "l1-flag",
+    explorationAreas: [
+        {
+            id: "l1-meadow-canopy", title: "Meadow Overlook", kind: "elevated",
+            purpose: "Follow the partly visible upper shelf to the medium coin, then drop back to the meadow.",
+            clue: "Cream flowers and a visible shelf edge beyond the meadow steps.",
+            bounds: { x: 4380, y: 160, width: 240, height: 124 },
+            entrance: { x: 3820, y: 396, width: 60, height: 64 },
+            exit: { x: 4920, y: 396, width: 60, height: 64 },
+            platformIds: ["l1-coin-step-1", "l1-coin-step-2", "l1-coin-perch", "l1-coin-exit"],
+            discoveryPlatforms: ["l1-coin-perch"], coinId: "level-1-coin-2",
+            foreground: [{ kind: "leaves", x: 4390, y: 240, width: 110, height: 46 }]
+        },
+        {
+            id: "l1-clover-hollow", title: "Clover Hollow", kind: "passage",
+            purpose: "A sheltered lower connector beneath the overlook, with an easy drop back to safe ground.",
+            clue: "A gap in the hedge exposes the edge of a low grassy shelf.",
+            bounds: { x: 4430, y: 290, width: 160, height: 75 },
+            entrance: { x: 4350, y: 396, width: 60, height: 64 },
+            exit: { x: 4920, y: 396, width: 60, height: 64 },
+            platformIds: ["l1-clover-shelf", "l1-coin-exit"], discoveryPlatforms: ["l1-clover-shelf"],
+            foreground: [{ kind: "hedge", x: 4435, y: 309, width: 150, height: 70 }]
+        }
+    ],
     stages: [
         {
             id: "introduction", start: 0, end: 2040, difficulty: "easy",
@@ -24,13 +47,15 @@ export const level1 = defineLevel({
             requiredRoute: ["l1-meadow", "l1-coin-meadow"],
             optionalRoutes: [
                 { purpose: "Avoid the first mushroom rather than attack it.", platforms: ["l1-bypass-1", "l1-bypass-2", "l1-bypass-exit"] },
-                { purpose: "Collect the medium coin and reconnect to the main path.", coinId: "level-1-coin-2", platforms: ["l1-coin-step-1", "l1-coin-step-2", "l1-coin-perch", "l1-coin-exit"] }
+                { purpose: "Collect the medium coin and reconnect to the main path.", coinId: "level-1-coin-2", platforms: ["l1-coin-step-1", "l1-coin-step-2", "l1-coin-perch", "l1-coin-exit"] },
+                { purpose: "Explore the sheltered lower shelf beneath the overlook and reconnect to its exit.", platforms: ["l1-clover-shelf", "l1-coin-exit"] }
             ],
             platforms: [g("l1-meadow", 2040, 3650), g("l1-coin-meadow", 3790, 5060),
                 p("l1-bypass-1", 2250, 365, 220, "enemy-bypass"), p("l1-bypass-2", 2500, 295, 220, "enemy-bypass"),
                 p("l1-bypass-exit", 2800, 365, 160, "recovery"),
                 p("l1-coin-step-1", 3900, 365, 170, "coin-route"), p("l1-coin-step-2", 4140, 295, 160, "coin-route"),
-                p("l1-coin-perch", 4380, 260, 240, "coin-route"), p("l1-coin-exit", 4740, 335, 180, "recovery")],
+                p("l1-coin-perch", 4380, 260, 240, "coin-route"), p("l1-clover-shelf", 4430, 365, 160, "secret-connector"),
+                p("l1-coin-exit", 4740, 335, 180, "recovery")],
             enemies: [e("l1-first-mushroom", "mushroom", 2620, 2530, 2700, "Introduce a slower mushroom beneath the center of its visible bypass.", 60),
                 e("l1-coin-slime", "slime", 4100, 4010, 4290, "Guard the lower route, leaving the upper coin perch clear.", 70)],
             coins: [{ id: "level-1-coin-2", x: 4500, y: 230, difficulty: "medium" }]

@@ -14,6 +14,7 @@ Level 2 still unlocks by completing Level 1, without requiring all three coins.
 | --- | --- | --- |
 | Mushroom Bend, x=7560–7770, top y=335 | Horizontal ferry | Wait on the extended grassy dock ending at x=7510, then board the marked wooden ferry as it approaches. Release movement keys and let it carry you. Jump off toward the far side. |
 | Just before Fern Walk, x=2890, top y=375–260 | Vertical lift | Approach from the existing x=2770 ledge. Board when the lift is low enough, ride upward, and jump toward the x=3100 ledge. The original ground jump remains available. |
+| Canopy exit, x=5620–5690, top y=300 | Moving bough | Walk or jump from the canopy edge onto the bough, ride it, then jump to the x=5800 exit shelf. |
 | Fern Walk, x=4030, top y=365 | Collapsing board | Land, watch for cracks/shaking, then jump away. If you stay, it drops after one second; the safe ground below can catch you. |
 | Sparrow Ledges, x=15750, top y=300 | Collapsing board | Keep moving and jump for Coin 3 before the one-second warning ends. This optional takeoff ledge leads into the final coin jump. |
 

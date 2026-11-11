@@ -1,6 +1,7 @@
 import { drawEnemy } from "./rendering/EnemyRenderer.js";
 import { GrasslandRenderer } from "./rendering/GrasslandRenderer.js";
 import { drawInteractivePlatforms } from "./rendering/PlatformRenderer.js";
+import { drawExplorationFoliage, drawDiscoveryNotice } from "./rendering/ExplorationRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { levels } from "./levels/levels.js";
 import { WorldMap } from "./ui/WorldMap.js";
@@ -218,6 +219,7 @@ function update(dt) {
         startDeath(message[result.death]);
         return;
     }
+    if (result.discovered.length) status.textContent = `Found: ${level.exploration.notice}. Reach the flag to save new coins.`;
 
     cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
 
@@ -245,6 +247,7 @@ function draw() {
     grassland.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
     grassland.drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
     drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width);
+    drawExplorationFoliage(ctx, level.exploration, cameraX, canvas.width);
 
     const flagTop = level.config.finish.platform.y - 60;
 
@@ -280,6 +283,7 @@ function draw() {
         ctx.fillText(section.hint, 25, 55, canvas.width - 190);
     }
     drawCoinHUD(ctx, level.config.coins, coins.saved, coins.pending, canvas.width);
+    drawDiscoveryNotice(ctx, level.exploration);
 
     if (deathTimeLeft > 0) {
         const fade = 1 - deathTimeLeft / deathDelay;
@@ -338,6 +342,7 @@ connectGameSession(changeAccount).then((session) => {
     });
 });
 requestAnimationFrame(gameLoop);
+
 
 
 

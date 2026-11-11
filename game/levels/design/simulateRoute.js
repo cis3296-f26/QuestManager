@@ -6,7 +6,7 @@ import { stepLevel } from "../../engine/stepLevel.js";
 import { followCamera } from "../../engine/Camera.js";
 
 // Recorded keyboard inputs, starting at spawn. No teleports, noclip, save writes or enemy removal.
-export function simulateRoute(config, route, { collection = "all" } = {}) {
+export function simulateRoute(config, route, { collection = "all", mainRoute = false } = {}) {
     if (!["all", "none"].includes(collection)) throw new Error("Unknown route collection objective.");
     if (![30, 60, 120].includes(route.fps) || !Number.isInteger(route.totalFrames) || route.totalFrames < 1) throw new Error("Invalid route timing.");
     const level = new LevelManager(config), coins = new CoinManager(config.coins);
@@ -21,6 +21,7 @@ export function simulateRoute(config, route, { collection = "all" } = {}) {
         if (![-1, 0, 1].includes(direction)) throw new Error("Invalid route direction.");
         const result = stepLevel(level, direction, 1 / route.fps);
         if (result.death) return { success: false, reason: result.death, frame, x: level.player.x };
+        if (mainRoute && level.exploration.discovered.size) return { success: false, reason: "entered optional exploration route", frame };
         coins.update(level.player, 1 / route.fps);
         if (collection === "none" && coins.pending.size) return { success: false, reason: "unexpected coin pickup", frame };
         const support = level.player.supportPlatform;
@@ -31,7 +32,8 @@ export function simulateRoute(config, route, { collection = "all" } = {}) {
             level.player.y < movement.hudBottom) return { success: false, reason: "player hidden by viewport or HUD", frame };
         const collectionMet = collection === "none" ? coins.pending.size === 0 : coins.pending.size === 3;
         if (level.checkCompletion()) return { success: collectionMet, reason: collectionMet ? null : "missing coins",
-            frame, seconds: (frame + 1) / route.fps, coinIds: [...coins.pending], visited: [...visited] };
+            frame, seconds: (frame + 1) / route.fps, coinIds: [...coins.pending], visited: [...visited],
+            discovered: [...level.exploration.discovered], exited: [...level.exploration.exited] };
     }
     return { success: false, reason: "flag not reached", x: level.player.x, coinIds: [...coins.pending], visited: [...visited] };
 }
