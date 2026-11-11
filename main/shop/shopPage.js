@@ -49,7 +49,7 @@ function renderShop() {
         </div>`;
 
     shopSection.querySelectorAll("[data-preview-item]").forEach((preview) => {
-    renderStage(preview, preview.dataset.previewCategory, [preview.dataset.previewItem]);
+    renderStage(preview, preview.dataset.previewCategory, [preview.dataset.previewItem], "", false);
 });
 }
 

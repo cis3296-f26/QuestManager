@@ -31,10 +31,11 @@ export function describeStage(categoryId, itemIds, items = SHOP_ITEMS) {
 }
 
 // Fills a container with the base image plus one <img> per equipped item.
-export function renderStage(container, categoryId, itemIds, label = "") {
+export function renderStage(container, categoryId, itemIds, label = "", withBase = true) {
     container.innerHTML = "";
 
     for (const layer of stageLayers(categoryId, itemIds)) {
+         if (layer.base && !withBase) continue;
         const el = document.createElement("div");
         el.className = "stage-layer stage-sheet " + (layer.base ? "stage-base" : "stage-item");
         el.dataset.count = layer.count;
