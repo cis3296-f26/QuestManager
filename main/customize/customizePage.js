@@ -63,8 +63,7 @@ function renderInventory(user) {
     if (ownedInCategory === 0) {
         body = `
             <div class="inv-empty">
-                <p>You don't own any ${category.label.toLowerCase()} items yet.</p>
-                <a class="shop-button" href="#shop">Visit the Shop</a>
+                <p>Your wagon is empty!</p>
             </div>`;
     } else {
         body = groups.map((group) => `

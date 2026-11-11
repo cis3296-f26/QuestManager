@@ -1,7 +1,6 @@
 /* ---------- Page layout ---------- */
 #customize {
     position: relative;
-    padding: 1rem;
 }
 
 .customize-frame {
@@ -31,6 +30,13 @@
     display: flex;
     flex-direction: column;
     contain: size;                    /* its content never makes the row taller */
+}
+
+.inv-scroll {
+    flex: 1;
+    min-height: 0;
+    max-height: none;                 /* was 480px */
+    overflow-y: auto;
 }
 
 .panel-header {
