@@ -1,12 +1,10 @@
+import { assertAuthoredRoute } from "./helpers/authoredRoute.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { CoinManager } from "../levels/CoinManager.js";
 import { LevelProgressManager } from "../progress/LevelProgressManager.js";
 import { LocalProgressStore } from "../progress/LocalProgressStore.js";
 import { level1 } from "../levels/Level1.js";
-import { LevelManager } from "../levels/LevelManager.js";
-import { moveHorizontally, applyGravity, jump } from "../engine/Physics.js";
-import { touchesHazard } from "../engine/Hazards.js";
 import { renderCoinProgress } from "../ui/CoinProgress.js";
 import { renderLevelSelection } from "../ui/LevelSelection.js";
 
@@ -123,36 +121,8 @@ test("unavailable storage is memory-only, corrupted saves are safe, latest compl
     assert.deepEqual(progressFor(storage).totalCoins, { earned: 1, possible: 30 });
 });
 
-test("coin routes work with unchanged physics, geometry and enemy patrols at 30/60/120 fps", () => {
-    const routes = [
-        { index: 0, start: 80, stop: 550, jumps: [] },
-        { index: 1, start: 6300, stop: 6940, jumps: [6380, 6550, 6750] },
-        { index: 2, start: 18390, stop: 19600, jumps: [18460, 18640, 18870, 19340] }
-    ];
-    for (const fps of [30, 60, 120]) for (const route of routes) {
-        const level = new LevelManager(level1), coins = new CoinManager(level1.coins);
-        const { player } = level;
-        player.x = route.start;
-        let nextJump = 0, reached = false;
-        for (let frame = 0; frame < fps * 8; frame++) {
-            if (nextJump < route.jumps.length && player.x >= route.jumps[nextJump] && player.grounded) {
-                jump(player, 650);
-                nextJump++;
-            }
-            moveHorizontally(player, player.x < route.stop ? 1 : 0, 280, level1.worldWidth, 1 / fps);
-            applyGravity(player, 1800, level1.platforms, 1 / fps);
-            for (const enemy of level.enemies) enemy.update(1 / fps);
-            assert.ok(player.y < 540, `fell on coin ${route.index + 1} route at ${fps}fps`);
-            assert.equal(touchesHazard(player, level1.hazards), false);
-            assert.equal(level.enemies.some((enemy) => enemy.touches(player)), false,
-                `enemy on coin ${route.index + 1} route at ${fps}fps`);
-            coins.update(player, 1 / fps);
-            if (coins.pending.has(ids[route.index])) reached = true;
-            if (player.x >= route.stop && player.grounded) break;
-        }
-        assert.ok(reached, `unreachable coin ${route.index + 1} at ${fps}fps`);
-        assert.ok(player.x >= route.stop && player.grounded, "route must end on a safe landing");
-    }
+test("all Level 1 coins are reachable in continuous real-physics runs at 30/60/120 FPS", () => {
+    assertAuthoredRoute(level1);
 });
 
 test("coin UI preserves specific earned slots and reusable selection actions", () => {
@@ -178,3 +148,4 @@ test("coin UI preserves specific earned slots and reusable selection actions", (
         assert.equal(played, 1);
     } finally { globalThis.document = originalDocument; }
 });
+

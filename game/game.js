@@ -4,11 +4,12 @@ import { drawInteractivePlatforms } from "./rendering/PlatformRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { levels } from "./levels/levels.js";
 import { WorldMap } from "./ui/WorldMap.js";
-import { touchesHazard, drawHazards } from "./engine/Hazards.js";
+import { drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
 import { followCamera } from "./engine/Camera.js";
-import { moveHorizontally, applyGravity, jump, carryPlayer } from "./engine/Physics.js";
-import { resolveEnemyInteractions } from "./engine/EnemyInteractions.js";
+import { jump } from "./engine/Physics.js";
+import { movement } from "./engine/Movement.js";
+import { stepLevel } from "./engine/stepLevel.js";
 import { CoinManager } from "./levels/CoinManager.js";
 import { LocalProgressStore } from "./progress/LocalProgressStore.js";
 import { LevelProgressManager } from "./progress/LevelProgressManager.js";
@@ -25,9 +26,7 @@ const level = new LevelManager(levels[0]);
 let { groundY, worldWidth } = level.config;
 let { platforms } = level;
 let { player, enemies, flagX } = level;
-const speed = 280;
-const gravity = 1800;
-const jumpStrength = 650;
+const jumpStrength = movement.jumpStrength;
 
 const keys = new Set();
 let lastTime = null;
@@ -213,27 +212,10 @@ function update(dt) {
     const left = keys.has("ArrowLeft") || keys.has("KeyA");
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
-    const previousPlayer = { x: player.x, y: player.y, width: player.width, height: player.height };
-    level.updatePlatforms(dt);
-    carryPlayer(player, worldWidth);
-    const movementStartX = player.x;
-    moveHorizontally(player, Number(right) - Number(left), speed, worldWidth, dt);
-    applyGravity(player, gravity, platforms, dt, { previousX: movementStartX });
-
-    enemies.forEach((enemy) => enemy.update(dt));
-    const contact = resolveEnemyInteractions(player, previousPlayer, enemies, { dt, gravity, platforms });
-    if (contact.deadly) {
-        startDeath("A creature caught you! Restarting…");
-        return;
-    }
-
-    if (player.y >= canvas.height) {
-        startDeath("You fell! Restarting…");
-        return;
-    }
-
-    if (touchesHazard(player, level.config.hazards ?? [])) {
-        startDeath("You touched the thorns! Restarting…");
+    const result = stepLevel(level, Number(right) - Number(left), dt);
+    if (result.death) {
+        const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…" };
+        startDeath(message[result.death]);
         return;
     }
 

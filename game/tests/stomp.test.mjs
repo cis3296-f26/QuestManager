@@ -1,3 +1,4 @@
+import { assertAuthoredRoute } from "./helpers/authoredRoute.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { Enemy } from "../entities/Enemy.js";
@@ -8,9 +9,6 @@ import { resolveEnemyInteractions } from "../engine/EnemyInteractions.js";
 import { drawEnemy } from "../rendering/EnemyRenderer.js";
 import { LevelManager } from "../levels/LevelManager.js";
 import { levels } from "../levels/levels.js";
-import { CoinManager } from "../levels/CoinManager.js";
-import { touchesHazard } from "../engine/Hazards.js";
-import { readFileSync } from "node:fs";
 
 const enemyAt = (options = {}) => new Enemy({ startX: 100, minX: 0, maxX: 1000,
     width: 32, height: 24, speed: 0, appearance: "slime", stompable: true, ...options }, options.feetY ?? 200);
@@ -231,25 +229,5 @@ test("both levels configure slime stomps only, and level restarts/replays restor
 });
 
 test("Level 2 remains completable with all three coins and swept enemy interactions enabled", () => {
-    const routes = JSON.parse(readFileSync(new URL("./fixtures/stomp-safe-level2-routes.json", import.meta.url)));
-    for (const route of routes) {
-        const level = new LevelManager(levels[1]), coins = new CoinManager(level.config.coins);
-        const jumps = new Set(route.jumpFrames), dt = 1 / route.fps;
-        let finished = false;
-        for (let frame = 0; frame < route.totalFrames; frame++) {
-            if (jumps.has(frame) && level.player.grounded) {
-                level.player.velocityY = -650;
-                level.player.grounded = false;
-            }
-            const direction = route.inputs.find((input) => frame >= input.from && frame < input.to)?.direction ?? 1;
-            const result = step(level.player, level.enemies, dt, { direction, platforms: level.config.platforms });
-            assert.equal(result.deadly, false, `enemy contact at ${frame / route.fps}s (${route.fps} FPS)`);
-            assert.ok(level.player.y < 540);
-            assert.equal(touchesHazard(level.player, level.config.hazards), false);
-            coins.update(level.player, dt);
-            if (level.checkCompletion()) { finished = true; break; }
-        }
-        assert.equal(finished, true);
-        assert.equal(coins.pending.size, 3);
-    }
+    assertAuthoredRoute(levels[1]);
 });

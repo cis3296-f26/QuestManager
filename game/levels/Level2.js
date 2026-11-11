@@ -1,126 +1,115 @@
 import { level2Scenery } from "./Level2Scenery.js";
+import { defineLevel, ground as g, ledge as p, creature as e, thorns as h } from "./design/defineLevel.js";
+const crumble = { type: "collapsing", collapseDelay: 1, appearance: "wood" };
 
-const groundY = 460;
-const worldWidth = 18000;
-
-// Authored ground islands. Empty space between these intervals is a real pit.
-// Gaps grow from 130 to 190 pixels; the existing 280/650/1800 movement can cross them.
-const ground = [
-    [0, 700], [830, 1680], [1840, 2820], [2990, 4450],
-    [4620, 6150], [6330, 7700], [7880, 9300], [9490, 10800],
-    [10980, 12600], [12790, 14200], [14390, 15750], [15930, worldWidth]
-].map(([start, end]) => ({ x: start, y: groundY, width: end - start, height: 80 }));
-
-// Explicit ledges, grouped by route rather than generated at random.
-const ledges = [
-    // Grove Gate: learn the rhythm on wide steps, then cross the first three pits.
-    [200, 375, 140], [410, 295, 130], [610, 225, 120],
-    [880, 375, 140], [1080, 295, 120], [1280, 220, 120],
-    [1480, 300, 120], [1700, 360, 160],
-    [1940, 375, 130], [2140, 290, 120], [2330, 210, 110],
-    [2540, 280, 120], [2770, 330, 120],
-
-    // Fern Walk: a rest clearing, then an optional ridge above the thorns.
-    [3100, 375, 160], [3320, 295, 140], [3540, 215, 140],
-    [3780, 290, 150], [4030, 375, 160, "collapsing"], [4270, 300, 150],
-
-    // Canopy Crossing: the second coin sits beyond an elevated patrol.
-    [4700, 375, 150], [4910, 295, 140], [5120, 215, 480],
-    [5800, 300, 150], [6020, 375, 130],
-
-    // Mushroom Bend: staggered landings, then a quiet stretch before the next gap.
-    [6400, 375, 140], [6610, 295, 125], [6820, 215, 130],
-    [7060, 290, 150], [7320, 375, 150], [7560, 300, 140],
-    [8000, 375, 150], [8220, 295, 130], [8440, 215, 150],
-    [8710, 290, 150], [9000, 375, 160],
-
-    // Root Hollow: two thorn patches, each with a climb and a ground-jump route.
-    [9650, 375, 150], [9870, 295, 130], [10090, 215, 140],
-    [10350, 300, 150], [10610, 375, 140],
-    [11120, 375, 140], [11330, 295, 130], [11540, 215, 150],
-    [11810, 290, 150], [12100, 375, 150], [12340, 300, 150],
-
-    // Sunbreak: a recovery clearing followed by a narrower ridge.
-    [12930, 375, 150], [13150, 295, 130], [13370, 215, 140],
-    [13620, 295, 140], [13890, 375, 150],
-
-    // Sparrow Ledges: the optional third-coin route ends with an airborne pickup.
-    [14520, 375, 150], [14740, 295, 140], [14970, 375, 130],
-    [15140, 375, 130], [15350, 295, 115], [15560, 215, 110],
-    [15750, 300, 110, "collapsing"],
-
-    // The clearing after the coin jump gives room to recover before the flag.
-    [16120, 375, 160], [16350, 295, 140], [16580, 215, 140],
-    [16840, 300, 160], [17110, 375, 150],
-    [17300, 375, 140], [17520, 295, 125], [17740, 215, 110],
-    [17880, 215, 120]
-].map(([x, y, width, type]) => ({ x, y, width, height: 24,
-    ...(type ? { id: `grove-crumble-${x}`, type, collapseDelay: 1, appearance: "wood" } : {})
-}));
-
-// Optional ferry and lift routes supplement the original jumpable ground gaps.
-// Existing enemy patrols remain entirely on static terrain.
-const movingPlatforms = [
-    { id: "grove-ferry", type: "moving", x: 660, y: 330, width: 110, height: 24,
-        axis: "x", distance: 190, speed: 70, pause: 0.3, appearance: "wood" },
-    { id: "grove-lift", type: "moving", x: 2890, y: 375, width: 100, height: 24,
-        axis: "y", distance: -160, speed: 55, pause: 0.4, appearance: "wood" }
-];
-const platforms = [...ground, ...movingPlatforms, ...ledges];
-const patrol = (appearance, startX, minX, maxX, speed, { feetY = groundY, stompable = false } = {}) =>
-    ({ appearance, startX, minX, maxX, speed, feetY, stompable, width: 32, height: 24 });
-
-export const level2 = {
-    id: 2,
-    name: "The Winding Grove",
-    theme: "forest",
-    mapSummary: "Forest · Canopy paths and winding clearings",
-    groundY,
-    worldWidth,
-    platforms,
-    spawn: { x: 80, feetY: groundY },
-    scenery: level2Scenery,
-    coins: [
-        // Easy: on the opening path before any enemy or pit.
-        { id: "level-2-coin-1", x: 520, y: 434 },
-        // Medium: follow the canopy climb and jump over its mushroom patrol.
-        { id: "level-2-coin-2", x: 5540, y: 185 },
-        // Challenging: jump from the narrow x=15750 ledge across the last pit.
-        { id: "level-2-coin-3", x: 15910, y: 190 }
-    ],
-    enemies: [
-        patrol("slime", 1100, 1000, 1510, 80, { stompable: true }),
-        patrol("mushroom", 2190, 2040, 2610, 85),
-        patrol("slime", 3440, 3200, 3700, 80, { stompable: true }),
-        patrol("slime", 4840, 4770, 5460, 90, { stompable: true }),
-        patrol("mushroom", 5330, 5190, 5460, 55, { feetY: 215 }),
-        patrol("mushroom", 6740, 6590, 7250, 90),
-        patrol("slime", 8400, 8200, 8850, 95, { stompable: true }),
-        patrol("mushroom", 10000, 9860, 10280, 90),
-        patrol("slime", 11600, 11390, 11960, 95, { stompable: true }),
-        patrol("mushroom", 13350, 13120, 13740, 90),
-        patrol("slime", 14680, 14550, 14950, 95, { stompable: true }),
-        patrol("mushroom", 16450, 16340, 16920, 95)
-    ],
-    hazards: [
-        { type: "spikes", x: 3880, y: 440, width: 45, height: 20 },
-        { type: "spikes", x: 7410, y: 440, width: 45, height: 20 },
-        { type: "spikes", x: 10430, y: 440, width: 50, height: 20 },
-        { type: "spikes", x: 12180, y: 440, width: 45, height: 20 },
-        { type: "spikes", x: 13940, y: 440, width: 50, height: 20 },
-        { type: "spikes", x: 17040, y: 440, width: 45, height: 20 }
-    ],
-    sections: [
-        { x: 0, title: "The Winding Grove", hint: "Marked wooden platforms move. Jump away if cracks appear." },
-        { x: 2990, title: "Fern Walk", hint: "Ride the lift or take the ground jump. Cracked ledges won't hold for long." },
-        { x: 4620, title: "Canopy Crossing", hint: "A coin waits above. Give the mushroom room to pass." },
-        { x: 6330, title: "Mushroom Bend", hint: "Watch the patrols before choosing your landing." },
-        { x: 9490, title: "Root Hollow", hint: "The gaps are wider here. Jump near the edge." },
-        { x: 12790, title: "Sunbreak Clearing", hint: "Catch your breath, then choose your route." },
-        { x: 14390, title: "Sparrow Ledges", hint: "Explore the high path for one last gold coin." },
-        { x: 15930, title: "The Grove Lookout", hint: "A final clearing, then climb to the flag." }
-    ],
-    finish: { platform: platforms[platforms.length - 1], flagInset: 40 }
-};
-
-
+export const level2 = defineLevel({
+    id: 2, name: "The Winding Grove", theme: "forest", mapSummary: "Forest · Canopy paths and winding clearings",
+    worldWidth: 18000, spawn: { x: 80, feetY: 460 }, scenery: level2Scenery, finishId: "l2-flag",
+    stages: [
+        {
+            id: "introduction", start: 0, end: 2990, difficulty: "easy-medium", title: "The Winding Grove",
+            hint: "Wooden ferries offer another crossing. Slimes can be stomped; mushrooms cannot.",
+            purpose: "Introduce an optional ferry, one slime, then a mushroom bypass ending at a lift.",
+            requiredRoute: ["l2-start", "l2-first-landing", "l2-intro-east"],
+            optionalRoutes: [{ purpose: "Board and exit the ferry from the visible raised path.", platforms: ["l2-practice-1", "l2-practice-2", "l2-practice-3", "grove-ferry"] },
+                { purpose: "Avoid the mushroom and ride the lift into Fern Walk.", platforms: ["l2-intro-bypass-1", "l2-intro-bypass-2", "l2-intro-bypass-exit", "l2-lift-approach", "grove-lift"] }],
+            platforms: [g("l2-start", 0, 700), g("l2-first-landing", 830, 1680), g("l2-intro-east", 1840, 2820),
+                p("l2-practice-1", 200, 365, 160, "practice"), p("l2-practice-2", 430, 295, 150, "practice"),
+                p("l2-practice-3", 660, 260, 150, "ferry-approach"),
+                p("grove-ferry", 660, 365, 110, "alternate-crossing", { type: "moving", axis: "x", distance: 190, speed: 70, pause: 0.3, appearance: "wood" }),
+                p("l2-first-stomp", 980, 365, 180, "stomp-opportunity"),
+                p("l2-intro-bypass-1", 1980, 365, 170, "enemy-bypass"), p("l2-intro-bypass-2", 2210, 295, 200, "enemy-bypass"),
+                p("l2-intro-bypass-exit", 2480, 335, 160, "recovery"), p("l2-lift-approach", 2770, 330, 120, "lift-approach"),
+                p("grove-lift", 2890, 375, 100, "alternate-crossing", { type: "moving", axis: "y", distance: -115, speed: 55, pause: 0.4, appearance: "wood" })],
+            enemies: [e("l2-first-slime", "slime", 1250, 1120, 1450, "Teach a forest stomp with room after the first pit.", 80),
+                e("l2-intro-mushroom", "mushroom", 2350, 2200, 2510, "A mushroom bypass that reconnects at the lift.", 85)],
+            coins: [{ id: "level-2-coin-1", x: 520, y: 434, difficulty: "easy" }]
+        },
+        {
+            id: "exploration", start: 2990, end: 6330, difficulty: "medium", title: "Fern Walk and Canopy Crossing",
+            hint: "Cracks mean jump soon. A mushroom guards the optional canopy coin.",
+            purpose: "Practice collapse above safe ground before the coin route asks for enemy timing.",
+            requiredRoute: ["l2-fern-ground", "l2-canopy-ground"],
+            optionalRoutes: [{ purpose: "Bypass thorns and learn collapse above safe ground.", platforms: ["l2-fern-1", "l2-fern-2", "l2-fern-3", "l2-fern-bridge", "grove-crumble-4030", "l2-fern-exit"] },
+                { purpose: "Reach Coin 2 beyond the canopy mushroom, then return safely.", coinId: "level-2-coin-2", platforms: ["l2-canopy-1", "l2-canopy-2", "l2-canopy", "l2-canopy-exit", "l2-canopy-gap-step"] }],
+            platforms: [g("l2-fern-ground", 2990, 4450), g("l2-canopy-ground", 4620, 6150),
+                p("l2-fern-1", 3100, 365, 160, "stomp-opportunity"), p("l2-fern-2", 3340, 295, 180, "enemy-bypass"),
+                p("l2-fern-3", 3590, 260, 180, "hazard-bypass"), p("l2-fern-bridge", 3810, 300, 160, "hazard-bypass"),
+                p("grove-crumble-4030", 4030, 365, 160, "collapse-practice", crumble), p("l2-fern-exit", 4270, 335, 150, "recovery"),
+                p("l2-canopy-1", 4700, 365, 150, "coin-route"), p("l2-canopy-2", 4910, 295, 140, "coin-route"),
+                p("l2-canopy", 5120, 260, 480, "coin-route"), p("l2-canopy-exit", 5800, 335, 150, "recovery"),
+                p("l2-canopy-gap-step", 6020, 365, 130, "gap-assist")],
+            enemies: [e("l2-fern-slime", "slime", 3440, 3200, 3700, "A raised bypass or a ground stomp before the thorns.", 80),
+                e("l2-canopy-slime", "slime", 4840, 4770, 5460, "A lower-route challenge with an elevated alternative.", 90),
+                e("l2-canopy-guard", "mushroom", 5330, 5190, 5460, "Guard the optional medium coin with a generous landing beyond the patrol.", 55, 260)],
+            hazards: [h("l2-fern-thorns", 3880, 45)],
+            coins: [{ id: "level-2-coin-2", x: 5540, y: 230, difficulty: "medium" }]
+        },
+        {
+            id: "challenge", start: 6330, end: 9490, difficulty: "medium", title: "Mushroom Bend",
+            hint: "Choose a raised bypass or time a ground crossing. Rest before the next jump.",
+            purpose: "Use two different bypass shapes rather than repeating the same staircase.",
+            requiredRoute: ["l2-bend-west", "l2-bend-east", "l2-long-gap-step"],
+            optionalRoutes: [{ purpose: "Climb above the mushroom and thorn patch.", platforms: ["l2-bend-1", "l2-bend-2", "l2-bend-3", "l2-bend-exit", "l2-bend-gap-step"] },
+                { purpose: "Use shallow ledges to bypass or stomp the slime.", platforms: ["l2-shallow-1", "l2-shallow-2", "l2-shallow-3"] }],
+            platforms: [g("l2-bend-west", 6330, 7700), g("l2-bend-east", 7880, 9300),
+                p("l2-bend-1", 6400, 365, 170, "enemy-bypass"), p("l2-bend-2", 6640, 295, 180, "enemy-bypass"),
+                p("l2-bend-3", 6880, 260, 200, "enemy-bypass"), p("l2-bend-exit", 7200, 365, 180, "hazard-approach"),
+                p("l2-bend-gap-step", 7560, 335, 140, "gap-assist"),
+                p("l2-shallow-1", 8050, 365, 220, "stomp-opportunity"), p("l2-shallow-2", 8350, 335, 260, "enemy-bypass"),
+                p("l2-shallow-3", 8720, 365, 180, "recovery"), p("l2-long-gap-step", 9220, 365, 80, "gap-assist")],
+            enemies: [e("l2-bend-mushroom", "mushroom", 6740, 6590, 7250, "A long, visible avoidance patrol with a raised route.", 90),
+                e("l2-bend-slime", "slime", 8400, 8200, 8850, "Offer stomps from low ledges, away from thorns.", 95)],
+            hazards: [h("l2-bend-thorns", 7410, 45)]
+        },
+        {
+            id: "combined", start: 9490, end: 12790, difficulty: "medium", title: "Root Hollow",
+            hint: "Use the takeoff ledges for wider gaps. Recover between patrols and thorns.",
+            purpose: "Combine known challenges, with raised takeoffs reducing the precision of wide gaps.",
+            requiredRoute: ["l2-hollow-west", "l2-hollow-west-exit", "l2-hollow-east", "l2-hollow-east-exit"],
+            optionalRoutes: [{ purpose: "Avoid the mushroom and thorn patch.", platforms: ["l2-hollow-1", "l2-hollow-2", "l2-hollow-3"] },
+                { purpose: "Choose slime stomps or a shallow upper lane.", platforms: ["l2-root-1", "l2-root-2", "l2-root-3", "l2-root-thorns"] }],
+            platforms: [g("l2-hollow-west", 9490, 10800), g("l2-hollow-east", 10980, 12600),
+                p("l2-hollow-1", 9650, 365, 180, "enemy-bypass"), p("l2-hollow-2", 9910, 295, 200, "enemy-bypass"),
+                p("l2-hollow-3", 10200, 335, 220, "hazard-approach"), p("l2-hollow-west-exit", 10610, 365, 140, "gap-assist"),
+                p("l2-root-1", 11120, 365, 180, "stomp-opportunity"), p("l2-root-2", 11400, 335, 220, "enemy-bypass"),
+                p("l2-root-3", 11720, 365, 240, "enemy-bypass"), p("l2-root-thorns", 12030, 335, 190, "hazard-bypass"),
+                p("l2-hollow-east-exit", 12430, 365, 140, "gap-assist")],
+            enemies: [e("l2-hollow-mushroom", "mushroom", 10000, 9860, 10280, "Guard a lower lane before a separate thorn jump.", 90),
+                e("l2-root-slime", "slime", 11600, 11390, 11960, "Reward controlled stomps from the shallow ledges.", 95)],
+            hazards: [h("l2-hollow-thorns", 10430, 50), h("l2-root-thorns-hazard", 12180, 45)]
+        },
+        {
+            id: "final-challenge", start: 12790, end: 15930, difficulty: "medium-hard", title: "Sparrow Ledges",
+            hint: "The last coin is optional. Leave the cracked takeoff ledge before it drops.",
+            purpose: "Combine avoidance and a timed coin takeoff, with an empty landing clearing afterward.",
+            requiredRoute: ["l2-sunbreak", "l2-sunbreak-exit", "l2-sparrow-ground"],
+            optionalRoutes: [{ purpose: "Avoid the sunbreak mushroom.", platforms: ["l2-sunbreak-1", "l2-sunbreak-2", "l2-sunbreak-3"] },
+                { purpose: "Climb to the collapsing takeoff for Coin 3.", coinId: "level-2-coin-3", platforms: ["l2-sparrow-1", "l2-sparrow-2", "l2-gold-1", "l2-gold-2", "l2-gold-3", "grove-crumble-15750"] }],
+            platforms: [g("l2-sunbreak", 12790, 14200), g("l2-sparrow-ground", 14390, 15750),
+                p("l2-sunbreak-1", 13000, 365, 240, "enemy-bypass"), p("l2-sunbreak-2", 13320, 295, 300, "enemy-bypass"),
+                p("l2-sunbreak-3", 13700, 335, 200, "recovery"), p("l2-sunbreak-exit", 14070, 365, 130, "gap-assist"),
+                p("l2-sparrow-1", 14520, 365, 150, "stomp-opportunity"), p("l2-sparrow-2", 14740, 335, 180, "enemy-bypass"),
+                p("l2-gold-1", 15140, 365, 130, "coin-route"), p("l2-gold-2", 15350, 295, 115, "coin-route"),
+                p("l2-gold-3", 15560, 260, 110, "coin-route"), p("grove-crumble-15750", 15750, 300, 110, "coin-route", crumble)],
+            enemies: [e("l2-sunbreak-mushroom", "mushroom", 13350, 13120, 13740, "Avoidance before the wide gap, with room to recover.", 90),
+                e("l2-sparrow-slime", "slime", 14800, 14650, 14950, "Guard the approach, not the coin's landing clearing.", 95)],
+            hazards: [h("l2-sunbreak-thorns", 13940, 50)],
+            coins: [{ id: "level-2-coin-3", x: 15910, y: 190, difficulty: "hard" }]
+        },
+        {
+            id: "finish", start: 15930, end: 18000, difficulty: "medium", title: "The Grove Lookout",
+            hint: "One last familiar crossing, then follow the steps to the flag.",
+            purpose: "Recover after Coin 3, bypass the final mushroom and thorns, and finish on clear steps.",
+            requiredRoute: ["l2-lookout-ground", "l2-finish-1", "l2-finish-2", "l2-finish-3", "l2-flag"],
+            optionalRoutes: [{ purpose: "Avoid the final ground patrol and thorn patch.", platforms: ["l2-lookout-1", "l2-lookout-2", "l2-lookout-3", "l2-lookout-thorns"] }],
+            platforms: [g("l2-lookout-ground", 15930, 18000),
+                p("l2-lookout-1", 16120, 365, 160, "enemy-bypass"), p("l2-lookout-2", 16350, 335, 240, "enemy-bypass"),
+                p("l2-lookout-3", 16700, 365, 160, "recovery"), p("l2-lookout-thorns", 16910, 335, 200, "hazard-bypass"),
+                p("l2-finish-1", 17300, 365, 140, "required"), p("l2-finish-2", 17520, 295, 125, "required"),
+                p("l2-finish-3", 17740, 260, 110, "required"), p("l2-flag", 17880, 260, 120, "finish")],
+            enemies: [e("l2-lookout-mushroom", "mushroom", 16450, 16340, 16920, "A final familiar avoidance pattern before a safe finish.", 95)],
+            hazards: [h("l2-lookout-thorns-hazard", 17040, 45)]
+        }
+    ]
+});

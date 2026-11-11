@@ -2,9 +2,9 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0"
   },
-
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "validate:levels": "node game/scripts/validate-levels.mjs"
   }
 }

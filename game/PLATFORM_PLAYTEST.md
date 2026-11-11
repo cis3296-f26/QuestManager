@@ -12,10 +12,10 @@ Level 2 still unlocks by completing Level 1, without requiring all three coins.
 
 | Location | Mechanic | What to try |
 | --- | --- | --- |
-| Opening gap, x=660–850, top y=330 | Horizontal ferry | Use the opening raised path to board the marked wooden ferry. Release movement keys and let it carry you. Jump off toward the far side. |
-| Just before Fern Walk, x=2890, top y=375–215 | Vertical lift | Approach from the existing x=2770 ledge. Board when the lift is low enough, ride upward, and jump toward the x=3100 ledge. The original ground jump remains available. |
-| Fern Walk, x=4030, top y=375 | Collapsing board | Land, watch for cracks/shaking, then jump away. If you stay, it drops after one second; the safe ground below can catch you. |
-| Sparrow Ledges, x=15750, top y=300 | Collapsing board | Keep moving and jump for Coin 3 before the one-second warning ends. This is the original coin takeoff ledge, with its position and dimensions preserved. |
+| Opening gap, x=660–850, top y=365 | Horizontal ferry | Use the opening raised path to board the marked wooden ferry. Release movement keys and let it carry you. Jump off toward the far side. |
+| Just before Fern Walk, x=2890, top y=375–260 | Vertical lift | Approach from the existing x=2770 ledge. Board when the lift is low enough, ride upward, and jump toward the x=3100 ledge. The original ground jump remains available. |
+| Fern Walk, x=4030, top y=365 | Collapsing board | Land, watch for cracks/shaking, then jump away. If you stay, it drops after one second; the safe ground below can catch you. |
+| Sparrow Ledges, x=15750, top y=300 | Collapsing board | Keep moving and jump for Coin 3 before the one-second warning ends. This optional takeoff ledge leads into the final coin jump. |
 
 Moving platforms have cream direction arrows and pause briefly at both endpoints.
 Collapsing platforms are solid during their warning, then become non-solid immediately
@@ -35,7 +35,7 @@ As with the existing terrain, platforms have one-way tops: jumping up through th
 - Press R, die, or finish and choose Replay Level. Moving platforms return to their
   configured starting positions; warning and collapsed boards return fully stable.
 - Check all three coins, saved progress, map navigation, level unlocking, the completion
-  popup, slime stomping and the equipped character. Level 1 should feel unchanged.
+  popup, slime stomping and the equipped character. Check the redesigned Level 1 too; see LEVEL_DESIGN.md for its new routes.
 
 ## Shared architecture
 
@@ -52,23 +52,24 @@ As with the existing terrain, platforms have one-way tops: jumping up through th
   when continuing a stomp bounce.
 - `rendering/PlatformRenderer.js`: wooden boards, direction arrows, cosmetic warning
   cracks/shake and a short collapse effect. Rendering never changes collision geometry.
-- `game.js`: updates platforms before player movement and renders interactive terrain.
-- `levels/Level2.js`: adds two optional moving platforms and converts exactly two ledges
-  to collapsing boards. Enemy patrols, coins, hazards and the finish flag are unchanged.
+- `engine/stepLevel.js`: updates platforms before player movement; shared with route validation.
+- `game.js`: uses the shared tick and renders interactive terrain.
+- `levels/Level2.js`: authors interactive platforms inside named gameplay sections.
+  See LEVEL_DESIGN.md for current layout and coin changes.
 
 ## Future level configuration
 
 Add definitions to a level's existing `platforms` list:
 
 ```js
-{ id: "ferry", type: "moving", x: 660, y: 330, width: 110, height: 24,
+{ id: "ferry", type: "moving", x: 660, y: 365, width: 110, height: 24,
   axis: "x", distance: 190, speed: 70, pause: 0.3,
   startProgress: 0, startDirection: 1, appearance: "wood" }
 
 { id: "lift", type: "moving", x: 2890, y: 375, width: 100, height: 24,
-  axis: "y", distance: -160, speed: 55, pause: 0.4, appearance: "wood" }
+  axis: "y", distance: -115, speed: 55, pause: 0.4, appearance: "wood" }
 
-{ id: "crumble", type: "collapsing", x: 4030, y: 375, width: 160, height: 24,
+{ id: "crumble", type: "collapsing", x: 4030, y: 365, width: 160, height: 24,
   collapseDelay: 1, appearance: "wood" }
 ```
 
@@ -86,6 +87,5 @@ npm test
 The existing suite plus platform tests cover movement, pauses/reversals, riding, edge
 landings, jumping off, warning deadlines, disappearance, resets and camera-independent
 world coordinates at 30/60/120 FPS. A continuous Level 2 run with live platform/enemy
-state collects all three coins and reaches the flag at each rate. Original Level 1
-movement/stomp traces also match the prior engine. Automated checks supplement your
+state collects all three coins and reaches the flag at each rate. Both redesigned levels have full spawn-to-flag, three-coin route proofs. Automated checks supplement your
 browser playtest; the feel of the new mechanics is not finalized yet.

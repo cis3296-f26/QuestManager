@@ -1,3 +1,4 @@
+import { assertAuthoredRoute } from "./helpers/authoredRoute.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { Platform } from "../entities/Platform.js";
@@ -5,10 +6,6 @@ import { Player } from "../entities/Player.js";
 import { applyGravity, carryPlayer, moveHorizontally, jump } from "../engine/Physics.js";
 import { LevelManager } from "../levels/LevelManager.js";
 import { levels } from "../levels/levels.js";
-import { CoinManager } from "../levels/CoinManager.js";
-import { resolveEnemyInteractions } from "../engine/EnemyInteractions.js";
-import { touchesHazard } from "../engine/Hazards.js";
-import { readFileSync } from "node:fs";
 import { drawInteractivePlatforms } from "../rendering/PlatformRenderer.js";
 
 const moving = (options = {}) => new Platform({ type: "moving", x: 100, y: 300, width: 120,
@@ -186,30 +183,7 @@ test("Level 2 runtime platforms reset after an attempt and leave enemy supports 
 });
 
 test("Level 2 remains completable with three coins and live platform/enemy behavior at all frame rates", () => {
-    const routes = JSON.parse(readFileSync(new URL("./fixtures/stomp-safe-level2-routes.json", import.meta.url)));
-    for (const route of routes) {
-        const level = new LevelManager(levels[1]), coins = new CoinManager(level.config.coins);
-        const { player, platforms, enemies } = level;
-        const jumps = new Set(route.jumpFrames), dt = 1 / route.fps;
-        let finished = false;
-        for (let frame = 0; frame < route.totalFrames + route.fps * 2; frame++) {
-            if (jumps.has(frame) && player.grounded) jump(player, 650);
-            const previous = { x: player.x, y: player.y, width: player.width, height: player.height };
-            level.updatePlatforms(dt); carryPlayer(player, level.config.worldWidth);
-            const previousX = player.x;
-            const direction = route.inputs.find((entry) => frame >= entry.from && frame < entry.to)?.direction ?? 1;
-            moveHorizontally(player, direction, 280, level.config.worldWidth, dt);
-            applyGravity(player, 1800, platforms, dt, { previousX });
-            enemies.forEach((enemy) => enemy.update(dt));
-            const contact = resolveEnemyInteractions(player, previous, enemies, { dt, gravity: 1800, platforms });
-            assert.equal(contact.deadly, false, `enemy at ${frame / route.fps}s, ${route.fps} FPS`);
-            assert.ok(player.y < 540, `fell at ${frame / route.fps}s, ${route.fps} FPS`);
-            assert.equal(touchesHazard(player, level.config.hazards), false);
-            coins.update(player, dt);
-            if (level.checkCompletion()) { finished = true; break; }
-        }
-        assert.equal(finished, true); assert.equal(coins.pending.size, 3);
-    }
+    assertAuthoredRoute(levels[1]);
 });
 
 test("Level 2 ferry and lift can be boarded, ridden and exited to static terrain", () => {
@@ -236,7 +210,7 @@ test("Level 2 ferry and lift can be boarded, ridden and exited to static terrain
                 assert.equal(player.supportPlatform, ride);
                 assert.ok(Math.abs(player.x - ride.x - offset) < 1e-6);
             }
-            if (!ferry) for (let i = 0; i < fps * 7 && ride.y > 216; i++) tick(player, platforms, 1 / fps);
+            if (!ferry) for (let i = 0; i < fps * 7 && ride.y > 261; i++) tick(player, platforms, 1 / fps);
             jump(player, 650);
             assert.equal(player.supportPlatform, null);
             const stop = ferry ? 970 : 3160;

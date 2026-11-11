@@ -1,9 +1,10 @@
 import { PlayerAnimation } from "./PlayerAnimation.js";
+import { movement } from "../engine/Movement.js";
 
 export class Player {
     constructor(spawn) {
-        this.width = 32;
-        this.height = 64;
+        this.width = movement.playerWidth;
+        this.height = movement.playerHeight;
         this.animation = new PlayerAnimation();
         this.reset(spawn);
     }
