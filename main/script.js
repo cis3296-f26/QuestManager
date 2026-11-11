@@ -18,6 +18,8 @@ route();
 var input = document.getElementById("taskInput");
 var descriptionInput = document.getElementById("taskDescription");
 const priorityBoard = document.getElementById("priorityBoard");
+const priorityInput = document.getElementById("questPriority");
+const typeInput = document.getElementById("questType");
 var addButton = document.getElementById("addButton");
 const questForm = document.getElementById("questForm");
 const difficultyInputs = questForm.querySelectorAll('input[name="difficulty"]');
@@ -135,9 +137,9 @@ function renderTask(task, target) {
 }
 
 // ---------- Adding tasks ----------
-async function addTaskFor(title, difficulty, date, description = "") {
+async function addTaskFor(title, difficulty, date, description = "", priority = "medium", taskType = "personal") {
     // Save the description alongside the other task details.
-    const row = await createTask(title, description, difficulty, date);
+    const row = await createTask(title, description, difficulty, date, priority, taskType);
     allTasks.push(QuestObject.fromRow(row));
     renderLists();
 }
@@ -159,8 +161,8 @@ async function addTask() {
     addButton.disabled = true;
 
     try {
-        // Keep the existing date behavior. The due date button has no logic.
-        await addTaskFor(title, difficulty, todayStr(), description);
+        // Keep the existing date behavior. The due date button has no logic.a
+        await addTaskFor(title, difficulty, todayStr(), description, priorityInput.value, typeInput.value);
         questForm.reset();
         setTaskFormOpen(false);
     } catch (error) {
