@@ -31,7 +31,7 @@ export const level1 = defineLevel({
                 p("l1-bypass-exit", 2800, 365, 160, "recovery"),
                 p("l1-coin-step-1", 3900, 365, 170, "coin-route"), p("l1-coin-step-2", 4140, 295, 160, "coin-route"),
                 p("l1-coin-perch", 4380, 260, 240, "coin-route"), p("l1-coin-exit", 4740, 335, 180, "recovery")],
-            enemies: [e("l1-first-mushroom", "mushroom", 2580, 2450, 2780, "Teach mushroom avoidance with a visible upper alternative."),
+            enemies: [e("l1-first-mushroom", "mushroom", 2620, 2530, 2700, "Introduce a slower mushroom beneath the center of its visible bypass.", 60),
                 e("l1-coin-slime", "slime", 4100, 4010, 4290, "Guard the lower route, leaving the upper coin perch clear.", 70)],
             coins: [{ id: "level-1-coin-2", x: 4500, y: 230, difficulty: "medium" }]
         },
@@ -92,3 +92,4 @@ export const level1 = defineLevel({
         }
     ]
 });
+

@@ -8,15 +8,13 @@ export const level2 = defineLevel({
     stages: [
         {
             id: "introduction", start: 0, end: 2990, difficulty: "easy-medium", title: "The Winding Grove",
-            hint: "Wooden ferries offer another crossing. Slimes can be stomped; mushrooms cannot.",
-            purpose: "Introduce an optional ferry, one slime, then a mushroom bypass ending at a lift.",
+            hint: "Slimes can be stomped; mushrooms cannot. Try the lift after the upper bypass.",
+            purpose: "Begin with familiar jumps, one isolated slime, then a mushroom bypass ending at a lift.",
             requiredRoute: ["l2-start", "l2-first-landing", "l2-intro-east"],
-            optionalRoutes: [{ purpose: "Board and exit the ferry from the visible raised path.", platforms: ["l2-practice-1", "l2-practice-2", "l2-practice-3", "grove-ferry"] },
+            optionalRoutes: [{ purpose: "Practice a short climb above safe ground before the first gap.", platforms: ["l2-practice-1", "l2-practice-2"] },
                 { purpose: "Avoid the mushroom and ride the lift into Fern Walk.", platforms: ["l2-intro-bypass-1", "l2-intro-bypass-2", "l2-intro-bypass-exit", "l2-lift-approach", "grove-lift"] }],
             platforms: [g("l2-start", 0, 700), g("l2-first-landing", 830, 1680), g("l2-intro-east", 1840, 2820),
                 p("l2-practice-1", 200, 365, 160, "practice"), p("l2-practice-2", 430, 295, 150, "practice"),
-                p("l2-practice-3", 660, 260, 150, "ferry-approach"),
-                p("grove-ferry", 660, 365, 110, "alternate-crossing", { type: "moving", axis: "x", distance: 190, speed: 70, pause: 0.3, appearance: "wood" }),
                 p("l2-first-stomp", 980, 365, 180, "stomp-opportunity"),
                 p("l2-intro-bypass-1", 1980, 365, 170, "enemy-bypass"), p("l2-intro-bypass-2", 2210, 295, 200, "enemy-bypass"),
                 p("l2-intro-bypass-exit", 2480, 335, 160, "recovery"), p("l2-lift-approach", 2770, 330, 120, "lift-approach"),
@@ -47,15 +45,15 @@ export const level2 = defineLevel({
         },
         {
             id: "challenge", start: 6330, end: 9490, difficulty: "medium", title: "Mushroom Bend",
-            hint: "Choose a raised bypass or time a ground crossing. Rest before the next jump.",
-            purpose: "Use two different bypass shapes rather than repeating the same staircase.",
+            hint: "Wait on the grassy dock, then ride the ferry across the gap. The lower jump is still available.",
+            purpose: "Build from mushroom avoidance into a safe waiting dock and a useful ferry crossing, then recover before the slime.",
             requiredRoute: ["l2-bend-west", "l2-bend-east", "l2-long-gap-step"],
-            optionalRoutes: [{ purpose: "Climb above the mushroom and thorn patch.", platforms: ["l2-bend-1", "l2-bend-2", "l2-bend-3", "l2-bend-exit", "l2-bend-gap-step"] },
+            optionalRoutes: [{ purpose: "Bypass the mushroom and thorns, wait safely, then ride the ferry to the far bank.", platforms: ["l2-bend-1", "l2-bend-2", "l2-bend-3", "l2-bend-exit", "grove-ferry", "l2-shallow-1"] },
                 { purpose: "Use shallow ledges to bypass or stomp the slime.", platforms: ["l2-shallow-1", "l2-shallow-2", "l2-shallow-3"] }],
             platforms: [g("l2-bend-west", 6330, 7700), g("l2-bend-east", 7880, 9300),
                 p("l2-bend-1", 6400, 365, 170, "enemy-bypass"), p("l2-bend-2", 6640, 295, 180, "enemy-bypass"),
-                p("l2-bend-3", 6880, 260, 200, "enemy-bypass"), p("l2-bend-exit", 7200, 365, 180, "hazard-approach"),
-                p("l2-bend-gap-step", 7560, 335, 140, "gap-assist"),
+                p("l2-bend-3", 6880, 260, 200, "enemy-bypass"), p("l2-bend-exit", 7200, 365, 310, "ferry-dock"),
+                p("grove-ferry", 7560, 335, 140, "gap-crossing", { type: "moving", axis: "x", distance: 210, speed: 70, pause: 0.3, appearance: "wood" }),
                 p("l2-shallow-1", 8050, 365, 220, "stomp-opportunity"), p("l2-shallow-2", 8350, 335, 260, "enemy-bypass"),
                 p("l2-shallow-3", 8720, 365, 180, "recovery"), p("l2-long-gap-step", 9220, 365, 80, "gap-assist")],
             enemies: [e("l2-bend-mushroom", "mushroom", 6740, 6590, 7250, "A long, visible avoidance patrol with a raised route.", 90),
@@ -113,3 +111,4 @@ export const level2 = defineLevel({
         }
     ]
 });
+

@@ -23,15 +23,19 @@ for (const config of levels) {
         else console.log(`  PASS ${fps} FPS local jump graph: every authored platform reachable`);
     }
     try {
-        const routes = JSON.parse(readFileSync(new URL(`../tests/fixtures/level${config.id}-routes.json`, import.meta.url)));
-        if (routes.length !== 3 || [30, 60, 120].some((fps) => !routes.some((route) => route.fps === fps))) throw new Error("Missing route proof at a required frame rate.");
-        for (const route of routes) {
-            const result = simulateRoute(config, route);
-            if (!result.success) { failed = true; console.error(`  ERROR ${route.fps} FPS route: ${JSON.stringify(result)}`); }
-            else console.log(`  PASS ${route.fps} FPS spawn → all 3 coins → flag (${result.seconds.toFixed(1)}s optimized input trace)`);
+        for (const collection of ["all", "none"]) {
+            const suffix = collection === "all" ? "routes" : "main-routes";
+            const routes = JSON.parse(readFileSync(new URL(`../tests/fixtures/level${config.id}-${suffix}.json`, import.meta.url)));
+            if (routes.length !== 3 || [30, 60, 120].some((fps) => !routes.some((route) => route.fps === fps))) throw new Error(`Missing ${collection} route proof at a required frame rate.`);
+            for (const route of routes) {
+                const result = simulateRoute(config, route, { collection });
+                if (!result.success) { failed = true; console.error(`  ERROR ${route.fps} FPS ${collection} route: ${JSON.stringify(result)}`); }
+                else console.log(`  PASS ${route.fps} FPS spawn → ${collection === "all" ? "all 3 coins" : "zero coins"} → flag (${result.seconds.toFixed(1)}s optimized input trace)`);
+            }
         }
     } catch (error) { failed = true; console.error(`  ERROR: ${error.message}`); }
     for (const check of report.manualChecks) console.log(`  MANUAL: ${check}`);
 }
 console.log("\nMoving boarding/exits and collapse warning/escape/reset scenarios: run npm test as well.");
 process.exitCode = failed ? 1 : 0;
+

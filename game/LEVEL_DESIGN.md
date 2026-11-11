@@ -14,11 +14,11 @@ that `LevelManager`, the renderer and progress system already consume.
 | Level | Before | Now | Main design changes |
 | --- | --- | --- | --- |
 | 1 · The First Adventure | 22,000px, 87 platforms, 12 enemies | 16,000px, 44 platforms, 9 enemies | Remove repeated staircase padding; introduce isolated enemies; give mushrooms visible bypasses; separate thorn encounters from recovery landings; finish without a surprise enemy. |
-| 2 · The Winding Grove | 18,000px, 81 platforms, 12 enemies | 18,000px, 69 platforms, 12 enemies | Keep ground islands, shorten repeated climbs, vary bypass shapes, add raised takeoffs near wide gaps, make the canopy guard and collapsing coin takeoff deliberate optional challenges. |
+| 2 · The Winding Grove | 18,000px, 81 platforms, 12 enemies | 18,000px, 67 platforms, 12 enemies | Keep ground islands, shorten repeated climbs, vary bypass shapes, add raised takeoffs near wide gaps, make the canopy guard and collapsing coin takeoff deliberate optional challenges. |
 
 Low static ledges have enough clearance for the 64px player to walk underneath.
 High ledges stop at y=260, leaving the player's head below the HUD even at the
-highest normal jump. The ferry is now y=365; the lift travels y=375–260. The first
+highest normal jump. The ferry is at x=7560–7770, y=335, after the Mushroom Bend dock; the lift travels y=375–260. The first
 collapse board is y=365 over safe ground; the final one remains y=300 over the
 last optional coin approach. Both retain their one-second warning and normal resets.
 
@@ -88,9 +88,10 @@ The separate continuous input traces start at the real spawn, keep live enemy,
 stomp, moving/collapsing platform and thorn state, collect all three coins, then
 reach the finish without dying at each frame rate. No teleports, invulnerability,
 enemy removal or save writes are involved. Optimized traces take about 56.5 seconds
-in Level 1 and 63.8–64.3 seconds in Level 2; these are not human playtime estimates.
+in Level 1 and 63.8–64.4 seconds in Level 2; these are not human playtime estimates.
+Separate main-route traces finish with zero coin pickups at all three frame rates.
 The existing platform suite separately checks boarding/riding/exiting the ferry
-and lift, collapse warnings, escape, disappearance and reset behavior.
+and lift from three different starting phases, plus collapse warnings, escape, disappearance and reset behavior.
 
 Tests also cover malformed designs, an impossible isolated platform, no-jump
 failure, read-only validation, death/reset, saved coin identity and existing
@@ -107,7 +108,7 @@ do not weaken collision rules or remove failed assertions to fit a new layout.
    and open `/game/` on the same origin used for your saved progress.
 2. Play Level 1's main path, then replay for the optional meadow perch and final
    coin jump. Check readability, safe recoveries and the shorter course's pacing.
-3. In Level 2, ride the opening ferry and the lift near x=2890. Try boarding at
+3. In Level 2, ride the Mushroom Bend ferry near x=7560 and the lift near x=2890. Try boarding at
    different phases, waiting through reversals, walking off and jumping away.
 4. Trigger the first cracking board near x=4030 and let it drop onto safe ground.
    Then try the optional collapsing takeoff near x=15750 for Coin 3.
@@ -122,3 +123,4 @@ no level advances automatically. No master merge or database change is part of t
 Future design intentions remain grassland → forest → deep forest → cave → desert
 → ruins → ice → mountains → volcano → castle. They are guidance only, and adding
 a future level still requires authored data, route proofs and a human playtest.
+

@@ -188,18 +188,18 @@ test("Level 2 remains completable with three coins and live platform/enemy behav
 
 test("Level 2 ferry and lift can be boarded, ridden and exited to static terrain", () => {
     for (const fps of [30, 60, 120]) {
-        for (const id of ["grove-ferry", "grove-lift"]) {
+        for (const id of ["grove-ferry", "grove-lift"]) for (const phase of [0, 1.2, 3.3]) {
             const level = new LevelManager(levels[1]), { player, platforms } = level;
             const ride = platforms.find((platform) => platform.config?.id === id);
             const ferry = id === "grove-ferry";
-            player.reset({ x: ferry ? 120 : 2820, feetY: ferry ? 460 : 330 });
-            const jumps = ferry ? [170, 330, 530] : [];
-            let nextJump = 0;
+            level.updatePlatforms(phase);
+            player.reset({ x: ferry ? 7480 : 2820, feetY: ferry ? 365 : 330 });
+            let boardedJump = false;
+            let approachingLift = false;
             for (let frame = 0; frame < fps * 8 && player.supportPlatform !== ride; frame++) {
-                if (nextJump < jumps.length && player.x >= jumps[nextJump] && player.grounded) {
-                    jump(player, 650); nextJump++;
-                }
-                tick(player, platforms, 1 / fps, 1);
+                if (!ferry && ride.y >= 345) approachingLift = true;
+                if (ferry && !boardedJump && ride.x <= 7590 && player.grounded) { jump(player, 650); boardedJump = true; }
+                tick(player, platforms, 1 / fps, (ferry ? boardedJump : approachingLift) ? 1 : 0);
             }
             assert.equal(player.supportPlatform, ride, `${id} cannot be boarded at ${fps} FPS`);
             const offset = player.x - ride.x;
@@ -211,13 +211,14 @@ test("Level 2 ferry and lift can be boarded, ridden and exited to static terrain
                 assert.ok(Math.abs(player.x - ride.x - offset) < 1e-6);
             }
             if (!ferry) for (let i = 0; i < fps * 7 && ride.y > 261; i++) tick(player, platforms, 1 / fps);
+            if (ferry) for (let i = 0; i < fps * 7 && ride.x < 7769; i++) tick(player, platforms, 1 / fps);
             jump(player, 650);
             assert.equal(player.supportPlatform, null);
-            const stop = ferry ? 970 : 3160;
+            const stop = ferry ? 8070 : 3160;
             for (let i = 0; i < fps * 3 && !player.grounded; i++) tick(player, platforms, 1 / fps, player.x < stop ? 1 : 0);
             assert.equal(player.grounded, true);
             assert.ok(!player.supportPlatform.type, "exit must reach original static terrain");
-            assert.ok(player.x > (ferry ? 830 : 2990));
+            assert.ok(player.x > (ferry ? 7880 : 2990));
         }
     }
 });
@@ -236,3 +237,4 @@ test("warning/fall drawing is cosmetic, gone platforms stay invisible, and camer
     assert.equal(board.state, "gone");
     drawInteractivePlatforms(ctx, [board], 0, 960); assert.equal(calls.length, 0);
 });
+

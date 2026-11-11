@@ -7,6 +7,7 @@ import { simulateRoute } from "../levels/design/simulateRoute.js";
 import { LevelManager } from "../levels/LevelManager.js";
 import { stepLevel } from "../engine/stepLevel.js";
 import { assertAuthoredRoute } from "./helpers/authoredRoute.mjs";
+import { readFileSync } from "node:fs";
 
 test("section authoring preserves stable coin IDs and describes each route and encounter", () => {
     for (const level of levels) {
@@ -38,7 +39,7 @@ test("validator finds hidden coins, unsafe spawn, invalid motion paths and insuf
     broken.coins[1].y = 460;
     broken.spawn.x = 760;
     const ferry = broken.platforms.find((p) => p.id === "grove-ferry");
-    ferry.distance = -1000;
+    ferry.distance = -broken.worldWidth;
     broken.platforms.find((p) => p.id === "l2-practice-1").y = 390;
     const report = validateLevel(broken);
     assert.equal(report.valid, false);
@@ -63,6 +64,27 @@ test("local graph identifies an impossible isolated platform instead of guessing
 
 test("both complete three-coin routes survive live enemy/platform/hazard timing at all rates", () => {
     levels.forEach(assertAuthoredRoute);
+});
+
+test("both main routes reach the flag with zero coins at 30/60/120 FPS", () => {
+    for (const config of levels) {
+        const routes = JSON.parse(readFileSync(new URL(`./fixtures/level${config.id}-main-routes.json`, import.meta.url)));
+        assert.deepEqual(routes.map((route) => route.fps), [30, 60, 120]);
+        for (const route of routes) {
+            const result = simulateRoute(config, route, { collection: "none" });
+            assert.equal(result.success, true, `Level ${config.id}, ${route.fps} FPS: ${JSON.stringify(result)}`);
+            assert.deepEqual(result.coinIds, []);
+        }
+    }
+});
+
+test("main-route objective never ignores an incidental pickup or weakens the three-coin proof", () => {
+    const config = levels[0];
+    const collecting = JSON.parse(readFileSync(new URL("./fixtures/level1-routes.json", import.meta.url)))[0];
+    assert.equal(simulateRoute(config, collecting, { collection: "none" }).reason, "unexpected coin pickup");
+    const avoiding = JSON.parse(readFileSync(new URL("./fixtures/level1-main-routes.json", import.meta.url)))[0];
+    assert.equal(simulateRoute(config, avoiding).reason, "missing coins");
+    assert.throws(() => simulateRoute(config, avoiding, { collection: "skip" }));
 });
 
 test("validation and route proofs never mutate authored definitions or persist attempt state", () => {
@@ -99,3 +121,4 @@ test("shared runtime step preserves death priority, platform reset and camera-in
         assert.ok(level.platforms.filter((p) => p.type).every((p) => p.elapsed === 0 && p.state === "stable"));
     }
 });
+
