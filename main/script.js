@@ -18,6 +18,9 @@ route();
 var input = document.getElementById("taskInput");
 var descriptionInput = document.getElementById("taskDescription");
 const priorityBoard = document.getElementById("priorityBoard");
+const typeFilter = document.getElementById("typeFilter");
+const priorityInput = document.getElementById("questPriority");
+const typeInput = document.getElementById("questType");
 var addButton = document.getElementById("addButton");
 const questForm = document.getElementById("questForm");
 const difficultyInputs = questForm.querySelectorAll('input[name="difficulty"]');
@@ -39,8 +42,9 @@ let selectedDate = todayStr();
 // ---------- Rendering ----------
 // Today's quests, split into High / Medium / Low.
 function renderPriorityBoard() {
-    const todays = allTasks.filter(t => t.date === todayStr());
-
+    const filter = typeFilter.value;
+    const todays = allTasks.filter(t =>
+        t.date === todayStr() && (filter === "all" || t.taskType === filter));
     PRIORITIES.forEach(priority => {
         const section = priorityBoard.querySelector(`[data-priority="${priority}"]`);
         const target = section.querySelector(".priority-list");
@@ -136,9 +140,9 @@ function renderTask(task, target) {
 }
 
 // ---------- Adding tasks ----------
-async function addTaskFor(title, difficulty, date, description = "", time= null) {
+async function addTaskFor(title, difficulty, date, description = "", time = null, priority = "medium", taskType = "personal") {
     // Save the description alongside the other task details.
-    const row = await createTask(title, description, difficulty, date, time);
+    const row = await createTask(title, description, difficulty, date, time, priority, taskType);
     allTasks.push(QuestObject.fromRow(row));
     renderLists();
 }
@@ -163,7 +167,7 @@ async function addTask() {
         // Use the picked due date, or today if the field is empty.
         const dueDate = document.getElementById("questDueDate").value || todayStr();
         const dueTime = document.getElementById("questDueTime").value || null;
-        await addTaskFor(title, difficulty, dueDate, description, dueTime);
+        await addTaskFor(title, difficulty, dueDate, description, dueTime, priorityInput.value, typeInput.value);
         questForm.reset();
         setTaskFormOpen(false);
     } catch (error) {
@@ -418,6 +422,8 @@ priorityBoard.querySelectorAll(".priority-toggle").forEach(toggle => {
         setSectionOpen(section, !isOpen);
     });
 });
+// Redraw the board when a different task type is picked.
+typeFilter.addEventListener("change", renderPriorityBoard);
 // ---------- Wiring ----------
 questForm.addEventListener("submit", event => {
     event.preventDefault();
