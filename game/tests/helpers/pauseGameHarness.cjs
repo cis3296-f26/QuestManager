@@ -23,6 +23,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const window = { addEventListener: (key, handler) => windowEvents.set(key, handler), localStorage: {
         getItem: (key) => disk.get(key) ?? null, setItem: (key, value) => disk.set(key, value)
     } };
+    if (process.env.QUESTMANAGER_TEST_AUDIO === "1") window.AudioContext = require("./fakeAudioContext.cjs").FakeAudioContext;
     const location = { value: "#level-1", get hash() { return this.value; }, set hash(value) { this.value = value; queueMicrotask(() => windowEvents.get("hashchange")?.()); } };
     let account = "pause-A", authCallback;
     const supabase = { auth: { onAuthStateChange(fn) { authCallback = fn; return { data: { subscription: { unsubscribe() {} } } }; },
@@ -32,7 +33,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     await client.link(() => {}); await client.evaluate();
     const create = (source, id) => new vm.SourceTextModule(source, { context, identifier: id, importModuleDynamically: async () => client });
     const source = fs.readFileSync(path.join(root, "game/game.js"), "utf8") +
-        "\nglobalThis.api={level,pause,settings,keys,clock,gameLoop,restartLevel,startDeath,progress,get coins(){return coins},get camera(){return cameraX},get deathTime(){return deathTimeLeft},get map(){return worldMap},get playing(){return playing}};";
+        "\nglobalThis.api={level,pause,settings,audio,keys,clock,gameLoop,restartLevel,startDeath,progress,get coins(){return coins},get camera(){return cameraX},get deathTime(){return deathTimeLeft},get map(){return worldMap},get playing(){return playing}};";
     const entry = create(source, "game/game.js"), cache = new Map();
     await entry.link((specifier, ref) => {
         const id = path.posix.normalize(path.posix.join(path.posix.dirname(ref.identifier), specifier));
@@ -46,10 +47,41 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const escapeDialog = () => element("pauseDialog").emit("cancel");
     const key = (code, extra = {}) => canvas.emit("keydown", { code, repeat: false, ...extra });
     let time = 0;
-    const frame = (seconds = 1 / 60) => { time += seconds * 1000; a.gameLoop(time); };
+    const frame = (seconds = 1 / 60) => { time += seconds * 1000; a.audio.context?.advance(seconds); a.gameLoop(time); };
     const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms,
         coins: { time: a.coins.time, pending: [...a.coins.pending], saved: [...a.coins.saved], effects: a.coins.effects },
         reveal: [...a.level.exploration.reveal], notice: a.level.exploration.noticeTime, camera: a.camera });
+    if (process.env.QUESTMANAGER_TEST_AUDIO === "1") {
+        await a.audio.unlock();
+        const played = (name) => a.audio.context.sources.filter((source) => source.starts.length && source.buffer === a.audio.assets.effect(name)).length;
+        a.restartLevel(); canvas.focus(); frame(); frame();
+        const jumps = played("jump"); key("Space"); key("Space", { repeat: true }); key("KeyW");
+        assert.equal(played("jump"), jumps + 1);
+        const landings = played("land"); for (let i = 0; i < 70; i++) frame();
+        assert.equal(played("land"), landings + 1);
+        for (let i = 0; i < 10; i++) frame(); assert.equal(played("land"), landings + 1);
+        a.restartLevel(); canvas.focus(); frame();
+        const coin = a.level.config.coins[0], p = a.level.player;
+        p.x = coin.x - 10; p.y = coin.y - 35; p.grounded = false; p.velocityY = 0;
+        const pickups = played("coin"); frame(); frame(); assert.equal(played("coin"), pickups + 1);
+        for (let i = 0; i < 10; i++) frame(); assert.equal(played("coin"), pickups + 1);
+        a.progress.completeLevel(1, [coin.id]); a.restartLevel(); canvas.focus(); frame();
+        p.x = coin.x - 10; p.y = coin.y - 35; p.grounded = false; p.velocityY = 0; frame(); frame();
+        assert.equal(played("coin"), pickups + 1, "earned faded coins are silent");
+        a.restartLevel(); canvas.focus(); frame(); const slime = a.level.enemies.find((enemy) => enemy.stompable);
+        p.x = slime.x; p.y = slime.feetY - slime.height - p.height - 8; p.velocityY = 500; p.grounded = false;
+        const stomps = played("stomp"); for (let i = 0; i < 10 && slime.active; i++) frame();
+        assert.equal(played("stomp"), stomps + 1);
+        const deaths = played("death"); a.startDeath("Audio test"); a.startDeath("Audio test");
+        assert.equal(played("death"), deaths + 1); for (let i = 0; i < 50; i++) frame();
+        p.x = a.level.flagX; p.y = a.level.config.finish.platform.y - p.height; p.velocityY = 0; p.grounded = true;
+        p.supportPlatform = a.level.platforms.find((surface) => surface.id === a.level.config.finish.platform.id);
+        const victories = played("victory"); frame(); await turn(); frame();
+        assert.equal(played("victory"), victories + 1); assert.equal(a.audio.music, null);
+        element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
+        assert.equal(a.audio.scene, "grassland"); assert.ok(a.audio.music);
+        console.log("PASS actual audio wiring: single jump, landing, pickup, stomp, death and victory; earned coins silent; replay music restored.");
+    }
     for (const id of [1, 2]) {
         if (id === 2) { a.progress.completeLevel(1, []); a.map.refresh(); a.map.openLevel(2); await turn(); }
         assert.equal(a.level.config.id, id);

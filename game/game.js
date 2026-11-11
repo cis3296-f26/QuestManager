@@ -19,6 +19,8 @@ import { renderCoinProgress, drawCoinHUD } from "./ui/CoinProgress.js";
 import { GamePauseManager, GameClock } from "./engine/GamePauseManager.js";
 import { GameSettings, SettingsPersistence } from "./settings/GameSettings.js";
 import { PauseMenu } from "./ui/PauseMenu.js";
+import { AudioManager } from "./audio/AudioManager.js";
+import { GameAudioEvents } from "./audio/GameAudioEvents.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -51,8 +53,11 @@ let accountSession;
 let sessionReady = false;
 let attemptRevision = 0;
 const settings = new GameSettings(new SettingsPersistence(storage));
+const audio = new AudioManager(settings);
+const audioEvents = new GameAudioEvents(audio);
+audio.listenForUnlock(window);
 const pause = new GamePauseManager(() => sessionReady && playing && !level.complete && deathTimeLeft <= 0 && !completionDialog.open);
-pause.subscribe(() => { keys.clear(); clock.reset(); });
+pause.subscribe(() => { keys.clear(); clock.reset(); audio.setPaused(pause.paused); });
 const pauseMenu = new PauseMenu({ document, pause, settings,
     onRestart: () => restartLevel(), onMap: () => worldMap.openMap(),
     returnFocus: () => { if (playing && !completionDialog.open) canvas.focus(); } });
@@ -126,6 +131,8 @@ function restartLevel() {
     cameraX = 0;
     deathTimeLeft = 0;
     keys.clear();
+    audioEvents.reset();
+    audio.setScene(playing ? level.config.audio?.music ?? "grassland" : "map", { gameplay: playing, restart: playing });
 
     status.textContent = "Reach the flag! Press R to restart.";
 }
@@ -159,6 +166,7 @@ function playLevel(config) {
     coins = new CoinManager(config.coins);
     restartLevel();
     playing = true;
+    audio.setScene(config.audio?.music ?? "grassland", { gameplay: true });
     document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
     canvas.setAttribute("aria-label", `Level ${config.id}: ${config.name} platform game`);
     canvas.focus();
@@ -203,6 +211,7 @@ canvas.addEventListener("keydown", event => {
         player.grounded
     ) {
         jump(player, jumpStrength);
+        audioEvents.jump();
     }
 });
 
@@ -213,9 +222,13 @@ canvas.addEventListener("keyup", event => {
 // Avoid stuck movement when switching tabs or clicking away.
 canvas.addEventListener("blur", () => keys.clear());
 window.addEventListener("blur", () => keys.clear());
+window.addEventListener("blur", () => audio.setActive(false));
+window.addEventListener("focus", () => audio.setActive(document.visibilityState !== "hidden"));
+window.addEventListener("pageshow", () => audio.setActive(document.visibilityState !== "hidden"));
 
-function startDeath(message) {
+function startDeath(message, reason = "enemy") {
     if (deathTimeLeft > 0) return;
+    audio.die(reason);
     coins.discard();
     updateCoinHUD();
     player.animation.beginDeath(player, canvas.height);
@@ -234,10 +247,11 @@ function update(dt) {
     const left = keys.has("ArrowLeft") || keys.has("KeyA");
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
+    const beforeAudio = audioEvents.capture(level, coins);
     const result = stepLevel(level, Number(right) - Number(left), dt);
     if (result.death) {
         const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…" };
-        startDeath(message[result.death]);
+        startDeath(message[result.death], result.death);
         return;
     }
     if (result.discovered.length) status.textContent = `Found: ${level.exploration.notice}. Reach the flag to save new coins.`;
@@ -246,8 +260,10 @@ function update(dt) {
 
     // Hazards win over collection when both are touched in the same frame.
     if (coins.update(player, dt)) updateCoinHUD();
+    audioEvents.after(beforeAudio, level, coins, result);
 
     if (level.checkCompletion()) {
+        audio.complete();
         keys.clear();
         status.textContent = "Flag reached! Saving collectible progress…";
         void finishLevel();
@@ -343,6 +359,7 @@ window.addEventListener("pagehide", () => {
         completionDialog.close();
     }
     restartLevel();
+    audio.setActive(false);
 });
 
 status.textContent = "Checking your account before the adventure begins…";

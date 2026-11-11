@@ -2,7 +2,7 @@ import { level1Scenery } from "./Level1Scenery.js";
 import { defineLevel, ground as g, ledge as p, creature as e, thorns as h } from "./design/defineLevel.js";
 
 export const level1 = defineLevel({
-    id: 1, name: "The First Adventure", worldWidth: 16000,
+    id: 1, name: "The First Adventure", worldWidth: 16000, audio: { music: "grassland" },
     spawn: { x: 80, feetY: 460 }, scenery: level1Scenery, finishId: "l1-flag",
     explorationAreas: [
         {

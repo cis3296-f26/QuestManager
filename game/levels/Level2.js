@@ -4,7 +4,7 @@ const crumble = { type: "collapsing", collapseDelay: 1, appearance: "wood" };
 
 export const level2 = defineLevel({
     id: 2, name: "The Winding Grove", theme: "forest", mapSummary: "Forest · Canopy paths and winding clearings",
-    worldWidth: 18000, spawn: { x: 80, feetY: 460 }, scenery: level2Scenery, finishId: "l2-flag",
+    worldWidth: 18000, audio: { music: "forest" }, spawn: { x: 80, feetY: 460 }, scenery: level2Scenery, finishId: "l2-flag",
     explorationAreas: [
         {
             id: "l2-leafy-canopy", title: "Leafy Canopy", kind: "elevated",

@@ -65,10 +65,9 @@ each account have distinct browser keys, separate from collectible achievements.
 If storage cannot be accessed/written, settings work in isolated session memory
 and the panel explains that they will not survive refresh.
 
-No music or effects currently exist in the game. The panel says so explicitly;
-this task does not add audio assets/playback. `AudioPreferences` provides a future
-media adapter: effective gain is master × channel gain, or zero while muted.
-Connecting a media element applies its volume/muted values without starting playback.
+Original soft retro music and effects now use these settings. Effective gain is
+master × channel gain, or zero while muted. Audio begins after a user gesture and
+pauses with gameplay. See [AUDIO_PLAYTEST.md](AUDIO_PLAYTEST.md) for listening checks.
 
 Reduce Motion removes character bob/tilt/squash, coin spinning and pickup travel/
 expansion, and collapsing-board warning shake. It preserves limb poses, moving
