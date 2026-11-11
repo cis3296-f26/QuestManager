@@ -12,13 +12,16 @@ export class QuestObject {
     #date;
     #priority;
     #taskType;
+    #time;
+    
 
     constructor(taskID, userID, title, description, difficulty) {
         this.#taskID = taskID;
         this.#userID = userID;
         this.#title = title;
         this.#description = description;
-        this.#date = null
+        this.#date = null;
+        this.#time = null;
 
         //doing a check in the constructor just in case
         if (difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
@@ -128,6 +131,14 @@ export class QuestObject {
     set date(d) {
         this.#date = d;
     }   // "YYYY-MM-DD"
+
+    get time() {
+        return this.#time;
+    }
+
+    set time(time) {
+        this.#time = time;
+    }
     get priority() {
         return this.#priority;
     }
@@ -166,6 +177,7 @@ export class QuestObject {
         if (row.rewarded) quest.markRewarded();
         quest.repeatRule = row.repeat_rule;
         quest.date = row.task_date;
+        quest.time = row.task_time;
         if (PRIORITIES.includes(row.priority)) quest.priority = row.priority;
         if (TASK_TYPES.includes(row.task_type)) quest.taskType = row.task_type;
         return quest;

@@ -77,10 +77,10 @@ export async function loadTasks(userId) {
 }
 
 // taskDate is "YYYY-MM-DD"
-export async function createTask(title, description, difficulty, taskDate) {
+export async function createTask(title, description, difficulty, taskDate, taskTime = null) {
     const { data, error } = await supabase
         .from("tasks")
-        .insert({ title, description, difficulty, task_date: taskDate })
+        .insert({ title, description, difficulty, task_date: taskDate, task_time: taskTime })
         .select()
         .single();
     if (error) throw error;
@@ -113,4 +113,12 @@ export async function saveEquipped(userId, itemId, equipped, allEquippedIds) {
         equipSavedInDatabase = false;
     }
     saveLocalEquipped(userId, allEquippedIds);
+}
+
+export async function updateTaskSchedule(taskId, taskDate, taskTime) {
+    const { error } = await supabase
+        .from("tasks")
+        .update({ task_date: taskDate, task_time: taskTime })
+        .eq("id", taskId);
+    if (error) throw error;
 }
