@@ -296,6 +296,8 @@ function showCalendar() {
 
     if (!calendar) {
         calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
+            eventDisplay: "block",             // timed quests render as colored bars, not dots
+            nextDayThreshold: "09:00:00",      // an 11:33pm quest no longer spills into the next day
             editable: true,
             snapDuration: "00:15:00",           // moves in 15-minute steps
             defaultTimedEventDuration: "00:30:00",

@@ -278,12 +278,21 @@
 #difficultyHard:checked + label   { background: var(--diff-hard);   border-color: var(--diff-hard);   color: #fff; }
 
 /* Quest cards (home board and journal board) */
-li[data-difficulty="easy"]   { border-left: 6px solid var(--diff-easy); }
-li[data-difficulty="medium"] { border-left: 6px solid var(--diff-medium); }
-li[data-difficulty="hard"]   { border-left: 6px solid var(--diff-hard); }
-li[data-difficulty="easy"]   .quest-difficulty { color: var(--diff-easy);   font-weight: 700; }
-li[data-difficulty="medium"] .quest-difficulty { color: var(--diff-medium); font-weight: 700; }
-li[data-difficulty="hard"]   .quest-difficulty { color: var(--diff-hard);   font-weight: 700; }
+/* Difficulty colors on the Home board and the Journal board */
+#priorityBoard li[data-difficulty="easy"],   #dayTaskList li[data-difficulty="easy"]   { --diff: #2e7d32; }
+#priorityBoard li[data-difficulty="medium"], #dayTaskList li[data-difficulty="medium"] { --diff: #1565c0; }
+#priorityBoard li[data-difficulty="hard"],   #dayTaskList li[data-difficulty="hard"]   { --diff: #c62828; }
+
+#priorityBoard li[data-difficulty],
+#dayTaskList li[data-difficulty] {
+    border-left: 6px solid var(--diff) !important;
+}
+
+#priorityBoard li[data-difficulty] .quest-difficulty,
+#dayTaskList li[data-difficulty] .quest-difficulty {
+    color: var(--diff) !important;
+    font-weight: 700;
+}
 
 /* Completed quests on the calendar */
 .fc-event.completed { opacity: 0.55; }
