@@ -109,14 +109,7 @@
                 Move with A/D or the left/right arrows.
                 Jump with Space, W, or the up arrow. Press R to restart. Reach the flag to finish!
             </p>
-            <div class="coin-hud" aria-label="Level collectible achievements">
-                <div class="coin-hud-summary">
-                    <strong id="coinCounter" role="status" aria-live="polite">Coins: 0/3</strong>
-                    <div id="hudCoins"></div>
-                </div>
-                <p id="coinSaveHint">Reach the flag to save new coins.</p>
-                <small id="progressStorageStatus">Checking account…</small>
-            </div>
+            <p id="coinCounter" class="visually-hidden" role="status" aria-live="polite">Coins: 0/3</p>
             <canvas id="gameCanvas" width="960" height="540" tabindex="0"
                 aria-label="Level 1 platform game" aria-describedby="gameInstructions">
                 Your browser does not support the canvas needed for this game.
@@ -144,4 +137,5 @@
     <script type="module" src="./game.js"></script>
 </body>
 </html>
+
 

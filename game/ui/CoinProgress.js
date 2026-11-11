@@ -13,3 +13,30 @@ export function renderCoinProgress(container, definitions, savedIds, pendingIds 
         container.appendChild(icon);
     }
 }
+
+// Three compact achievement slots inside the tan section bar, in screen space.
+export function drawCoinHUD(ctx, definitions, savedIds, pendingIds, viewWidth) {
+    ctx.save();
+    definitions.forEach((coin, index) => {
+        const earned = savedIds.has(coin.id), pending = pendingIds.has(coin.id);
+        const x = viewWidth - 119 + index * 38;
+        ctx.fillStyle = earned || pending ? "#efbd43" : "#c8c1b3";
+        ctx.strokeStyle = earned || pending ? "#795b29" : "#746b5b";
+        ctx.lineWidth = 2;
+        ctx.setLineDash(pending && !earned ? [3, 2] : []);
+        ctx.beginPath();
+        ctx.arc(x, 39, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.arc(x, 39, 10, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, 32);
+        ctx.lineTo(x, 46);
+        ctx.stroke();
+    });
+    ctx.restore();
+}
+

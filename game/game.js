@@ -10,7 +10,7 @@ import { CoinManager } from "./levels/CoinManager.js";
 import { LocalProgressStore } from "./progress/LocalProgressStore.js";
 import { LevelProgressManager } from "./progress/LevelProgressManager.js";
 import { connectGameSession } from "./progress/GameSession.js";
-import { renderCoinProgress } from "./ui/CoinProgress.js";
+import { renderCoinProgress, drawCoinHUD } from "./ui/CoinProgress.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -43,15 +43,8 @@ let sessionReady = false;
 let attemptRevision = 0;
 
 function updateCoinHUD() {
-    const saved = progress.getLevel(level.config.id);
-    document.getElementById("coinCounter").textContent = `Coins: ${coins.count}/3`;
-    renderCoinProgress(document.getElementById("hudCoins"), level.config.coins, coins.saved, coins.pending);
-    document.getElementById("coinSaveHint").textContent =
-        `Saved: ${saved.coinIds.length}/3 · Reach the flag to save new coins.`;
-    document.getElementById("progressStorageStatus").textContent = progress.persistent
-        ? "Saved on this browser for your signed-in account. Collectibles are not shop currency."
-        : progress.userId ? "Browser saving is unavailable. Progress is kept for this session only."
-            : "Session-only progress. Sign in on the homepage for account-specific browser saves.";
+    // The visible HUD is drawn inside the canvas; announce pickups without another panel.
+    document.getElementById("coinCounter").textContent = `Coins: ${coins.count}/3. Reach the flag to save new coins.`;
 }
 
 function changeAccount(userId) {
@@ -237,16 +230,18 @@ function draw() {
     ctx.restore();
 
     // Section names are drawn in screen space; they never collide with the player.
-    const section = [...(level.config.sections ?? [])].reverse().find((entry) => player.x >= entry.x);
+    const section = [...(level.config.sections ?? [])].reverse().find((entry) => player.x >= entry.x)
+        ?? level.config.sections?.[0];
     if (section) {
         ctx.fillStyle = "rgba(250, 240, 230, 0.95)";
         ctx.fillRect(12, 12, canvas.width - 24, 55);
         ctx.fillStyle = "#3d5f26";
         ctx.font = "bold 17px Georgia";
-        ctx.fillText(section.title, 25, 34);
+        ctx.fillText(section.title, 25, 34, canvas.width - 190);
         ctx.font = "13px Arial";
-        ctx.fillText(section.hint, 25, 55);
+        ctx.fillText(section.hint, 25, 55, canvas.width - 190);
     }
+    drawCoinHUD(ctx, level.config.coins, coins.saved, coins.pending, canvas.width);
 
     if (deathTimeLeft > 0) {
         const fade = 1 - deathTimeLeft / deathDelay;
@@ -299,3 +294,4 @@ connectGameSession(changeAccount).then((session) => {
     status.textContent = "Click inside the game to begin The First Adventure.";
 });
 requestAnimationFrame(gameLoop);
+

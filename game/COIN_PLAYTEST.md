@@ -8,15 +8,16 @@ is still disabled. This change does not add Supabase tables or spendable shop cu
 
 1. Sign in on the normal QuestManager homepage and equip your character as usual.
 2. Open `/game/` on the **same origin** (for example, `http://127.0.0.1:8000/game/`).
-3. The HUD should say that saves belong to your signed-in account on this browser.
+3. Three coin icons appear at the top right of the tan section bar inside the game.
+   Saves belong to your signed-in account on this browser.
    Signed-out play, unavailable authentication, or blocked storage uses session-only progress;
-   the HUD and finish dialog explicitly identify that mode.
+   the finish dialog explicitly identifies that mode.
 
 Each coin icon has a fixed identity: left = coin 1, middle = coin 2, right = coin 3.
 Gray means not earned, dashed gold means picked up this attempt, solid gold means earned
 by reaching the flag. Saved coins appear faded in the level and cannot be collected again.
-The counter includes both saved coins and new pickups; the separate Saved count shows
-which achievements have already been credited.
+The three HUD slots include both saved coins and new pickups. The finish dialog shows
+the saved collection count; screen readers also receive pickup count announcements.
 
 ## Gameplay checks
 
@@ -76,3 +77,4 @@ completion without coins, unlock metadata, 30-coin totals, coin-route physics an
 Keep coin IDs stable when adjusting positions. New levels can define their own three IDs
 and locations and reuse these modules. Local saves are development achievements on one
 browser/origin, not an authoritative reward system. Supabase persistence is a later task.
+
