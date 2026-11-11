@@ -1,7 +1,10 @@
+import { PlayerAnimation } from "./PlayerAnimation.js";
+
 export class Player {
     constructor(spawn) {
         this.width = 32;
         this.height = 64;
+        this.animation = new PlayerAnimation();
         this.reset(spawn);
     }
 
@@ -13,6 +16,7 @@ export class Player {
         this.facing = 1;
         this.walkPhase = 0;
         this.isMoving = false;
+        this.animation.reset();
     }
 
     trackMovement(previousX) {

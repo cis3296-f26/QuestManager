@@ -1,3 +1,4 @@
+import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { level1 } from "./levels/Level1.js";
 import { touchesHazard, drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
@@ -20,8 +21,9 @@ const jumpStrength = 650;
 const keys = new Set();
 let lastTime = null;
 let cameraX = 0;
-const deathDelay = 0.35;
+const deathDelay = 0.7;
 let deathTimeLeft = 0;
+const avatar = new AvatarRenderer();
 
 
 // Click the game to give it keyboard focus.
@@ -79,6 +81,8 @@ canvas.addEventListener("blur", () => keys.clear());
 window.addEventListener("blur", () => keys.clear());
 
 function startDeath(message) {
+    if (deathTimeLeft > 0) return;
+    player.animation.beginDeath(player, canvas.height);
     deathTimeLeft = deathDelay;
     keys.clear();
     status.textContent = message;
@@ -125,130 +129,8 @@ function update(dt) {
     }
 }
 
-let avatarImages = [];
-
-async function loadGameAvatar() {
-    try {
-        const [
-            { supabase },
-            { loadPlayer },
-            { SHOP_ITEMS },
-            { cleanEquipped },
-            { stageLayers }
-        ] = await Promise.all([
-            import("../main/users/supabaseClient.js"),
-            import("../main/users/playerData.js"),
-            import("../main/shop/shopItems.js"),
-            import("../main/customize/avatar/loadout.js"),
-            import("../main/customize/avatar/stage.js")
-        ]);
-
-        const { data, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (!data.session) return;
-
-        const saved = await loadPlayer(data.session.user.id);
-        const equipped = cleanEquipped(SHOP_ITEMS, saved.inventory, saved.equipped ?? []);
-        const layers = stageLayers("avatar", equipped);
-
-        const images = await Promise.all(layers.map(async ({ src }) => {
-            const image = new Image();
-
-            // Shop paths start at the app root, one folder above /game/.
-            image.src = new URL(`../${src}`, document.baseURI).href;
-
-            try {
-                await image.decode();
-                return image;
-            } catch {
-                return null;
-            }
-        }));
-
-        // Keep the stick figure if the base sprite couldn't load.
-        if (images[0]) avatarImages = images.filter(Boolean);
-    } catch (error) {
-        console.warn("Could not load the game avatar:", error);
-    }
-}
-
 function drawPlayer() {
-    const centerX = player.x + player.width / 2;
-    const feetY = player.y + player.height;
-    const isActive = deathTimeLeft === 0 && !level.complete;
-    const isWalking = isActive && player.isMoving && player.grounded;
-
-    const stride = isWalking ? Math.sin(player.walkPhase) : 0;
-    const bounce = Math.abs(stride) * 3;
-
-    let tilt = stride * 0.06;
-    let stretchX = 1;
-    let stretchY = 1;
-
-    if (isActive && !player.grounded) {
-        // Blend through a neutral pose at the top of the jump.
-        const airMotion = Math.max(-1, Math.min(1, player.velocityY / 350));
-        tilt = -airMotion * 0.14;
-        stretchX = 1 + airMotion * 0.08;
-        stretchY = 1 - airMotion * 0.10;
-    }
-
-    ctx.save();
-    ctx.translate(centerX, feetY - bounce);
-    ctx.scale(player.facing, 1);
-    ctx.rotate(tilt);
-    ctx.scale(stretchX, stretchY);
-    ctx.translate(-centerX, -feetY);
-    drawPlayerArt();
-    ctx.restore();
-}
-
-function drawPlayerArt() {
-
-    if (avatarImages.length > 0) {
-        const size = player.height;
-        const centerX = player.x + player.width / 2;
-        const feetY = player.y + player.height;
-
-        for (const image of avatarImages) {
-            const scale = size / Math.max(image.naturalWidth, image.naturalHeight);
-            const width = image.naturalWidth * scale;
-            const height = image.naturalHeight * scale;
-
-            ctx.drawImage(image, centerX - width / 2, feetY - height, width, height);
-        }
-
-        return;
-    }
-
-    // Temporary stick character, drawn without an image file.
-    const centerX = player.x + player.width / 2;
-    const top = player.y;
-
-    ctx.strokeStyle = "#222";
-    ctx.fillStyle = "#faf0e6";
-    ctx.lineWidth = 4;
-    ctx.lineCap = "round";
-
-    // Head.
-    ctx.beginPath();
-    ctx.arc(centerX, top + 12, 10, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    // Body, arms, and legs.
-    ctx.beginPath();
-    ctx.moveTo(centerX, top + 22);
-    ctx.lineTo(centerX, top + 42);
-
-    ctx.moveTo(centerX - 12, top + 37);
-    ctx.lineTo(centerX, top + 27);
-    ctx.lineTo(centerX + 12, top + 37);
-
-    ctx.moveTo(centerX - 12, top + 62);
-    ctx.lineTo(centerX, top + 42);
-    ctx.lineTo(centerX + 12, top + 62);
-    ctx.stroke();
+    avatar.draw(ctx, player);
 }
 
 function drawCreature(creature) {
@@ -349,6 +231,11 @@ function draw() {
         const fade = 1 - deathTimeLeft / deathDelay;
         ctx.fillStyle = `rgba(17, 24, 39, ${fade * 0.8})`;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#faf0e6";
+        ctx.font = "bold 28px Georgia";
+        ctx.textAlign = "center";
+        ctx.fillText("Try again!", canvas.width / 2, canvas.height / 2);
+        ctx.textAlign = "start";
     }
 }
 
@@ -363,6 +250,11 @@ function gameLoop(time) {
     // Pause movement when the game does not have keyboard focus.
     if (document.activeElement === canvas) {
         update(dt);
+        player.animation.update(player, dt, {
+            dead: deathTimeLeft > 0,
+            deathProgress: 1 - deathTimeLeft / deathDelay,
+            complete: level.complete
+        });
     }
 
     draw();
@@ -370,5 +262,5 @@ function gameLoop(time) {
 }
 
 status.textContent = "Click inside the game to begin The First Adventure.";
-loadGameAvatar();
+avatar.load();
 requestAnimationFrame(gameLoop);
