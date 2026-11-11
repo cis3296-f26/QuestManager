@@ -12,8 +12,8 @@ import { drawExplorationFoliage, drawDiscoveryNotice } from "../rendering/Explor
 
 const witnesses = JSON.parse(readFileSync(new URL("./fixtures/exploration-routes.json", import.meta.url)));
 
-test("exploration routes have valid hints, real entrance/exit terrain and the original six coin IDs", () => {
-    assert.deepEqual(levels.map((level) => level.explorationAreas.length), [2, 3]);
+test("exploration routes have valid hints, real entrance/exit terrain and stable coin IDs", () => {
+    assert.deepEqual(levels.map((level) => level.explorationAreas.length), [2, 3, 3]);
     for (const config of levels) {
         assert.deepEqual(validateExploration(config), []);
         assert.deepEqual(config.coins.map((coin) => coin.id), [1, 2, 3].map((n) => `level-${config.id}-coin-${n}`));
@@ -21,7 +21,7 @@ test("exploration routes have valid hints, real entrance/exit terrain and the or
 });
 
 test("each secret can be entered, earn its linked coin and reconnect at 30/60/120 FPS", () => {
-    assert.equal(witnesses.length, 15);
+    assert.equal(witnesses.length, levels.reduce((n, config) => n + config.explorationAreas.length * 3, 0));
     for (const config of levels) for (const area of config.explorationAreas) {
         const routes = witnesses.filter((route) => route.levelId === config.id && route.areaId === area.id);
         assert.deepEqual(routes.map((route) => route.fps), [30, 60, 120]);

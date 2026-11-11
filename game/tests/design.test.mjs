@@ -62,11 +62,11 @@ test("local graph identifies an impossible isolated platform instead of guessing
     assert.ok(platformReachability(level).unreachable.includes("unreachable"));
 });
 
-test("both complete three-coin routes survive live enemy/platform/hazard timing at all rates", () => {
+test("all complete three-coin routes survive live enemy/platform/hazard timing at all rates", () => {
     levels.forEach(assertAuthoredRoute);
 });
 
-test("both main routes reach the flag with zero coins at 30/60/120 FPS", () => {
+test("all main routes reach the flag with zero coins at 30/60/120 FPS", () => {
     for (const config of levels) {
         const routes = JSON.parse(readFileSync(new URL(`./fixtures/level${config.id}-main-routes.json`, import.meta.url)));
         assert.deepEqual(routes.map((route) => route.fps), [30, 60, 120]);

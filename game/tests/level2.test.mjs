@@ -10,7 +10,7 @@ import { levels } from "../levels/levels.js";
 
 test("Level 2 has three distinct achievements, safe decoration placement and supported patrols", () => {
     assert.equal(level2.coins.length, 3);
-    assert.equal(new Set(levels.flatMap((level) => level.coins.map((coin) => coin.id))).size, 6);
+    assert.equal(new Set(levels.flatMap((level) => level.coins.map((coin) => coin.id))).size, levels.length * 3);
     for (const enemy of level2.enemies) {
         assert.ok(level2.platforms.some((platform) => platform.y === enemy.feetY &&
             enemy.minX >= platform.x && enemy.maxX + enemy.width <= platform.x + platform.width),
@@ -72,9 +72,10 @@ test("Level 2 restarts reset elevated enemies; progress and coins stay independe
     assert.deepEqual(progress.getLevel(1).coinIds, []);
     assert.deepEqual(progress.getLevel(2).coinIds, [level2.coins[1].id]);
     assert.deepEqual(progress.totalCoins, { earned: 1, possible: 30 });
-    assert.equal(progress.getLevel(3).unlocked, true, "metadata prepares the next unlock without building Level 3");
+    assert.equal(progress.getLevel(3).unlocked, true, "completion unlocks the next registered level");
 });
 
 test("continuous spawn-to-flag runs collect all three coins without dying at 30/60/120 FPS", () => {
     assertAuthoredRoute(level2);
 });
+

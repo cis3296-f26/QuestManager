@@ -25,16 +25,17 @@ function fixture(hash = "") {
     globalThis.document = { getElementById: (id) => elements[id], querySelectorAll: () => nodes, createElement: element };
     globalThis.window = { addEventListener: (key, callback) => windowListeners[key] = callback };
     globalThis.location = { hash };
-    let saved = [], completed = false, plays = 0, returns = 0;
+    let saved = [], completed = false, secondCompleted = false, plays = 0, returns = 0;
     const map = new WorldMap({ levels,
-        getProgress: (id) => ({ unlocked: id === 1 || (id === 2 && completed),
-            completed: id === 1 && completed, coinIds: id === 1 ? saved : [], fullyCompleted: id === 1 && saved.length === 3 }),
+        getProgress: (id) => ({ unlocked: id === 1 || (id === 2 && completed) || (id === 3 && secondCompleted),
+            completed: id === 1 && completed || id === 2 && secondCompleted, coinIds: id === 1 ? saved : [], fullyCompleted: id === 1 && saved.length === 3 }),
         getTotal: () => ({ earned: saved.length, possible: 30 }),
         onPlay: () => plays++, onMap: () => returns++
     });
     return { map, elements, nodes,
         get plays() { return plays; }, get returns() { return returns; },
         save(ids) { saved = ids; completed = true; map.refresh(); },
+        completeSecond() { secondCompleted = true; map.refresh(); },
         route(hash) { globalThis.location.hash = hash; windowListeners.hashchange(); },
         restore() { Object.assign(globalThis, previous); }
     };
@@ -102,5 +103,26 @@ test("finishing Level 1 unlocks Level 2 and explicit Next navigation without req
         assert.match(f.elements.mapLevelStatus.textContent, /Forest/);
         assert.equal(f.map.hasNext(), false);
         assert.ok(f.nodes.slice(2).every((node) => node.disabled));
+    } finally { f.restore(); }
+});
+
+
+
+test("Level 2 unlocks Deep Forest selection and Next; unfinished Crystal Cave remains unavailable", () => {
+    const f = fixture("#level-2");
+    try {
+        f.save([]); f.route("#level-2");
+        assert.equal(f.nodes[2].disabled, true); assert.equal(f.map.hasNext(), false);
+        f.completeSecond();
+        assert.equal(f.nodes[2].disabled, false); assert.equal(f.map.hasNext(), true);
+        assert.equal(globalThis.location.hash, "#level-2", "no automatic advancement");
+        f.nodes[2].listeners.click();
+        assert.match(f.elements.levelSelectionContent.children[0].textContent, /Deep Forest/);
+        assert.equal(f.elements.levelSelectionContent.children[2].children.length, 3);
+        f.map.openLevel(3); f.route("#level-3");
+        assert.equal(f.map.playing, true); assert.equal(f.map.hasNext(), false);
+        f.map.openNext(); assert.equal(globalThis.location.hash, "#level-3");
+        assert.ok(f.nodes.slice(3).every(n => n.disabled));
+        f.route("#level-4"); assert.equal(f.map.playing, false);
     } finally { f.restore(); }
 });

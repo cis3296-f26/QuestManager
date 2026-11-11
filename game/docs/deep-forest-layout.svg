@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1430" viewBox="0 0 1200 1430" role="img" aria-labelledby="title desc"><title id="title">Deep Forest authored level layout</title><desc id="desc">Five sections showing actual platform, enemy patrol, hazard, moving platform and coin locations. Horizontal scale differs per section; vertical positions share the game coordinate system.</desc><g font-family="Arial, sans-serif">
+<rect x="0" y="0" width="1200" height="1430" fill="#faf0e6" rx="0"/>
+<text x="34" y="42" font-size="28" fill="#35502b">QuestManager · Level 3: Deep Forest</text>
+<text x="34" y="70" font-size="17" fill="#35502b">Authored geometry · lower terrain is the main route; upper branches and secrets reconnect.</text>
+<rect x="35" y="93" width="15" height="15" fill="#a47f58" rx="0"/>
+<text x="57" y="106" font-size="14" fill="#35502b">Solid ground / branches</text>
+<rect x="323" y="93" width="15" height="15" fill="#b08b5b" rx="0"/>
+<text x="345" y="106" font-size="14" fill="#35502b">Moving wood ↔ / ↕</text>
+<rect x="611" y="93" width="15" height="15" fill="#d79e58" rx="0"/>
+<text x="633" y="106" font-size="14" fill="#35502b">Cracked / collapsing</text>
+<rect x="899" y="93" width="15" height="15" fill="#e4b63e" rx="0"/>
+<text x="921" y="106" font-size="14" fill="#35502b">Special coin C1–C3</text>
+<rect x="24" y="130" width="1152" height="234" fill="#e7f2e6" rx="12"/>
+<text x="40" y="157" font-size="20" fill="#35502b">1. Forest Entrance · 0–2400 px</text>
+<rect x="60" y="302" width="405" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="60" y="302" width="405" height="3" fill="#638647" rx="0"/>
+<rect x="523.5" y="302" width="553.5" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="523.5" y="302" width="553.5" height="3" fill="#638647" rx="0"/>
+<rect x="159" y="273.5" width="81" height="8" fill="#a47f58" rx="0"/>
+<rect x="159" y="273.5" width="81" height="3" fill="#638647" rx="0"/>
+<rect x="267" y="252.5" width="81" height="8" fill="#a47f58" rx="0"/>
+<rect x="267" y="252.5" width="81" height="3" fill="#638647" rx="0"/>
+<rect x="388.5" y="273.5" width="76.5" height="8" fill="#a47f58" rx="0"/>
+<rect x="388.5" y="273.5" width="76.5" height="3" fill="#638647" rx="0"/>
+<rect x="564" y="273.5" width="81" height="8" fill="#a47f58" rx="0"/>
+<rect x="564" y="273.5" width="81" height="3" fill="#638647" rx="0"/>
+<path d="M 654 308 H 807.9" stroke="#748464" stroke-dasharray="3 3"/>
+<circle cx="690" cy="296" r="7" fill="#72a94b" stroke="#35502b"/>
+<text x="686" y="300" font-size="10" fill="#fff">S</text>
+<circle cx="303" cy="294.2" r="10" fill="#e4b63e" stroke="#7e602d" stroke-width="2"/>
+<text x="291" y="278.2" font-size="14" fill="#35502b">C1</text>
+<text x="42" y="351" font-size="14" fill="#35502b">Familiar jumps first. Follow the branches into the trees.</text>
+<text x="96" y="287" font-size="13" fill="#35502b">START</text>
+<rect x="24" y="378" width="1152" height="234" fill="#e7f2e6" rx="12"/>
+<text x="40" y="405" font-size="20" fill="#35502b">2. Branching Forest Paths · 2400–5400 px</text>
+<rect x="60" y="550" width="547.1999999999999" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="60" y="550" width="547.1999999999999" height="3" fill="#638647" rx="0"/>
+<rect x="661.1999999999999" y="550" width="421.2" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="661.1999999999999" y="550" width="421.2" height="3" fill="#638647" rx="0"/>
+<rect x="168" y="521.5" width="61.199999999999996" height="8" fill="#a47f58" rx="0"/>
+<rect x="168" y="521.5" width="61.199999999999996" height="3" fill="#638647" rx="0"/>
+<rect x="254.4" y="500.5" width="61.199999999999996" height="8" fill="#a47f58" rx="0"/>
+<rect x="254.4" y="500.5" width="61.199999999999996" height="3" fill="#638647" rx="0"/>
+<rect x="348" y="490" width="136.79999999999998" height="8" fill="#a47f58" rx="0"/>
+<rect x="348" y="490" width="136.79999999999998" height="3" fill="#638647" rx="0"/>
+<rect x="542.4" y="512.5" width="57.599999999999994" height="8" fill="#a47f58" rx="0"/>
+<rect x="542.4" y="512.5" width="57.599999999999994" height="3" fill="#638647" rx="0"/>
+<rect x="729.6" y="521.5" width="50.4" height="8" fill="#a47f58" rx="0"/>
+<rect x="729.6" y="521.5" width="50.4" height="3" fill="#638647" rx="0"/>
+<rect x="798" y="521.5" width="64.8" height="8" fill="#a47f58" rx="0"/>
+<rect x="798" y="521.5" width="64.8" height="3" fill="#638647" rx="0"/>
+<rect x="798" y="490" width="64.8" height="8" fill="#a47f58" rx="0"/>
+<rect x="798" y="490" width="64.8" height="3" fill="#638647" rx="0"/>
+<rect x="902.4" y="512.5" width="57.599999999999994" height="8" fill="#a47f58" rx="0"/>
+<rect x="902.4" y="512.5" width="57.599999999999994" height="3" fill="#638647" rx="0"/>
+<path d="M 276 556 H 431.52" stroke="#748464" stroke-dasharray="3 3"/>
+<circle cx="290.4" cy="544" r="7" fill="#72a94b" stroke="#35502b"/>
+<text x="286.4" y="548" font-size="10" fill="#fff">S</text>
+<path d="M 355.2 496 H 399.12" stroke="#748464" stroke-dasharray="3 3"/>
+<circle cx="366" cy="484" r="7" fill="#c66e55" stroke="#35502b"/>
+<text x="362" y="488" font-size="10" fill="#fff">M</text>
+<circle cx="452.4" cy="481" r="10" fill="#e4b63e" stroke="#7e602d" stroke-width="2"/>
+<text x="440.4" y="465" font-size="14" fill="#35502b">C2</text>
+<text x="348" y="443" font-size="13" fill="#35502b">The Hidden Bough</text>
+<text x="798" y="443" font-size="13" fill="#35502b">Fern Passage</text>
+<text x="42" y="599" font-size="14" fill="#35502b">The meadow continues below. Look for gold between the higher branches.</text>
+<rect x="24" y="626" width="1152" height="234" fill="#e7f2e6" rx="12"/>
+<text x="40" y="653" font-size="20" fill="#35502b">3. Moving Canopy · 5400–8500 px</text>
+<rect x="60" y="798" width="383.2258064516129" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="60" y="798" width="383.2258064516129" height="3" fill="#638647" rx="0"/>
+<rect x="519.8709677419355" y="798" width="550.4516129032259" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="519.8709677419355" y="798" width="550.4516129032259" height="3" fill="#638647" rx="0"/>
+<rect x="262.06451612903226" y="769.5" width="59.225806451612904" height="8" fill="#a47f58" rx="0"/>
+<rect x="262.06451612903226" y="769.5" width="59.225806451612904" height="3" fill="#638647" rx="0"/>
+<rect x="345.6774193548387" y="760.5" width="69.6774193548387" height="8" fill="#b08b5b" rx="0"/>
+<rect x="345.6774193548387" y="760.5" width="69.6774193548387" height="3" fill="#638647" rx="0"/>
+<rect x="429.2903225806452" y="760.5" width="48.774193548387096" height="8" fill="#b08b5b" rx="0"/>
+<rect x="429.2903225806452" y="760.5" width="48.774193548387096" height="3" fill="#e8d9b6" rx="0"/>
+<path d="M 453.6774193548387 751.5 L 523.3548387096774 751.5" stroke="#715c42" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="445.6774193548387" y="747.5" font-size="18" fill="#35502b">↔</text>
+<rect x="575.6129032258065" y="760.5" width="62.70967741935484" height="8" fill="#b08b5b" rx="0"/>
+<rect x="575.6129032258065" y="760.5" width="62.70967741935484" height="3" fill="#638647" rx="0"/>
+<rect x="756.7741935483871" y="769.5" width="48.774193548387096" height="8" fill="#a47f58" rx="0"/>
+<rect x="756.7741935483871" y="769.5" width="48.774193548387096" height="3" fill="#638647" rx="0"/>
+<rect x="826.4516129032259" y="769.5" width="41.806451612903224" height="8" fill="#b08b5b" rx="0"/>
+<rect x="826.4516129032259" y="769.5" width="41.806451612903224" height="3" fill="#e8d9b6" rx="0"/>
+<path d="M 847.3548387096774 760.5 L 847.3548387096774 729" stroke="#715c42" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="839.3548387096774" y="756.5" font-size="18" fill="#35502b">↕</text>
+<rect x="896.1290322580645" y="738" width="76.64516129032258" height="8" fill="#a47f58" rx="0"/>
+<rect x="896.1290322580645" y="738" width="76.64516129032258" height="3" fill="#638647" rx="0"/>
+<rect x="1004.1290322580645" y="769.5" width="66.19354838709677" height="8" fill="#a47f58" rx="0"/>
+<rect x="1004.1290322580645" y="769.5" width="66.19354838709677" height="3" fill="#638647" rx="0"/>
+<path d="M 631.3548387096774 804 H 733.083870967742" stroke="#748464" stroke-dasharray="3 3"/>
+<circle cx="652.258064516129" cy="792" r="7" fill="#72a94b" stroke="#35502b"/>
+<text x="648.258064516129" y="796" font-size="10" fill="#fff">S</text>
+<text x="930.9677419354839" y="797" font-size="15" fill="#9b5943">▲▲</text>
+<text x="42" y="847" font-size="14" fill="#35502b">Wait on the dock for the ferry. The wooden tree lift leads above the thorns.</text>
+<rect x="24" y="874" width="1152" height="234" fill="#e7f2e6" rx="12"/>
+<text x="40" y="901" font-size="20" fill="#35502b">4. Heart of the Forest · 8500–11800 px</text>
+<rect x="60" y="1046" width="432" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="60" y="1046" width="432" height="3" fill="#638647" rx="0"/>
+<rect x="550.9090909090909" y="1046" width="536.7272727272727" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="550.9090909090909" y="1046" width="536.7272727272727" height="3" fill="#638647" rx="0"/>
+<rect x="112.36363636363636" y="1017.5" width="55.63636363636363" height="8" fill="#a47f58" rx="0"/>
+<rect x="112.36363636363636" y="1017.5" width="55.63636363636363" height="3" fill="#638647" rx="0"/>
+<rect x="190.9090909090909" y="996.5" width="65.45454545454545" height="8" fill="#a47f58" rx="0"/>
+<rect x="190.9090909090909" y="996.5" width="65.45454545454545" height="3" fill="#638647" rx="0"/>
+<rect x="289.0909090909091" y="1008.5" width="58.90909090909091" height="8" fill="#a47f58" rx="0"/>
+<rect x="289.0909090909091" y="1008.5" width="58.90909090909091" height="3" fill="#638647" rx="0"/>
+<rect x="367.6363636363636" y="1008.5" width="42.54545454545455" height="8" fill="#b08b5b" rx="0"/>
+<rect x="367.6363636363636" y="1008.5" width="42.54545454545455" height="3" fill="#638647" rx="0"/>
+<rect x="429.8181818181818" y="1017.5" width="52.36363636363636" height="8" fill="#d79e58" rx="0"/>
+<rect x="429.8181818181818" y="1017.5" width="52.36363636363636" height="3" fill="#e8d9b6" rx="0"/>
+<text x="453" y="1027.5" font-size="13" fill="#513c2b">×</text>
+<rect x="550.9090909090909" y="1017.5" width="65.45454545454545" height="8" fill="#a47f58" rx="0"/>
+<rect x="550.9090909090909" y="1017.5" width="65.45454545454545" height="3" fill="#638647" rx="0"/>
+<rect x="747.2727272727273" y="1017.5" width="52.36363636363636" height="8" fill="#a47f58" rx="0"/>
+<rect x="747.2727272727273" y="1017.5" width="52.36363636363636" height="3" fill="#638647" rx="0"/>
+<rect x="822.5454545454545" y="996.5" width="45.81818181818182" height="8" fill="#a47f58" rx="0"/>
+<rect x="822.5454545454545" y="996.5" width="45.81818181818182" height="3" fill="#638647" rx="0"/>
+<rect x="888" y="986" width="36" height="8" fill="#b08b5b" rx="0"/>
+<rect x="888" y="986" width="36" height="3" fill="#e8d9b6" rx="0"/>
+<path d="M 906 977 L 932.1818181818181 977" stroke="#715c42" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="898" y="973" font-size="18" fill="#35502b">↔</text>
+<rect x="976.3636363636364" y="998" width="45.81818181818182" height="8" fill="#d79e58" rx="0"/>
+<rect x="976.3636363636364" y="998" width="45.81818181818182" height="3" fill="#e8d9b6" rx="0"/>
+<text x="996.2727272727273" y="1008" font-size="13" fill="#513c2b">×</text>
+<rect x="1054.909090909091" y="1008.5" width="32.72727272727273" height="8" fill="#a47f58" rx="0"/>
+<rect x="1054.909090909091" y="1008.5" width="32.72727272727273" height="3" fill="#638647" rx="0"/>
+<path d="M 190.9090909090909 1052 H 325.74545454545455" stroke="#748464" stroke-dasharray="3 3"/>
+<circle cx="240" cy="1040" r="7" fill="#c66e55" stroke="#35502b"/>
+<text x="236" y="1044" font-size="10" fill="#fff">M</text>
+<path d="M 642.5454545454545 1052 H 734.8363636363637" stroke="#748464" stroke-dasharray="3 3"/>
+<circle cx="681.8181818181819" cy="1040" r="7" fill="#72a94b" stroke="#35502b"/>
+<text x="677.8181818181819" y="1044" font-size="10" fill="#fff">S</text>
+<text x="812.7272727272727" y="1045" font-size="15" fill="#9b5943">▲▲</text>
+<circle cx="1038.5454545454545" cy="974" r="10" fill="#e4b63e" stroke="#7e602d" stroke-width="2"/>
+<text x="1026.5454545454545" y="958" font-size="14" fill="#35502b">C3</text>
+<text x="969.8181818181818" y="939" font-size="13" fill="#35502b">The Last Nest</text>
+<text x="42" y="1095" font-size="14" fill="#35502b">Read the patrols, then choose the cracked upper route for the last gold coin.</text>
+<rect x="24" y="1122" width="1152" height="234" fill="#e7f2e6" rx="12"/>
+<text x="40" y="1149" font-size="20" fill="#35502b">5. Final Forest Clearing · 11800–14000 px</text>
+<rect x="60" y="1294" width="392.72727272727275" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="60" y="1294" width="392.72727272727275" height="3" fill="#638647" rx="0"/>
+<rect x="521.4545454545455" y="1294" width="618.5454545454545" height="25.6" fill="#a47f58" rx="0"/>
+<rect x="521.4545454545455" y="1294" width="618.5454545454545" height="3" fill="#638647" rx="0"/>
+<rect x="197.45454545454547" y="1265.5" width="88.36363636363636" height="8" fill="#a47f58" rx="0"/>
+<rect x="197.45454545454547" y="1265.5" width="88.36363636363636" height="3" fill="#638647" rx="0"/>
+<rect x="344.72727272727275" y="1265.5" width="78.54545454545455" height="8" fill="#a47f58" rx="0"/>
+<rect x="344.72727272727275" y="1265.5" width="78.54545454545455" height="3" fill="#638647" rx="0"/>
+<text x="42" y="1343" font-size="14" fill="#35502b">Take a breath. One familiar gap, then open ground to the flag.</text>
+<text x="919.0909090909091" y="1274" font-size="15" fill="#35502b">FINISH ⚑</text>
+<text x="35" y="1400" font-size="16" fill="#35502b">S = stompable slime · M = deadly mushroom · ▲ = thorns · dashed ranges = patrol / platform travel</text>
+</g></svg>

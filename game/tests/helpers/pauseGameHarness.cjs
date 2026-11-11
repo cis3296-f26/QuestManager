@@ -82,9 +82,10 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.audio.scene, "grassland"); assert.ok(a.audio.music);
         console.log("PASS actual audio wiring: single jump, landing, pickup, stomp, death and victory; earned coins silent; replay music restored.");
     }
-    for (const id of [1, 2]) {
-        if (id === 2) { a.progress.completeLevel(1, []); a.map.refresh(); a.map.openLevel(2); await turn(); }
+    for (const id of [1, 2, 3]) {
+        if (id > 1) { a.progress.completeLevel(id - 1, []); a.map.refresh(); a.map.openLevel(id); await turn(); }
         assert.equal(a.level.config.id, id);
+        assert.equal(a.audio.scene, a.level.config.audio.music);
         for (const fps of [30, 60, 120]) {
             a.restartLevel(); canvas.focus(); frame(); frame(1 / fps);
             a.coins.pending.add(a.level.config.coins[1].id);
@@ -119,6 +120,25 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         // Header navigation must use the same confirmation path.
         click("backToMap"); assert.equal(a.pause.screen, "map"); escapeDialog(); click("pauseResume");
     }
+    // Exercise actual Level 3 save, coming-soon Next and replay wiring. Teleports
+    // here set up the UI boundary; continuous route fixtures prove playability separately.
+    a.restartLevel(); canvas.focus(); frame();
+    a.coins.pending.add(a.level.config.coins[2].id);
+    const finisher = a.level.player;
+    finisher.x = a.level.flagX; finisher.y = a.level.config.finish.platform.y - finisher.height;
+    finisher.grounded = true; finisher.velocityY = 0; finisher.supportPlatform = a.level.config.finish.platform;
+    frame(); await turn();
+    assert.equal(element("levelCompleteDialog").open, true);
+    assert.equal(element("levelCompleteTitle").textContent, "Level 3 Complete!");
+    assert.deepEqual([...a.progress.getLevel(3).coinIds], [a.level.config.coins[2].id]);
+    assert.equal(a.progress.getLevel(4).unlocked, true);
+    assert.equal(element("nextLevel").disabled, true);
+    assert.match(element("nextLevel").textContent, /Coming soon/);
+    element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
+    assert.equal(a.level.complete, false); assert.equal(a.level.player.x, a.level.config.spawn.x);
+    assert.equal(a.audio.scene, "deepForest");
+    assert.ok(a.coins.saved.has(a.level.config.coins[2].id));
+    console.log("PASS Level 3 completion, saved coins, replay and unavailable Level 4 wiring.");
     a.startDeath("Test transition"); canvas.focus(); key("Escape"); assert.equal(a.pause.paused, false);
     for (let i = 0; i < 50; i++) frame();
     assert.equal(a.deathTime, 0);

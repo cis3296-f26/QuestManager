@@ -23,24 +23,35 @@ export class GrasslandRenderer {
         this.drawHills(ctx, viewWidth, viewHeight, cameraX * 0.32,
             groundY + 42, 530, 170, "#83ae8d");
         if (theme === "forest") this.drawForest(ctx, viewWidth, cameraX, groundY);
+        if (theme === "deep-forest") {
+            // Richer foliage builds gradually; the sky and gameplay colors stay bright.
+            const density = Math.min(1, cameraX / 5400) * Math.min(1, Math.max(0, (12600 - cameraX) / 1600));
+            this.drawForest(ctx, viewWidth, cameraX, groundY, density);
+        }
         ctx.restore();
     }
 
     // Low-contrast tree silhouettes add depth to forest levels without hiding hazards.
-    drawForest(ctx, width, cameraX, groundY) {
+    drawForest(ctx, width, cameraX, groundY, density = null) {
         const offset = cameraX * 0.45;
-        const first = Math.floor(offset / 180) - 1;
-        for (let i = first; i < first + Math.ceil(width / 180) + 3; i++) {
-            const x = i * 180 - offset;
-            const height = 145 + ((i % 3 + 3) % 3) * 20;
-            ctx.fillStyle = "#8aab91";
+        const spacing = density === null ? 180 : 145;
+        const first = Math.floor(offset / spacing) - 1;
+        for (let i = first; i < first + Math.ceil(width / spacing) + 3; i++) {
+            const x = i * spacing - offset;
+            ctx.save();
+            // Fixed tree positions avoid scenery sliding as density changes. Extra
+            // silhouettes fade in toward the heart, then out in the final clearing.
+            if (density !== null && ((i % 3 + 3) % 3) === 1) ctx.globalAlpha *= density;
+            const height = 145 + ((i % 3 + 3) % 3) * 20 + (density ?? 0) * 55;
+            ctx.fillStyle = density > .5 ? "#789c82" : "#8aab91";
             ctx.fillRect(x - 7, groundY - height + 35, 14, height - 35);
-            ctx.fillStyle = "#91b49a";
+            ctx.fillStyle = density > .5 ? "#81a68b" : "#91b49a";
             for (const [dx, dy, radius] of [[-25, 14, 36], [25, 9, 38], [0, -17, 40]]) {
                 ctx.beginPath();
                 ctx.arc(x + dx, groundY - height + dy, radius, 0, Math.PI * 2);
                 ctx.fill();
             }
+            ctx.restore();
         }
     }
 
@@ -75,13 +86,26 @@ export class GrasslandRenderer {
     drawDecorations(ctx, decorations, groundY, cameraX, viewWidth) {
         ctx.save();
         for (const decoration of decorations) {
-            if (decoration.x < cameraX - 90 || decoration.x > cameraX + viewWidth + 90) continue;
+            if (decoration.x < cameraX - 180 || decoration.x > cameraX + viewWidth + 180) continue;
             ctx.save();
             ctx.translate(decoration.x, groundY);
-            if (decoration.type === "tree") {
+            if (decoration.type === "branch-tree") {
+                const top = decoration.top - groundY, reach = decoration.reach;
+                ctx.fillStyle = "#795c3f";
+                ctx.fillRect(-12, top - 45, 24, -top + 45);
+                ctx.strokeStyle = "#795c3f"; ctx.lineWidth = 10;
+                ctx.beginPath(); ctx.moveTo(-reach, top); ctx.lineTo(reach, top); ctx.stroke();
+                ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(-reach * .65, top);
+                ctx.lineTo(0, top + 50); ctx.lineTo(reach * .65, top); ctx.stroke();
+                ctx.fillStyle = "#416a46";
+                for (const [x, y, r] of [[-35, top - 75, 35], [32, top - 82, 38], [0, top - 104, 40]]) {
+                    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+                }
+            } else if (decoration.type === "tree") {
+                ctx.scale(decoration.scale ?? 1, decoration.scale ?? 1);
                 ctx.fillStyle = "#795c3f";
                 ctx.fillRect(-9, -67, 18, 67);
-                ctx.fillStyle = "#4e7446";
+                ctx.fillStyle = decoration.foliage ?? "#4e7446";
                 for (const [x, y, radius] of [[-23, -75, 27], [19, -77, 29], [0, -98, 30]]) {
                     ctx.beginPath();
                     ctx.arc(x, y, radius, 0, Math.PI * 2);
@@ -124,6 +148,16 @@ export class GrasslandRenderer {
         for (const platform of platforms) {
             if (platform.x + platform.width < cameraX || platform.x > cameraX + viewWidth) continue;
             const { x, y, width, height } = platform;
+            if (platform.appearance === "wood") {
+                ctx.fillStyle = "#aa8055"; ctx.fillRect(x, y, width, height);
+                ctx.strokeStyle = "#795c3f"; ctx.lineWidth = 2;
+                ctx.strokeRect(x + 1, y + 1, width - 2, height - 2);
+                for (let plank = 24; plank < width; plank += 24) {
+                    ctx.beginPath(); ctx.moveTo(x + plank, y + 3); ctx.lineTo(x + plank, y + height); ctx.stroke();
+                }
+                ctx.fillStyle = "#e7d7b4"; ctx.fillRect(x, y, width, 3);
+                continue;
+            }
             ctx.fillStyle = "#a47f58";
             ctx.fillRect(x, y, width, height);
             ctx.fillStyle = "#896746";
@@ -165,4 +199,5 @@ export class GrasslandRenderer {
         ctx.restore();
     }
 }
+
 

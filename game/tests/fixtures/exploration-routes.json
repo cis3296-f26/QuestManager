@@ -284,5 +284,319 @@
     },
     "areaId": "l2-root-gallery",
     "levelId": 2
+  },
+  {
+    "fps": 30,
+    "totalFrames": 125,
+    "jumpFrames": [
+      6,
+      21,
+      39,
+      63
+    ],
+    "inputs": [],
+    "start": {
+      "x": 2630,
+      "feetY": 460
+    },
+    "areaId": "l3-hidden-bough",
+    "levelId": 3
+  },
+  {
+    "fps": 60,
+    "totalFrames": 249,
+    "jumpFrames": [
+      12,
+      42,
+      78,
+      126
+    ],
+    "inputs": [],
+    "start": {
+      "x": 2630,
+      "feetY": 460
+    },
+    "areaId": "l3-hidden-bough",
+    "levelId": 3
+  },
+  {
+    "fps": 120,
+    "totalFrames": 497,
+    "jumpFrames": [
+      12,
+      84,
+      156,
+      252
+    ],
+    "inputs": [],
+    "start": {
+      "x": 2630,
+      "feetY": 460
+    },
+    "areaId": "l3-hidden-bough",
+    "levelId": 3
+  },
+  {
+    "fps": 30,
+    "totalFrames": 74,
+    "jumpFrames": [
+      6
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4250,
+      "feetY": 460
+    },
+    "areaId": "l3-fern-passage",
+    "levelId": 3
+  },
+  {
+    "fps": 60,
+    "totalFrames": 148,
+    "jumpFrames": [
+      6
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4250,
+      "feetY": 460
+    },
+    "areaId": "l3-fern-passage",
+    "levelId": 3
+  },
+  {
+    "fps": 120,
+    "totalFrames": 295,
+    "jumpFrames": [
+      12
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4250,
+      "feetY": 460
+    },
+    "areaId": "l3-fern-passage",
+    "levelId": 3
+  },
+  {
+    "fps": 30,
+    "totalFrames": 181,
+    "jumpFrames": [
+      0,
+      15,
+      36,
+      60,
+      87,
+      108,
+      141
+    ],
+    "inputs": [
+      {
+        "from": 90,
+        "to": 93,
+        "direction": 0
+      },
+      {
+        "from": 93,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 99,
+        "direction": 0
+      },
+      {
+        "from": 99,
+        "to": 102,
+        "direction": 0
+      },
+      {
+        "from": 102,
+        "to": 105,
+        "direction": 0
+      },
+      {
+        "from": 105,
+        "to": 108,
+        "direction": 0
+      },
+      {
+        "from": 108,
+        "to": 111,
+        "direction": 0
+      },
+      {
+        "from": 111,
+        "to": 114,
+        "direction": 0
+      },
+      {
+        "from": 114,
+        "to": 117,
+        "direction": 0
+      },
+      {
+        "from": 117,
+        "to": 120,
+        "direction": 0
+      },
+      {
+        "from": 120,
+        "to": 123,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 10580,
+      "feetY": 460
+    },
+    "areaId": "l3-last-nest",
+    "levelId": 3
+  },
+  {
+    "fps": 60,
+    "totalFrames": 359,
+    "jumpFrames": [
+      0,
+      30,
+      84,
+      162,
+      210,
+      288
+    ],
+    "inputs": [
+      {
+        "from": 78,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 138,
+        "to": 144,
+        "direction": 0
+      },
+      {
+        "from": 192,
+        "to": 198,
+        "direction": 0
+      },
+      {
+        "from": 198,
+        "to": 204,
+        "direction": 0
+      },
+      {
+        "from": 204,
+        "to": 210,
+        "direction": 0
+      },
+      {
+        "from": 216,
+        "to": 222,
+        "direction": 0
+      },
+      {
+        "from": 222,
+        "to": 228,
+        "direction": 0
+      },
+      {
+        "from": 228,
+        "to": 234,
+        "direction": 0
+      },
+      {
+        "from": 234,
+        "to": 240,
+        "direction": 0
+      },
+      {
+        "from": 240,
+        "to": 246,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 10580,
+      "feetY": 460
+    },
+    "areaId": "l3-last-nest",
+    "levelId": 3
+  },
+  {
+    "fps": 120,
+    "totalFrames": 725,
+    "jumpFrames": [
+      0,
+      72,
+      144,
+      324,
+      420,
+      576
+    ],
+    "inputs": [
+      {
+        "from": 360,
+        "to": 372,
+        "direction": 0
+      },
+      {
+        "from": 372,
+        "to": 384,
+        "direction": 0
+      },
+      {
+        "from": 384,
+        "to": 396,
+        "direction": 0
+      },
+      {
+        "from": 396,
+        "to": 408,
+        "direction": 0
+      },
+      {
+        "from": 408,
+        "to": 420,
+        "direction": 0
+      },
+      {
+        "from": 420,
+        "to": 432,
+        "direction": 0
+      },
+      {
+        "from": 432,
+        "to": 444,
+        "direction": 0
+      },
+      {
+        "from": 444,
+        "to": 456,
+        "direction": 0
+      },
+      {
+        "from": 456,
+        "to": 468,
+        "direction": 0
+      },
+      {
+        "from": 468,
+        "to": 480,
+        "direction": 0
+      },
+      {
+        "from": 480,
+        "to": 492,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 10580,
+      "feetY": 460
+    },
+    "areaId": "l3-last-nest",
+    "levelId": 3
   }
 ]
