@@ -1,4 +1,5 @@
-
+export const PRIORITIES = ["high", "medium", "low"];
+export const TASK_TYPES = ["school", "work", "personal", "health", "other"];
 export class QuestObject {
     #taskID;
     #userID;
@@ -9,16 +10,21 @@ export class QuestObject {
     #repeatRule;
     #rewarded
     #date;
+    #priority;
+    #taskType;
+    #time;
+    
 
     constructor(taskID, userID, title, description, difficulty) {
         this.#taskID = taskID;
         this.#userID = userID;
         this.#title = title;
         this.#description = description;
-        this.#date = null
+        this.#date = null;
+        this.#time = null;
 
         //doing a check in the constructor just in case
-        if(difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
+        if (difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
             this.#difficulty = difficulty;
         } else {
             throw new Error("Invalid Difficulty");
@@ -27,6 +33,8 @@ export class QuestObject {
         this.#rewarded = false;
         this.#repeatRule = null;
         this.#date = null;
+        this.#priority = "medium";
+        this.#taskType = "personal";
     }
 
     //getters and setters; the idea of the setters is that we'll connect them to buttons that the user can push
@@ -66,7 +74,7 @@ export class QuestObject {
     set difficulty(difficulty) {
         if (difficulty === "easy" || difficulty === "medium" || difficulty === "hard") {
             this.#difficulty = difficulty;
-        }else{
+        } else {
             throw new Error("Invalid Difficulty");
         }
     }
@@ -91,7 +99,7 @@ export class QuestObject {
     }
     */
 
-    get repeatRule(){
+    get repeatRule() {
         return this.#repeatRule;
     }
 
@@ -100,7 +108,7 @@ export class QuestObject {
     }
 
     giveReward() {
-        switch(this.#difficulty){
+        switch (this.#difficulty) {
             case "easy":
                 return 10
             case "medium":
@@ -112,23 +120,53 @@ export class QuestObject {
         }
     }
 
-    complete(){
+    complete() {
         this.#completed = true;
     }
-    
-    get date() { 
-        return this.#date; 
+
+    get date() {
+        return this.#date;
     }
-    
-    set date(d) { 
-        this.#date = d; 
+
+    set date(d) {
+        this.#date = d;
     }   // "YYYY-MM-DD"
 
+    get time() {
+        return this.#time;
+    }
+
+    set time(time) {
+        this.#time = time;
+    }
+    get priority() {
+        return this.#priority;
+    }
+
+    set priority(priority) {
+        if (PRIORITIES.includes(priority)) {
+            this.#priority = priority;
+        } else {
+            throw new Error("Invalid Priority");
+        }
+    }
+
+    get taskType() {
+        return this.#taskType;
+    }
+
+    set taskType(taskType) {
+        if (TASK_TYPES.includes(taskType)) {
+            this.#taskType = taskType;
+        } else {
+            throw new Error("Invalid Task Type");
+        }
+    }
     uncomplete() {
         this.#completed = false;
     }
 
-    markRewarded(){
+    markRewarded() {
         this.#rewarded = true;
     }
 
@@ -139,6 +177,9 @@ export class QuestObject {
         if (row.rewarded) quest.markRewarded();
         quest.repeatRule = row.repeat_rule;
         quest.date = row.task_date;
+        quest.time = row.task_time;
+        if (PRIORITIES.includes(row.priority)) quest.priority = row.priority;
+        if (TASK_TYPES.includes(row.task_type)) quest.taskType = row.task_type;
         return quest;
     }
 }
