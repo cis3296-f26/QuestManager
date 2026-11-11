@@ -1,14 +1,15 @@
 # Level 1 collectible coin playtest
 
 This feature is awaiting Victoria's gameplay approval. Level 1 is **The First Adventure**.
-The existing world map and Level 2 files remain in the repository, but navigation to them
-is still disabled. This change does not add Supabase tables or spendable shop currency.
+The world map is enabled again. Level 2's prototype remains in the repository, but only
+Level 1 is registered as playable. This change does not add Supabase tables or spendable shop currency.
 
 ## Start
 
 1. Sign in on the normal QuestManager homepage and equip your character as usual.
 2. Open `/game/` on the **same origin** (for example, `http://127.0.0.1:8000/game/`).
-3. Three coin icons appear at the top right of the tan section bar inside the game.
+3. Select Level 1 on the map to open its progress popup, then choose Play Level.
+   Three coin icons appear at the top right of the tan section bar inside the game.
    Saves belong to your signed-in account on this browser.
    Signed-out play, unavailable authentication, or blocked storage uses session-only progress;
    the finish dialog explicitly identifies that mode.
@@ -33,7 +34,9 @@ the saved collection count; screen readers also receive pickup count announcemen
   clears the previous avatar while loading, and shows only the new account's progress.
   Sign back into the first account to recover its own saved achievements.
 - Shop purchases must not affect collectible achievements or vice versa.
-- Replay works from the completion dialog; Next Level and World Map remain disabled.
+- Replay and World Map work from the completion dialog. The in-game World Map button
+  discards unfinished pickups. Next Level stays disabled until another level is ready.
+- Map selection shows the correct three earned slots and the saved total out of 30.
 
 ### Placement hints
 
@@ -51,7 +54,7 @@ Human testing still needs to confirm the challenge and presentation feel right.
 From the repository root, with Node installed:
 
 ```sh
-node --test game/tests/coins.test.mjs game/tests/session.test.mjs
+node --test game/tests/coins.test.mjs game/tests/session.test.mjs game/tests/map.test.mjs
 ```
 
 Tests cover attempt discard, saving only completed runs, unique ID unions across replays,
@@ -70,7 +73,9 @@ completion without coins, unlock metadata, 30-coin totals, coin-route physics an
 - `progress/GameSession.js`: observes the existing Supabase auth client and verifies identity
   again before a finish is saved. It makes no database writes.
 - `ui/CoinProgress.js`: shared three-slot indicators.
-- `ui/LevelSelection.js`: reusable selection panel contents, intentionally not mounted yet.
+- `ui/LevelSelection.js`: reusable selection popup contents, connected to map nodes.
+- `ui/WorldMap.js`: map selection and hash navigation, reading the shared progress manager.
+- `levels/levels.js`: playable level registry; unfinished levels remain unavailable.
 - `game.js`, `index.html`, `game.css`: existing lifecycle hooks, HUD and completion dialog.
 - `rendering/AvatarRenderer.js`: rejects outdated avatar image loads after account changes.
 

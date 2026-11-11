@@ -1,7 +1,8 @@
 import { drawEnemy } from "./rendering/EnemyRenderer.js";
 import { GrasslandRenderer } from "./rendering/GrasslandRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
-import { level1 } from "./levels/Level1.js";
+import { levels } from "./levels/levels.js";
+import { WorldMap } from "./ui/WorldMap.js";
 import { touchesHazard, drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
 import { followCamera } from "./engine/Camera.js";
@@ -18,9 +19,9 @@ const status = document.getElementById("gameStatus");
 const completionDialog = document.getElementById("levelCompleteDialog");
 const completionTitle = document.getElementById("levelCompleteTitle");
 
-const level = new LevelManager(level1);
-const { groundY, worldWidth, platforms } = level.config;
-const { player, enemies, flagX } = level;
+const level = new LevelManager(levels[0]);
+let { groundY, worldWidth, platforms } = level.config;
+let { player, enemies, flagX } = level;
 const speed = 280;
 const gravity = 1800;
 const jumpStrength = 650;
@@ -36,8 +37,10 @@ const grassland = new GrasslandRenderer();
 let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
 const progress = new LevelProgressManager(new LocalProgressStore(storage));
-progress.registerLevel(level.config);
-const coins = new CoinManager(level.config.coins);
+levels.forEach((config) => progress.registerLevel(config));
+let coins = new CoinManager(level.config.coins);
+let worldMap;
+let playing = false;
 let accountSession;
 let sessionReady = false;
 let attemptRevision = 0;
@@ -55,6 +58,7 @@ function changeAccount(userId) {
         completionDialog.close();
     }
     restartLevel(); // Discard the previous account's unfinished attempt, including coins.
+    worldMap?.refresh();
     avatar.load(); // Also clear the previous account's avatar and reject stale image loads.
 }
 
@@ -68,9 +72,12 @@ async function finishLevel() {
     const saved = verified
         ? progress.completeLevel(level.config.id, attemptIds)
         : progress.getLevel(level.config.id);
+    worldMap.refresh();
+    document.getElementById("nextLevel").disabled = !worldMap.hasNext();
     coins.reset(saved.coinIds);
     updateCoinHUD();
     completionTitle.textContent = `Level ${level.config.id} Complete!`;
+    document.getElementById("levelCompleteDescription").textContent = `You reached the flag! Replay ${level.config.name} or return to the World Map.`;
     document.getElementById("completionCoinCount").textContent = `Coin Collection: ${saved.coinIds.length}/3`;
     renderCoinProgress(document.getElementById("completionCoins"), level.config.coins, saved.coinIds);
     document.getElementById("perfectCoins").hidden = !saved.fullyCompleted;
@@ -101,15 +108,48 @@ function restartLevel() {
     status.textContent = "Reach the flag! Press R to restart.";
 }
 
-// Future navigation remains disabled while Level 1 is being playtested.
+// Finishing never advances automatically; navigation requires an explicit choice.
 completionDialog.addEventListener("close", () => {
     if (completionDialog.returnValue === "replay") restartLevel();
-    canvas.focus();
+    if (completionDialog.returnValue === "map") worldMap.openMap();
+    else if (playing) canvas.focus();
 });
+
+document.getElementById("nextLevel").addEventListener("click", () => {
+    if (!worldMap?.hasNext()) return;
+    completionDialog.returnValue = "";
+    completionDialog.close();
+    worldMap.openNext();
+});
+
+function closeCompletion() {
+    if (!completionDialog.open) return;
+    completionDialog.returnValue = "";
+    completionDialog.close();
+}
+
+function playLevel(config) {
+    closeCompletion();
+    level.load(config);
+    ({ groundY, worldWidth, platforms } = config);
+    ({ player, enemies, flagX } = level);
+    coins = new CoinManager(config.coins);
+    restartLevel();
+    playing = true;
+    document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
+    canvas.setAttribute("aria-label", `Level ${config.id}: ${config.name} platform game`);
+    canvas.focus();
+}
+
+function showMap() {
+    playing = false;
+    closeCompletion();
+    restartLevel(); // Abandoning a level never saves new coins.
+}
 
 canvas.addEventListener("keydown", event => {
 
-    if (!sessionReady) return;
+    if (!sessionReady || !playing) return;
 
     if (event.code === "KeyR") {
         event.preventDefault();
@@ -264,7 +304,7 @@ function gameLoop(time) {
     lastTime = time;
 
     // Pause movement when the game does not have keyboard focus.
-    if (sessionReady && document.activeElement === canvas) {
+    if (sessionReady && playing && document.activeElement === canvas) {
         update(dt);
         player.animation.update(player, dt, {
             dead: deathTimeLeft > 0,
@@ -273,7 +313,7 @@ function gameLoop(time) {
         });
     }
 
-    draw();
+    if (playing) draw();
     requestAnimationFrame(gameLoop);
 }
 
@@ -291,7 +331,14 @@ connectGameSession(changeAccount).then((session) => {
     accountSession = session;
     sessionReady = true;
     updateCoinHUD();
-    status.textContent = "Click inside the game to begin The First Adventure.";
+    worldMap = new WorldMap({
+        levels,
+        getProgress: (id) => progress.getLevel(id),
+        getTotal: () => progress.totalCoins,
+        onPlay: playLevel,
+        onMap: showMap
+    });
 });
 requestAnimationFrame(gameLoop);
+
 

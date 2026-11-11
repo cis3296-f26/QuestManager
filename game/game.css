@@ -289,4 +289,19 @@ h1 {
 .completion-coins .coin-slot { width: 40px; height: 40px; font-size: 28px; }
 #completionCoinCount, #perfectCoins { color: #3d5f26; font-weight: bold; }
 
+#mapTotalCoins { margin: 10px 0 0; color: #795b29; font-weight: bold; }
+#mapLevelCoins { margin-top: 10px; }
+#levelSelectionContent .coin-slots { justify-content: center; margin: 20px 0; }
+.selection-close { display: flex; justify-content: flex-end; margin-bottom: 8px; }
+.selection-close button {
+    border: 0;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    background: #6c523b;
+    color: #faf0e6;
+    font-size: 24px;
+    cursor: pointer;
+}
+
 

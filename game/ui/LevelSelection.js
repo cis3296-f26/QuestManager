@@ -3,6 +3,7 @@ import { renderCoinProgress } from "./CoinProgress.js";
 // Ready for a future map dialog. Nothing mounts this component during the Level 1 playtest.
 export function renderLevelSelection(container, config, progress, onPlay) {
     const heading = document.createElement("h2");
+    heading.id = "selectionLevelTitle";
     heading.textContent = `Level ${config.id}: ${config.name}`;
     const status = document.createElement("p");
     status.textContent = progress.fullyCompleted ? "Fully completed · 3/3 coins" :
