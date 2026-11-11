@@ -263,4 +263,75 @@
   .journal-board {
     padding: 16px;
   }
+
+}
+
+:root {
+    --diff-easy: #2e7d32;
+    --diff-medium: #1565c0;
+    --diff-hard: #c62828;
+}
+
+/* New Quest modal: selected difficulty button */
+#difficultyEasy:checked + label   { background: var(--diff-easy);   border-color: var(--diff-easy);   color: #fff; }
+#difficultyMedium:checked + label { background: var(--diff-medium); border-color: var(--diff-medium); color: #fff; }
+#difficultyHard:checked + label   { background: var(--diff-hard);   border-color: var(--diff-hard);   color: #fff; }
+
+/* Quest cards (home board and journal board) */
+/* Difficulty colors on the Home board and the Journal board */
+#priorityBoard li[data-difficulty="easy"],   #dayTaskList li[data-difficulty="easy"]   { --diff: #2e7d32; }
+#priorityBoard li[data-difficulty="medium"], #dayTaskList li[data-difficulty="medium"] { --diff: #1565c0; }
+#priorityBoard li[data-difficulty="hard"],   #dayTaskList li[data-difficulty="hard"]   { --diff: #c62828; }
+
+#priorityBoard li[data-difficulty],
+#dayTaskList li[data-difficulty] {
+    border-left: 6px solid var(--diff) !important;
+}
+
+#priorityBoard li[data-difficulty] .quest-difficulty,
+#dayTaskList li[data-difficulty] .quest-difficulty {
+    color: var(--diff) !important;
+    font-weight: 700;
+}
+
+/* Completed quests on the calendar */
+.fc-event.completed { opacity: 0.55; }
+.fc-event.completed .fc-event-title { text-decoration: line-through; }
+
+#home.home-offscreen {
+    position: fixed;
+    left: -10000px;
+    top: 0;
+    width: 1px;
+    height: 1px;
+}
+
+/* Make calendar days look clickable */
+#calendar .fc-daygrid-day,
+#calendar .fc-timegrid-col,
+#calendar .fc-event { cursor: pointer; }
+
+#calendar .fc-daygrid-day:hover { background: rgba(59, 95, 40, 0.10); }
+
+/* Selected day */
+#calendar .fc-daygrid-day.is-selected,
+#calendar .fc-timegrid-col.is-selected {
+    box-shadow: inset 0 0 0 3px #3b5f28;
+    background: rgba(59, 95, 40, 0.12);
+}
+
+/* Day numbers: not blue links */
+#calendar .fc-daygrid-day-number {
+    color: #3b5f28;
+    text-decoration: none;
+}
+#questDueDate,
+#questDueTime,
+#questDueDate::-webkit-datetime-edit,
+#questDueTime::-webkit-datetime-edit,
+#questDueDate::-webkit-datetime-edit-fields-wrapper,
+#questDueTime::-webkit-datetime-edit-fields-wrapper,
+#questDueDate::-webkit-calendar-picker-indicator,
+#questDueTime::-webkit-calendar-picker-indicator {
+    cursor: pointer !important;
 }

@@ -375,6 +375,8 @@ body {
     cursor: not-allowed;
 }
 
+#questDueDate, #questDueTime { cursor: pointer; }
+
 #home .quest-difficulty-options {
     min-width: 0;
     margin: 0;
