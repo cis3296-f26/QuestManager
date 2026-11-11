@@ -105,11 +105,14 @@
                     <p class="game-eyebrow">QuestManager Adventure</p>
                     <h1 id="levelHeading">Level 1: The First Adventure</h1>
                 </div>
-                <button type="button" id="backToMap" class="adventure-button secondary">World Map</button>
+                <div class="level-actions">
+                    <button type="button" id="pauseButton" class="adventure-button" aria-haspopup="dialog" aria-controls="pauseDialog" disabled>Pause <small>(Esc)</small></button>
+                    <button type="button" id="backToMap" class="adventure-button secondary">World Map</button>
+                </div>
             </header>
             <p id="gameInstructions">
                 Move with A/D or the left/right arrows.
-                Jump with Space, W, or the up arrow. Press R to restart. Reach the flag to finish!
+                Jump with Space, W, or the up arrow. Press R to restart. Esc pauses or resumes. Reach the flag to finish!
                 Land on slimes to defeat them; mushrooms must still be avoided.
             </p>
             <p id="coinCounter" class="visually-hidden" role="status" aria-live="polite">Coins: 0/3</p>
@@ -143,9 +146,64 @@
         </form>
         <div id="levelSelectionContent"></div>
     </dialog>
+    <dialog id="pauseDialog" class="pause-dialog" aria-labelledby="pauseTitle" aria-describedby="pauseDescription">
+        <p class="game-eyebrow">QuestManager Adventure</p>
+        <h2 id="pauseTitle">GAME PAUSED</h2>
+        <p id="pauseDescription">Take a break. Your current attempt is preserved.</p>
+        <div id="pauseMainPanel" class="pause-actions">
+            <button id="pauseResume" type="button" autofocus>Resume</button>
+            <button id="pauseRestart" type="button">Restart Level</button>
+            <button id="pauseWorldMap" type="button">World Map</button>
+            <button id="pauseSettings" type="button" class="secondary">Settings</button>
+        </div>
+        <div id="pauseConfirmPanel" hidden>
+            <div class="pause-actions confirmation-actions">
+                <button id="pauseCancel" type="button" class="secondary">Cancel</button>
+                <button id="pauseConfirm" type="button">Restart</button>
+            </div>
+        </div>
+        <div id="pauseSettingsPanel" hidden>
+            <fieldset class="settings-group">
+                <legend>Sound</legend>
+                <p class="settings-note">No game music or sound effects are connected yet. These preferences are ready for future audio.</p>
+                <div class="volume-row">
+                    <label for="masterVolume">Master Volume</label><output id="masterVolumeValue" for="masterVolume">80%</output>
+                    <input id="masterVolume" type="range" min="0" max="100" step="1" value="80">
+                </div>
+                <div class="volume-row">
+                    <label for="musicVolume">Music Volume</label><output id="musicVolumeValue" for="musicVolume">60%</output>
+                    <input id="musicVolume" type="range" min="0" max="100" step="1" value="60">
+                </div>
+                <div class="volume-row">
+                    <label for="effectsVolume">Sound Effects Volume</label><output id="effectsVolumeValue" for="effectsVolume">80%</output>
+                    <input id="effectsVolume" type="range" min="0" max="100" step="1" value="80">
+                </div>
+                <label class="setting-toggle"><input id="muted" type="checkbox"> Mute All</label>
+            </fieldset>
+            <fieldset class="settings-group">
+                <legend>Gameplay</legend>
+                <label class="setting-toggle"><input id="showControls" type="checkbox" checked> Show Controls</label>
+                <label class="setting-toggle"><input id="reduceMotion" type="checkbox"> Reduce Motion</label>
+                <p class="settings-note">Reduces character bobbing, coin effects and platform warning shake. Gameplay movement stays the same.</p>
+            </fieldset>
+            <section id="controlsReference" class="controls-reference" aria-labelledby="controlsTitle">
+                <h3 id="controlsTitle">Controls</h3>
+                <dl>
+                    <dt>A / Left Arrow</dt><dd>Move Left</dd>
+                    <dt>D / Right Arrow</dt><dd>Move Right</dd>
+                    <dt>Space / W / Up Arrow</dt><dd>Jump</dd>
+                    <dt>R</dt><dd>Restart Level</dd>
+                    <dt>Esc</dt><dd>Pause / Resume</dd>
+                </dl>
+            </section>
+            <p id="settingsSaveStatus" class="settings-note" role="status"></p>
+            <div class="pause-actions"><button id="settingsBack" type="button">Back</button></div>
+        </div>
+    </dialog>
     <script type="module" src="./game.js"></script>
 </body>
 </html>
+
 
 
 

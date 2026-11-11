@@ -50,9 +50,10 @@ export class AvatarRenderer {
         }
     }
 
-    draw(ctx, player) {
+    draw(ctx, player, { reduceMotion = false } = {}) {
         const animation = player.animation;
-        const pose = animation.pose;
+        // Keep limb/air/death state readable; omit bobbing, rotation and squash only in rendering.
+        const pose = reduceMotion ? { ...animation.pose, lift: 0, tilt: 0, xScale: 1, yScale: 1, spriteFrame: 0 } : animation.pose;
         const anchor = animation.state === "dead" ? animation.deathAnchor : null;
         const x = anchor?.x ?? player.x + player.width / 2;
         const feetY = anchor?.feetY ?? player.y + player.height;
@@ -116,4 +117,5 @@ export class AvatarRenderer {
         limb(0, -22, 12, 20, pose.rightLeg);
     }
 }
+
 

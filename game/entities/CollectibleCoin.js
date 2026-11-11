@@ -14,11 +14,11 @@ export class CollectibleCoin {
         return (nearX - this.x) ** 2 + (nearY - y) ** 2 <= this.radius ** 2;
     }
 
-    draw(ctx, time, earned) {
+    draw(ctx, time, earned, { reduceMotion = false } = {}) {
         ctx.save();
         ctx.translate(this.x, this.centerY(time));
         ctx.globalAlpha *= earned ? 0.28 : 1;
-        ctx.scale(0.3 + Math.abs(Math.cos(time * 2.4)) * 0.7, 1);
+        ctx.scale(reduceMotion ? 1 : 0.3 + Math.abs(Math.cos(time * 2.4)) * 0.7, 1);
         ctx.fillStyle = earned ? "#cbb69f" : "#efbd43";
         ctx.strokeStyle = "#795b29";
         ctx.lineWidth = 2;
@@ -37,3 +37,4 @@ export class CollectibleCoin {
         ctx.restore();
     }
 }
+

@@ -304,4 +304,47 @@ h1 {
     cursor: pointer;
 }
 
+.level-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#pauseButton small { margin-left: 6px; font-weight: normal; }
+.pause-dialog {
+    width: min(440px, calc(100% - 24px));
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+    padding: clamp(18px, 4vw, 28px);
+    border: 3px solid #51452b;
+    border-radius: 18px;
+    background: #faf0e6;
+    color: #403725;
+    box-shadow: 0 16px 40px #211a1450;
+}
+.pause-dialog::backdrop { background: rgb(33 26 20 / 58%); }
+.pause-dialog h2 { margin: 0; color: #3d5f26; font: bold clamp(24px, 5vw, 32px) Georgia, serif; }
+#pauseDescription { line-height: 1.5; }
+.pause-actions { display: grid; gap: 10px; }
+.pause-actions button {
+    min-height: 44px;
+    border: 2px solid #51452b;
+    border-radius: 9px;
+    padding: 10px 16px;
+    background: #3d5f26;
+    color: #faf0e6;
+    font: bold 16px Arial, sans-serif;
+    cursor: pointer;
+}
+.pause-actions button.secondary { background: #6c523b; }
+.pause-dialog :focus-visible { outline: 3px solid #795b29; outline-offset: 3px; }
+.settings-group { margin: 18px 0; padding: 12px; border: 1px solid #cbb69f; border-radius: 9px; }
+.settings-group legend, .controls-reference h3 { color: #3d5f26; font-weight: bold; }
+.settings-note { font-size: 13px; line-height: 1.5; color: #66553d; }
+.volume-row { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin: 12px 0; }
+.volume-row input { grid-column: 1 / -1; width: 100%; margin: 4px 0; accent-color: #3d5f26; }
+.volume-row output { font-variant-numeric: tabular-nums; }
+.setting-toggle { display: flex; align-items: center; gap: 10px; min-height: 36px; }
+.setting-toggle input { width: 18px; height: 18px; accent-color: #3d5f26; }
+.controls-reference h3 { margin: 0 0 10px; }
+.controls-reference dl { display: grid; grid-template-columns: minmax(0, 1.5fr) 1fr; gap: 8px; font-size: 14px; }
+.controls-reference dt { font-weight: bold; }
+.controls-reference dd { margin: 0; }
+
+
 

@@ -1,12 +1,12 @@
 // Cosmetic warning shake never moves the collision surface or the player's feet.
-export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth) {
+export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { reduceMotion = false } = {}) {
     for (const platform of platforms) {
         if (!platform.type || platform.state === "gone" || platform.x + platform.width < cameraX ||
             platform.x > cameraX + viewWidth) continue;
         const { width, height, config } = platform;
         const falling = platform.state === "falling";
         const progress = falling ? Math.min(1, platform.collapseTime / 0.35) : 0;
-        const shake = platform.state === "warning" ? Math.sin(platform.warningTime * 45) * 2 : 0;
+        const shake = platform.state === "warning" && !reduceMotion ? Math.sin(platform.warningTime * 45) * 2 : 0;
         ctx.save();
         ctx.translate(platform.x + width / 2 + shake, platform.y + progress * progress * 85);
         if (falling) { ctx.rotate(progress * 0.12); ctx.globalAlpha *= 1 - progress; }
@@ -43,3 +43,4 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth) {
         ctx.restore();
     }
 }
+

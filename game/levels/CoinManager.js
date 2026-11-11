@@ -40,21 +40,21 @@ export class CoinManager {
         return changed;
     }
 
-    draw(ctx, cameraX, viewWidth) {
+    draw(ctx, cameraX, viewWidth, { reduceMotion = false } = {}) {
         for (const coin of this.coins) {
             if (this.pending.has(coin.id) || coin.x + 18 < cameraX || coin.x - 18 > cameraX + viewWidth) continue;
-            coin.draw(ctx, this.time, this.saved.has(coin.id));
+            coin.draw(ctx, this.time, this.saved.has(coin.id), { reduceMotion });
         }
         for (const effect of this.effects) {
             const progress = effect.age / 0.55;
             ctx.save();
-            ctx.translate(effect.x, effect.y - progress * 25);
+            ctx.translate(effect.x, effect.y - (reduceMotion ? 0 : progress * 25));
             ctx.globalAlpha *= 1 - progress;
             ctx.strokeStyle = "#efbd43";
             ctx.lineWidth = 2;
             for (let i = 0; i < 6; i++) {
                 const angle = i * Math.PI / 3;
-                const radius = 10 + progress * 20;
+                const radius = 10 + (reduceMotion ? 0 : progress * 20);
                 ctx.beginPath();
                 ctx.moveTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
                 ctx.lineTo(Math.cos(angle) * (radius + 4), Math.sin(angle) * (radius + 4));
@@ -68,3 +68,4 @@ export class CoinManager {
         }
     }
 }
+

@@ -3,7 +3,7 @@ import { renderLevelSelection } from "./LevelSelection.js";
 
 // Navigation reads the same account-scoped achievements as the running game.
 export class WorldMap {
-    constructor({ levels, getProgress, getTotal, onPlay, onMap }) {
+    constructor({ levels, getProgress, getTotal, onPlay, onMap, onMapRequest }) {
         Object.assign(this, { levels, getProgress, getTotal, onPlay, onMap });
         this.selectedId = levels[0].id;
         this.playing = false;
@@ -24,7 +24,7 @@ export class WorldMap {
             });
         });
         this.playButton.addEventListener("click", () => this.openLevel());
-        document.getElementById("backToMap").addEventListener("click", () => this.openMap());
+        document.getElementById("backToMap").addEventListener("click", () => onMapRequest ? onMapRequest() : this.openMap());
         window.addEventListener("hashchange", () => this.render());
         this.render(false);
     }
@@ -117,4 +117,5 @@ export class WorldMap {
         }
     }
 }
+
 

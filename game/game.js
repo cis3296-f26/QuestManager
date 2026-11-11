@@ -16,6 +16,9 @@ import { LocalProgressStore } from "./progress/LocalProgressStore.js";
 import { LevelProgressManager } from "./progress/LevelProgressManager.js";
 import { connectGameSession } from "./progress/GameSession.js";
 import { renderCoinProgress, drawCoinHUD } from "./ui/CoinProgress.js";
+import { GamePauseManager, GameClock } from "./engine/GamePauseManager.js";
+import { GameSettings, SettingsPersistence } from "./settings/GameSettings.js";
+import { PauseMenu } from "./ui/PauseMenu.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -30,7 +33,7 @@ let { player, enemies, flagX } = level;
 const jumpStrength = movement.jumpStrength;
 
 const keys = new Set();
-let lastTime = null;
+const clock = new GameClock();
 let cameraX = 0;
 const deathDelay = 0.7;
 let deathTimeLeft = 0;
@@ -47,6 +50,12 @@ let playing = false;
 let accountSession;
 let sessionReady = false;
 let attemptRevision = 0;
+const settings = new GameSettings(new SettingsPersistence(storage));
+const pause = new GamePauseManager(() => sessionReady && playing && !level.complete && deathTimeLeft <= 0 && !completionDialog.open);
+pause.subscribe(() => { keys.clear(); clock.reset(); });
+const pauseMenu = new PauseMenu({ document, pause, settings,
+    onRestart: () => restartLevel(), onMap: () => worldMap.openMap(),
+    returnFocus: () => { if (playing && !completionDialog.open) canvas.focus(); } });
 
 function updateCoinHUD() {
     // The visible HUD is drawn inside the canvas; announce pickups without another panel.
@@ -55,6 +64,8 @@ function updateCoinHUD() {
 
 function changeAccount(userId) {
     if (userId === progress.userId) return;
+    pause.close();
+    settings.setUser(userId);
     progress.setUser(userId);
     if (completionDialog.open) {
         completionDialog.returnValue = "";
@@ -106,6 +117,8 @@ canvas.addEventListener("pointerdown", () => {
 });
 
 function restartLevel() {
+    pause.close();
+    clock.reset();
     attemptRevision++;
     level.restart();
     coins.reset(progress.getLevel(level.config.id).coinIds);
@@ -153,13 +166,21 @@ function playLevel(config) {
 
 function showMap() {
     playing = false;
+    pause.close();
     closeCompletion();
     restartLevel(); // Abandoning a level never saves new coins.
 }
 
 canvas.addEventListener("keydown", event => {
 
-    if (!sessionReady || !playing) return;
+    if (event.target && event.target !== canvas) return;
+    if (!sessionReady || !playing || pause.paused || completionDialog.open) return;
+    if (event.code === "Escape") {
+        event.preventDefault();
+        if (!event.repeat) pause.open();
+        return;
+    }
+    if (deathTimeLeft > 0) return;
 
     if (event.code === "KeyR") {
         event.preventDefault();
@@ -234,7 +255,7 @@ function update(dt) {
 }
 
 function drawPlayer() {
-    avatar.draw(ctx, player);
+    avatar.draw(ctx, player, { reduceMotion: settings.values.reduceMotion });
 }
 
 function draw() {
@@ -246,7 +267,7 @@ function draw() {
     ctx.translate(-cameraX, 0);
     grassland.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
     grassland.drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
-    drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width);
+    drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawExplorationFoliage(ctx, level.exploration, cameraX, canvas.width);
 
     const flagTop = level.config.finish.platform.y - 60;
@@ -266,7 +287,7 @@ function draw() {
 
     drawHazards(ctx, level.config.hazards ?? []);
     enemies.forEach((enemy) => drawEnemy(ctx, enemy, cameraX, canvas.width));
-    coins.draw(ctx, cameraX, canvas.width);
+    coins.draw(ctx, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawPlayer();
     ctx.restore();
 
@@ -298,15 +319,10 @@ function draw() {
 }
 
 function gameLoop(time) {
-    // Seconds since the previous frame. Cap long pauses.
-    const dt = lastTime === null
-        ? 0
-        : Math.min((time - lastTime) / 1000, 1 / 30);
-
-    lastTime = time;
-
-    // Pause movement when the game does not have keyboard focus.
-    if (sessionReady && playing && document.activeElement === canvas) {
+    // All game state and animation time advance through this one gate.
+    const dt = clock.frame(time, sessionReady && playing && !pause.paused &&
+        !completionDialog.open && document.activeElement === canvas);
+    if (dt !== null && dt > 0) {
         update(dt);
         player.animation.update(player, dt, {
             dead: deathTimeLeft > 0,
@@ -315,6 +331,7 @@ function gameLoop(time) {
         });
     }
 
+    document.getElementById("pauseButton").disabled = !pause.canPause() || pause.paused;
     if (playing) draw();
     requestAnimationFrame(gameLoop);
 }
@@ -338,7 +355,11 @@ connectGameSession(changeAccount).then((session) => {
         getProgress: (id) => progress.getLevel(id),
         getTotal: () => progress.totalCoins,
         onPlay: playLevel,
-        onMap: showMap
+        onMap: showMap,
+        onMapRequest: () => {
+            if (pause.canPause()) pause.open("map");
+            else if (!pause.paused) worldMap.openMap();
+        }
     });
 });
 requestAnimationFrame(gameLoop);
