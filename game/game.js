@@ -1,3 +1,4 @@
+import { GrasslandRenderer } from "./rendering/GrasslandRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { level1 } from "./levels/Level1.js";
 import { touchesHazard, drawHazards } from "./engine/Hazards.js";
@@ -24,6 +25,7 @@ let cameraX = 0;
 const deathDelay = 0.7;
 let deathTimeLeft = 0;
 const avatar = new AvatarRenderer();
+const grassland = new GrasslandRenderer();
 
 
 // Click the game to give it keyboard focus.
@@ -158,42 +160,12 @@ function drawCreature(creature) {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Sky.
-    ctx.fillStyle = "#b9e1ef";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Distant hills.
-    ctx.fillStyle = "#80a88b";
-    ctx.beginPath();
-    ctx.moveTo(0, groundY);
-    ctx.lineTo(220, 240);
-    ctx.lineTo(440, groundY);
-    ctx.lineTo(700, 190);
-    ctx.lineTo(canvas.width, groundY);
-    ctx.closePath();
-    ctx.fill();
+    grassland.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY);
 
     ctx.save();
     ctx.translate(-cameraX, 0);
-
-    // Draw the ground and floating platforms.
-    for (const platform of platforms) {
-        ctx.fillStyle = "#9e7954";
-        ctx.fillRect(
-            platform.x,
-            platform.y,
-            platform.width,
-            platform.height
-        );
-
-        ctx.fillStyle = "#5e744a";
-        ctx.fillRect(
-            platform.x,
-            platform.y,
-            platform.width,
-            10
-        );
-    }
+    grassland.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
+    grassland.drawPlatforms(ctx, platforms, cameraX, canvas.width);
 
     const flagTop = level.config.finish.platform.y - 60;
 

@@ -1,3 +1,5 @@
+import { level1Scenery } from "./Level1Scenery.js";
+
 const groundY = 460;
 const worldWidth = 22000;
 
@@ -109,6 +111,7 @@ export const level1 = {
     worldWidth,
     platforms,
     spawn: { x: 80, feetY: groundY },
+    scenery: level1Scenery,
     enemies: [
         {
             "startX": 1100,
