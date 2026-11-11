@@ -496,4 +496,46 @@ body {
     border: none;
     background: none;
     color: #3d5f26;
-    font-family: "Abril
+    font-family: "Abril Fatface", Georgia, serif;
+    font-size: 18px;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Count bubble on the right. */
+.priority-count {
+    margin-left: auto;
+    min-width: 26px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--priority-color);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Smaller gap above the cards inside a section. */
+#home #priorityBoard .priority-list {
+    margin: 8px 0 0;
+    list-style: none;
+}
+
+/* Task type filter above the board. */
+.quest-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    color: #403725;
+}
+
+#typeFilter {
+    padding: 6px 12px;
+    border: 2px solid #51452b;
+    border-radius: 999px;
+    background: #faf0e6;
+    color: #304c1e;
+    font: inherit;
+}

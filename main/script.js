@@ -18,6 +18,7 @@ route();
 var input = document.getElementById("taskInput");
 var descriptionInput = document.getElementById("taskDescription");
 const priorityBoard = document.getElementById("priorityBoard");
+const typeFilter = document.getElementById("typeFilter");
 const priorityInput = document.getElementById("questPriority");
 const typeInput = document.getElementById("questType");
 var addButton = document.getElementById("addButton");
@@ -41,8 +42,9 @@ let selectedDate = todayStr();
 // ---------- Rendering ----------
 // Today's quests, split into High / Medium / Low.
 function renderPriorityBoard() {
-    const todays = allTasks.filter(t => t.date === todayStr());
-
+    const filter = typeFilter.value;
+    const todays = allTasks.filter(t =>
+        t.date === todayStr() && (filter === "all" || t.taskType === filter));
     PRIORITIES.forEach(priority => {
         const section = priorityBoard.querySelector(`[data-priority="${priority}"]`);
         const target = section.querySelector(".priority-list");
@@ -361,6 +363,8 @@ priorityBoard.querySelectorAll(".priority-toggle").forEach(toggle => {
         setSectionOpen(section, !isOpen);
     });
 });
+// Redraw the board when a different task type is picked.
+typeFilter.addEventListener("change", renderPriorityBoard);
 // ---------- Wiring ----------
 questForm.addEventListener("submit", event => {
     event.preventDefault();
