@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>QuestManager Adventure</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap">
+    <link rel="stylesheet" href="./game.css">
+</head>
+<body>
+    <main class="game-shell">
+        <section id="worldMapView" aria-labelledby="mapHeading">
+            <header class="map-header">
+                <div>
+                    <p class="game-eyebrow">QuestManager Adventure</p>
+                    <h1 id="mapHeading" tabindex="-1">Adventure Map</h1>
+                    <p id="mapTotalCoins">Total Coins: 0/30</p>
+                </div>
+                <nav class="map-nav" aria-label="QuestManager">
+                    <a href="../#home">Home</a>
+                    <a href="../#journal">Journal</a>
+                    <a href="../#shop">Shop</a>
+                </nav>
+            </header>
+            <p id="mapDescription" class="map-help">Complete each level to unlock the next adventure. Levels 1–4 are playable, with three special coins to collect in each. Levels 5–10 are coming soon.</p>
+            <div class="map-scroll">
+                <div class="world-map" role="group" aria-label="Adventure levels" aria-describedby="mapDescription">
+                    <img class="map-art" src="./assets/adventure-map.webp" alt="" draggable="false">
+                    <button type="button" class="map-node is-selected" data-level="1"
+                        style="left:18.6005%;top:82.1530%"
+                        aria-label="Level 1: The First Adventure" aria-pressed="true"
+                        title="Select Level 1">
+                        <span>1</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="2"
+                        style="left:28.7081%;top:68.4136%"
+                        aria-label="Level 2: The Winding Grove, complete Level 1 to unlock" disabled
+                        title="Complete Level 1 to unlock">
+                        <span>2</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="3"
+                        style="left:41.6866%;top:70.2550%"
+                        aria-label="Level 3: Deep Forest, complete Level 2 to unlock" disabled
+                        title="Complete Level 2 to unlock">
+                        <span>3</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="4"
+                        style="left:60.1675%;top:68.5552%"
+                        aria-label="Level 4: Crystal Cave, complete Level 3 to unlock" disabled
+                        title="Complete Level 3 to unlock">
+                        <span>4</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="5"
+                        style="left:81.9378%;top:70.2550%"
+                        aria-label="Level 5: Desert Ruins, coming soon" disabled
+                        title="Desert Ruins — coming soon">
+                        <span>5</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="6"
+                        style="left:83.3732%;top:47.7337%"
+                        aria-label="Level 6: Desert Ruins, coming soon" disabled
+                        title="Desert Ruins — coming soon">
+                        <span>6</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="7"
+                        style="left:75.7177%;top:31.5864%"
+                        aria-label="Level 7: Frozen Peaks, coming soon" disabled
+                        title="Frozen Peaks — coming soon">
+                        <span>7</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="8"
+                        style="left:55.3828%;top:30.3116%"
+                        aria-label="Level 8: Mountain Cliffs, coming soon" disabled
+                        title="Mountain Cliffs — coming soon">
+                        <span>8</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="9"
+                        style="left:35.2871%;top:32.0113%"
+                        aria-label="Level 9: Volcanic Kingdom, coming soon" disabled
+                        title="Volcanic Kingdom — coming soon">
+                        <span>9</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                    <button type="button" class="map-node" data-level="10"
+                        style="left:22.0096%;top:24.7875%"
+                        aria-label="Level 10: Volcanic Castle, coming soon" disabled
+                        title="Volcanic Castle — coming soon">
+                        <span>10</span><span class="map-lock" aria-hidden="true">🔒</span>
+                    </button>
+                </div>
+            </div>
+            <footer class="map-footer">
+                <a class="adventure-button secondary" href="../#home">← Back to QuestManager</a>
+                <div class="map-selection">
+                    <h2 id="mapLevelTitle">Level 1 · The First Adventure</h2>
+                    <p id="mapLevelStatus" role="status">Grasslands · Ready to explore</p>
+                    <div id="mapLevelCoins" aria-label="Selected level coins"></div>
+                </div>
+                <button type="button" id="playLevel" class="adventure-button">Play Level</button>
+            </footer>
+        </section>
+
+        <section id="levelView" hidden aria-labelledby="levelHeading">
+            <header class="game-header level-header">
+                <div>
+                    <p class="game-eyebrow">QuestManager Adventure</p>
+                    <h1 id="levelHeading">Level 1: The First Adventure</h1>
+                </div>
+                <div class="level-actions">
+                    <button type="button" id="pauseButton" class="adventure-button" aria-haspopup="dialog" aria-controls="pauseDialog" disabled>Pause <small>(Esc)</small></button>
+                    <button type="button" id="backToMap" class="adventure-button secondary">World Map</button>
+                </div>
+            </header>
+            <p id="gameInstructions">
+                Move with A/D or the left/right arrows.
+                Jump with Space, W, or the up arrow. Press R to restart. Esc pauses or resumes. Reach the flag to finish!
+                Land on slimes to defeat them; mushrooms must still be avoided.
+            </p>
+            <p id="coinCounter" class="visually-hidden" role="status" aria-live="polite">Coins: 0/3</p>
+            <canvas id="gameCanvas" width="960" height="540" tabindex="0"
+                aria-label="Level 1 platform game" aria-describedby="gameInstructions">
+                Your browser does not support the canvas needed for this game.
+            </canvas>
+            <p id="gameStatus" role="status" aria-live="polite">Your adventure begins here.</p>
+        </section>
+    </main>
+    <dialog id="levelCompleteDialog" class="completion-dialog"
+        aria-labelledby="levelCompleteTitle" aria-describedby="levelCompleteDescription">
+        <p class="game-eyebrow">Quest complete</p>
+        <h2 id="levelCompleteTitle">Level 1 Complete!</h2>
+        <p id="levelCompleteDescription">You reached the flag! Replay The First Adventure to try again.</p>
+        <section class="completion-coins" aria-label="Saved collectible progress">
+            <p id="completionCoinCount">Coin Collection: 0/3</p>
+            <div id="completionCoins"></div>
+            <p id="perfectCoins" hidden>Perfect! All 3 Coins Collected!</p>
+            <p id="completionSaveStatus"></p>
+        </section>
+        <form method="dialog" class="completion-actions">
+            <button type="submit" value="replay" autofocus>Replay Level</button>
+            <button id="nextLevel" type="button" disabled>Next Level <small>Coming soon</small></button>
+            <button type="submit" value="map">World Map</button>
+        </form>
+    </dialog>
+    <dialog id="levelSelectionDialog" class="completion-dialog" aria-labelledby="selectionLevelTitle">
+        <form method="dialog" class="selection-close">
+            <button type="submit" aria-label="Close level details">×</button>
+        </form>
+        <div id="levelSelectionContent"></div>
+    </dialog>
+    <dialog id="pauseDialog" class="pause-dialog" aria-labelledby="pauseTitle" aria-describedby="pauseDescription">
+        <p class="game-eyebrow">QuestManager Adventure</p>
+        <h2 id="pauseTitle">GAME PAUSED</h2>
+        <p id="pauseDescription">Take a break. Your current attempt is preserved.</p>
+        <div id="pauseMainPanel" class="pause-actions">
+            <button id="pauseResume" type="button" autofocus>Resume</button>
+            <button id="pauseRestart" type="button">Restart Level</button>
+            <button id="pauseWorldMap" type="button">World Map</button>
+            <button id="pauseSettings" type="button" class="secondary">Settings</button>
+        </div>
+        <div id="pauseConfirmPanel" hidden>
+            <div class="pause-actions confirmation-actions">
+                <button id="pauseCancel" type="button" class="secondary">Cancel</button>
+                <button id="pauseConfirm" type="button">Restart</button>
+            </div>
+        </div>
+        <div id="pauseSettingsPanel" hidden>
+            <fieldset class="settings-group">
+                <legend>Sound</legend>
+                <p class="settings-note">Gentle original adventure music and soft retro effects. Click or press a key to enable audio; muted play keeps all visual feedback.</p>
+                <div class="volume-row">
+                    <label for="masterVolume">Master Volume</label><output id="masterVolumeValue" for="masterVolume">80%</output>
+                    <input id="masterVolume" type="range" min="0" max="100" step="1" value="80">
+                </div>
+                <div class="volume-row">
+                    <label for="musicVolume">Music Volume</label><output id="musicVolumeValue" for="musicVolume">60%</output>
+                    <input id="musicVolume" type="range" min="0" max="100" step="1" value="60">
+                </div>
+                <div class="volume-row">
+                    <label for="effectsVolume">Sound Effects Volume</label><output id="effectsVolumeValue" for="effectsVolume">80%</output>
+                    <input id="effectsVolume" type="range" min="0" max="100" step="1" value="80">
+                </div>
+                <label class="setting-toggle"><input id="muted" type="checkbox"> Mute All</label>
+            </fieldset>
+            <fieldset class="settings-group">
+                <legend>Gameplay</legend>
+                <label class="setting-toggle"><input id="showControls" type="checkbox" checked> Show Controls</label>
+                <label class="setting-toggle"><input id="reduceMotion" type="checkbox"> Reduce Motion</label>
+                <p class="settings-note">Reduces character bobbing, coin effects and platform warning shake. Gameplay movement stays the same.</p>
+            </fieldset>
+            <section id="controlsReference" class="controls-reference" aria-labelledby="controlsTitle">
+                <h3 id="controlsTitle">Controls</h3>
+                <dl>
+                    <dt>A / Left Arrow</dt><dd>Move Left</dd>
+                    <dt>D / Right Arrow</dt><dd>Move Right</dd>
+                    <dt>Space / W / Up Arrow</dt><dd>Jump</dd>
+                    <dt>R</dt><dd>Restart Level</dd>
+                    <dt>Esc</dt><dd>Pause / Resume</dd>
+                </dl>
+            </section>
+            <p id="settingsSaveStatus" class="settings-note" role="status"></p>
+            <div class="pause-actions"><button id="settingsBack" type="button">Back</button></div>
+        </div>
+    </dialog>
+    <script type="module" src="./game.js"></script>
+</body>
+</html>
+
+
+
+
+
+

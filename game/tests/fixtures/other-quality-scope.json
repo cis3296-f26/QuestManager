@@ -1,0 +1,61 @@
+{
+  "reference": "1bd431eb32e8e75011e7250e401cfbfb5f93390f",
+  "level1": "10b478eca6c6686c84042e52b1e608a2976eac7019e20cca6e47d31258db06d6",
+  "traces": [
+    {
+      "camera": 0,
+      "hash": "1527ab0cf4616d968c8b04fe11a11a65a00ee718ecb9ab0e0c7df3c049457e47"
+    },
+    {
+      "camera": 1100,
+      "hash": "9530ac6012225026862dc6ec066a6b8da049574100a4667fd4ccb5da831e75d5"
+    },
+    {
+      "camera": 2040,
+      "hash": "80dc64350909a4f0efabe3576177dbb228347e9feb6fd15d1ddb97de1257ffc6"
+    },
+    {
+      "camera": 3000,
+      "hash": "6a499b24e2a4fe313436905ea02ce8735733cc0cd81217493316af7a575f6c96"
+    },
+    {
+      "camera": 6000,
+      "hash": "f367000c22dbc2ebba641333e241f0ee50d78d1f79022cf00ad10b63c8c3caac"
+    }
+  ],
+  "others": [
+    {
+      "id": 2,
+      "coins": [
+        "level-2-coin-1",
+        "level-2-coin-2",
+        "level-2-coin-3"
+      ],
+      "laterStages": "9cb86cb276e94dc15b1f6613ce055e8867e2f66d723d06589368bcad08daf52a",
+      "moving": "eed23f9e5e0de8df3b59002c9957e6c163dbe4369024a72d7982c2fb94d889a4",
+      "finish": "b11e919c96910a116d5974726c05bbd9ae08bd21c2753b8569f44449928ffbd7"
+    },
+    {
+      "id": 3,
+      "coins": [
+        "level-3-coin-1",
+        "level-3-coin-2",
+        "level-3-coin-3"
+      ],
+      "laterStages": "642402e233ead72ea2ab486287783532b1ea838773962807f44d90d4774e9559",
+      "moving": "a882d4253bc260c336465d0eee2722000948f58015566b6df54bd1e74d2ab267",
+      "finish": "8765c16db8d67aba6c3605a5be98cf22234c848eb2fd7d1edeac4526a2558baf"
+    },
+    {
+      "id": 4,
+      "coins": [
+        "level-4-coin-1",
+        "level-4-coin-2",
+        "level-4-coin-3"
+      ],
+      "laterStages": "072e84f8a9ec33be9a823de477329ae463a4298bf316e9195e6a6b1d381a88f0",
+      "moving": "04ac0a1e3deff118234355c4ce39bbc1da6bfca454e53d0c1522fefd2407b699",
+      "finish": "35b91fb14c4a3027c1b57cf5bbc5147cf195bdaddeb7694fd9d818efe5f2d4fa"
+    }
+  ]
+}
