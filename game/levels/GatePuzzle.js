@@ -3,7 +3,7 @@ import { sweepAABB } from "../engine/Collision.js";
 const bounds = p => ({ x: p.x, y: p.y, width: p.width, height: p.height });
 
 // Attempt state only. Opening a gate never changes a permanent save or a level
-// definition. Touch switches and grounded pressure plates share the same links.
+// definition. Optional openDuration makes a plate a reusable timed switch.
 export class GatePuzzle {
     constructor(switches = [], gates = []) {
         this.switches = switches.map(config => ({ ...config, active: false }));
@@ -12,16 +12,33 @@ export class GatePuzzle {
     }
 
     reset() {
-        this.switches.forEach(s => { s.active = false; s.activationTime = 0; });
-        this.gates.forEach(g => { g.open = false; g.openTime = 0; });
+        this.switches.forEach(s => { s.active = false; s.activationTime = 0; s.remainingTime = 0; s.wasPressed = false; });
+        this.gates.forEach(g => { g.open = false; g.openTime = 0; g.remainingTime = 0; });
         this.activationCount = 0;
     }
 
     update(player, previous, dt = 0, { ignoreWalls = false } = {}) {
-        for (const s of this.switches) if (s.active) s.activationTime = Math.min(.35, s.activationTime + dt);
+        for (const s of this.switches) if (s.active) {
+            s.activationTime = Math.min(.35, s.activationTime + dt);
+            if (s.openDuration) {
+                s.remainingTime = Math.max(0, s.remainingTime - dt);
+                if (s.remainingTime <= 1e-9) { s.remainingTime = 0; s.active = false; }
+            }
+        }
+        for (const gate of this.gates) {
+            const linked = this.switches.filter(s => s.gateIds.includes(gate.id));
+            const active = linked.filter(s => s.active);
+            gate.remainingTime = Math.max(0, ...active.map(s => s.remainingTime));
+            const occupied = player.x < gate.x + gate.width && player.x + player.width > gate.x &&
+                player.y < gate.y + gate.height && player.y + player.height > gate.y;
+            // Closing never crushes or teleports someone straddling the doorway.
+            // This grace lasts only until they clear its collision rectangle.
+            gate.open = active.length > 0 || (gate.open && occupied);
+            if (!gate.open) gate.openTime = 0;
+        }
         for (const gate of this.gates) if (gate.open) gate.openTime = Math.min(.35, gate.openTime + dt);
         // Resolve walls first: a fast player cannot activate a switch through a
-        // closed gate. Open gates never close or crush players during an attempt.
+        // closed gate. Timed gates close only when the doorway is clear.
         for (const gate of this.gates.filter(g => !g.open && !ignoreWalls)) {
             const hit = sweepAABB(previous, bounds(player), gate, gate);
             if (!hit) continue;
@@ -52,13 +69,21 @@ export class GatePuzzle {
             }
         }
         for (const s of this.switches) {
-            if (s.active) continue;
-            if (s.mode === "plate" && (!player.grounded ||
-                Math.abs(player.y + player.height - s.y - s.height) > 1)) continue;
-            if (!sweepAABB(previous, bounds(player), s, s)) continue;
+            const onTop = player.grounded && Math.abs(player.y + player.height - s.y - s.height) <= 1;
+            const pressed = (s.mode === "touch" || onTop) &&
+                Boolean(sweepAABB(previous, bounds(player), s, s));
+            const landed = previous.y + previous.height < s.y + s.height - 1e-7;
+            const activate = pressed && !s.wasPressed && (s.mode !== "stomp" || landed) && (!s.active || s.openDuration);
+            s.wasPressed = pressed;
+            if (!activate) continue;
             s.active = true;
+            s.activationTime = 0;
+            s.remainingTime = s.openDuration ?? 0;
             this.activationCount++;
-            this.gates.filter(g => s.gateIds.includes(g.id)).forEach(g => g.open = true);
+            this.gates.filter(g => s.gateIds.includes(g.id)).forEach(g => {
+                if (!g.open) g.openTime = 0;
+                g.open = true; g.remainingTime = Math.max(g.remainingTime, s.remainingTime);
+            });
         }
     }
 }

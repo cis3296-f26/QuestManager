@@ -604,16 +604,27 @@
   },
   {
     "fps": 30,
-    "totalFrames": 147,
+    "totalFrames": 153,
     "jumpFrames": [
-      6,
-      21,
-      39,
-      63,
-      84,
-      114
+      0,
+      15,
+      33,
+      54,
+      90,
+      120
     ],
-    "inputs": [],
+    "inputs": [
+      {
+        "from": 39,
+        "to": 42,
+        "direction": 0
+      },
+      {
+        "from": 42,
+        "to": 45,
+        "direction": 0
+      }
+    ],
     "start": {
       "x": 3100,
       "feetY": 460
@@ -623,16 +634,27 @@
   },
   {
     "fps": 60,
-    "totalFrames": 294,
+    "totalFrames": 306,
     "jumpFrames": [
-      12,
-      42,
-      78,
-      120,
-      168,
-      228
+      0,
+      30,
+      66,
+      114,
+      180,
+      240
     ],
-    "inputs": [],
+    "inputs": [
+      {
+        "from": 78,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 84,
+        "to": 90,
+        "direction": 0
+      }
+    ],
     "start": {
       "x": 3100,
       "feetY": 460
@@ -642,16 +664,32 @@
   },
   {
     "fps": 120,
-    "totalFrames": 587,
+    "totalFrames": 623,
     "jumpFrames": [
-      12,
-      84,
-      156,
-      240,
-      336,
-      456
+      48,
+      120,
+      192,
+      276,
+      372,
+      492
     ],
-    "inputs": [],
+    "inputs": [
+      {
+        "from": 108,
+        "to": 120,
+        "direction": 0
+      },
+      {
+        "from": 168,
+        "to": 180,
+        "direction": 0
+      },
+      {
+        "from": 180,
+        "to": 192,
+        "direction": 0
+      }
+    ],
     "start": {
       "x": 3100,
       "feetY": 460
@@ -661,17 +699,81 @@
   },
   {
     "fps": 30,
-    "totalFrames": 171,
+    "totalFrames": 249,
     "jumpFrames": [
-      0,
-      15,
-      36,
-      57,
-      90,
+      27,
       111,
-      132
+      132,
+      153,
+      174
     ],
-    "inputs": [],
+    "inputs": [
+      {
+        "from": 132,
+        "to": 135,
+        "direction": -1
+      },
+      {
+        "from": 135,
+        "to": 138,
+        "direction": -1
+      },
+      {
+        "from": 138,
+        "to": 141,
+        "direction": -1
+      },
+      {
+        "from": 141,
+        "to": 144,
+        "direction": -1
+      },
+      {
+        "from": 144,
+        "to": 147,
+        "direction": -1
+      },
+      {
+        "from": 147,
+        "to": 150,
+        "direction": -1
+      },
+      {
+        "from": 150,
+        "to": 153,
+        "direction": -1
+      },
+      {
+        "from": 153,
+        "to": 156,
+        "direction": -1
+      },
+      {
+        "from": 156,
+        "to": 159,
+        "direction": -1
+      },
+      {
+        "from": 159,
+        "to": 162,
+        "direction": -1
+      },
+      {
+        "from": 162,
+        "to": 165,
+        "direction": -1
+      },
+      {
+        "from": 165,
+        "to": 168,
+        "direction": -1
+      },
+      {
+        "from": 168,
+        "to": 171,
+        "direction": -1
+      }
+    ],
     "start": {
       "x": 11780,
       "feetY": 460
@@ -681,17 +783,86 @@
   },
   {
     "fps": 60,
-    "totalFrames": 341,
+    "totalFrames": 503,
     "jumpFrames": [
-      0,
-      30,
-      72,
-      114,
-      168,
-      216,
-      264
+      54,
+      222,
+      270,
+      312,
+      354
     ],
-    "inputs": [],
+    "inputs": [
+      {
+        "from": 264,
+        "to": 270,
+        "direction": -1
+      },
+      {
+        "from": 270,
+        "to": 276,
+        "direction": 0
+      },
+      {
+        "from": 276,
+        "to": 282,
+        "direction": -1
+      },
+      {
+        "from": 282,
+        "to": 288,
+        "direction": -1
+      },
+      {
+        "from": 288,
+        "to": 294,
+        "direction": -1
+      },
+      {
+        "from": 294,
+        "to": 300,
+        "direction": -1
+      },
+      {
+        "from": 300,
+        "to": 306,
+        "direction": -1
+      },
+      {
+        "from": 306,
+        "to": 312,
+        "direction": -1
+      },
+      {
+        "from": 312,
+        "to": 318,
+        "direction": -1
+      },
+      {
+        "from": 318,
+        "to": 324,
+        "direction": -1
+      },
+      {
+        "from": 324,
+        "to": 330,
+        "direction": -1
+      },
+      {
+        "from": 330,
+        "to": 336,
+        "direction": -1
+      },
+      {
+        "from": 336,
+        "to": 342,
+        "direction": -1
+      },
+      {
+        "from": 342,
+        "to": 348,
+        "direction": -1
+      }
+    ],
     "start": {
       "x": 11780,
       "feetY": 460
@@ -701,17 +872,87 @@
   },
   {
     "fps": 120,
-    "totalFrames": 681,
+    "totalFrames": 998,
     "jumpFrames": [
-      0,
-      72,
-      156,
-      240,
+      108,
       336,
-      432,
-      528
+      444,
+      540,
+      612,
+      696
     ],
-    "inputs": [],
+    "inputs": [
+      {
+        "from": 528,
+        "to": 540,
+        "direction": 0
+      },
+      {
+        "from": 540,
+        "to": 552,
+        "direction": -1
+      },
+      {
+        "from": 552,
+        "to": 564,
+        "direction": -1
+      },
+      {
+        "from": 564,
+        "to": 576,
+        "direction": -1
+      },
+      {
+        "from": 576,
+        "to": 588,
+        "direction": -1
+      },
+      {
+        "from": 588,
+        "to": 600,
+        "direction": -1
+      },
+      {
+        "from": 600,
+        "to": 612,
+        "direction": -1
+      },
+      {
+        "from": 612,
+        "to": 624,
+        "direction": -1
+      },
+      {
+        "from": 624,
+        "to": 636,
+        "direction": -1
+      },
+      {
+        "from": 636,
+        "to": 648,
+        "direction": -1
+      },
+      {
+        "from": 648,
+        "to": 660,
+        "direction": -1
+      },
+      {
+        "from": 660,
+        "to": 672,
+        "direction": -1
+      },
+      {
+        "from": 672,
+        "to": 684,
+        "direction": -1
+      },
+      {
+        "from": 684,
+        "to": 696,
+        "direction": 0
+      }
+    ],
     "start": {
       "x": 11780,
       "feetY": 460

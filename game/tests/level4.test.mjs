@@ -37,17 +37,21 @@ test("Crystal Cave has five purposeful sections, three stable coins and no conte
     assert.deepEqual(level4.coins.map(c=>c.id),[1,2,3].map(n=>`level-4-coin-${n}`));
     assert.equal(level4.explorationAreas.length,2);assert.equal(level4.gates.length,1);assert.equal(level4.switches.length,1);
     assert.equal(level4.stages[0].stalactites,undefined);assert.equal(level4.stages.at(-1).enemies,undefined);
-    assert.ok(level4.stalactites.every(r=>r.warningDuration>=.8&&r.warningDuration<=1.2));
+    assert.ok(level4.stalactites.length>=10);
+    assert.ok(level4.stalactites.every(r=>r.warningDuration>=.6&&r.warningDuration<=1.2));
     assert.ok(level4.enemies.every(e=>e.minX>850));
 });
 
-test("all-coin routes board the ferry, cross the cracked slab and open the vault; main routes skip both secrets",()=>{
+test("all-coin routes ride the ferry and beat the timed vault; main routes skip both secrets",()=>{
     for(const suffix of ["routes","main-routes"])for(const route of routes(suffix)) {
         const {level,coins,visited}=play(route),all=suffix==="routes";
         assert.equal(coins.pending.size,all?3:0);
         assert.ok(visited.has("l4-ferry"),`${route.fps} ${suffix}: must ride across the chasm`);
-        assert.equal(level.puzzle.gates[0].open,all);assert.equal(level.puzzle.switches[0].active,all);
-        if(all){assert.ok(visited.has("l4-vault-crumble"));assert.equal(level.exploration.discovered.size,2);}
+        // Timed gates have closed again by the finish; use actual activation and
+        // the two return-step visits to establish that the puzzle was solved.
+        assert.equal(level.puzzle.gates[0].open,false);assert.equal(level.puzzle.switches[0].active,false);
+        assert.equal(level.puzzle.activationCount>0,all);
+        if(all){assert.ok(visited.has("l4-vault-lower-step")&&visited.has("l4-vault-upper-step"));assert.equal(level.exploration.discovered.size,2);}
         else assert.equal(level.exploration.discovered.size,0);
         assert.ok(level.stalactites.every(r=>r.warningCount===1));
         level.restart();coins.discard();
@@ -96,7 +100,7 @@ test("cave ferry can be boarded, carried through reversal and exited at multiple
     }
 });
 
-test("cracked slab warns above a real pit; waiting falls, while a last-moment jump reaches the plate",()=>{
+test("cracked slab warns above a real pit; a last-moment jump reaches the approach shelf without opening the door",()=>{
     for(const fps of [30,60,120]) {
         const level=new LevelManager(level4),p=level.player,board=level.platforms.find(p=>id(p)==="l4-vault-crumble");
         const stand=()=>{p.reset({x:board.x+board.width-45,feetY:board.y});p.supportPlatform=board;board.onLand();};
@@ -106,7 +110,7 @@ test("cracked slab warns above a real pit; waiting falls, while a last-moment ju
         for(let i=0;i<Math.floor(fps*(board.config.collapseDelay-.1));i++)assert.equal(stepLevel(level,0,1/fps).death,null);
         jump(p,650);
         for(let i=0;i<fps*2&&!p.grounded;i++)assert.equal(stepLevel(level,p.x<12330?1:0,1/fps).death,null);
-        assert.equal(id(p.supportPlatform),"l4-switch-shelf");assert.equal(level.puzzle.gates[0].open,true);
+        assert.equal(id(p.supportPlatform),"l4-switch-shelf");assert.equal(level.puzzle.gates[0].open,false);
     }
 });
 

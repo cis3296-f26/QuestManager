@@ -23,14 +23,31 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
             ctx.fillText("!",w/2,h+19);ctx.textAlign="start";
         }
         ctx.restore();
+        if(warning) {
+            const floor=level.platforms.filter(p=>p.solid!==false&&p.y>=y+h&&x<p.x+p.width&&x+w>p.x)
+                .reduce((top,p)=>Math.min(top,p.y),540);
+            ctx.save();ctx.fillStyle="#e9bd74";ctx.globalAlpha*=.8;
+            ctx.fillRect(x-5,floor-5,w+10,4);ctx.restore();
+        }
     }
     for(const s of level.puzzle.switches) {
+        if(s.x+s.width<cameraX||s.x>cameraX+width)continue;
         ctx.fillStyle="#586275";ctx.fillRect(s.x,s.y+8,s.width,s.height-8);
         const pressed=s.active?(reduceMotion?1:Math.min(1,s.activationTime/.18)):0;
         ctx.fillStyle=s.active?"#b1eee2":"#75bed2";
         ctx.fillRect(s.x+3,s.y+2+pressed*5,s.width-6,8-pressed*5);
         ctx.fillStyle="#f2ecd1";ctx.font="bold 11px Arial";ctx.textAlign="center";
-        ctx.fillText(s.active?"OPEN":"BLUE SEAL",s.x+s.width/2,s.y-5);ctx.textAlign="start";
+        ctx.fillText(s.active?(s.openDuration?`${s.remainingTime.toFixed(1)}s`:"OPEN"):
+            s.openDuration?`${s.openDuration}s SWITCH`:"BLUE SEAL",s.x+s.width/2,s.y-5);
+        if(s.openDuration) {
+            ctx.fillStyle="#b1eee2";ctx.fillText(s.active?"← CLIMB BACK":"STOMP TO OPEN",s.x+s.width/2,s.y-23);
+        }
+        ctx.textAlign="start";
+    }
+    for(const s of level.puzzle.switches)for(const id of s.routePlatformIds??[]) {
+        const p=level.platforms.find(p=>p.id===id);
+        if(!p||p.x+p.width<cameraX||p.x>cameraX+width)continue;
+        ctx.fillStyle="#75bed2";ctx.fillRect(p.x+3,p.y,p.width-6,4);
     }
     for(const g of level.puzzle.gates) {
         if(g.x+g.width<cameraX||g.x>cameraX+width)continue;
@@ -48,5 +65,10 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
                 ctx.lineTo(g.x+g.width-6,y);ctx.lineTo(g.x+g.width/2,y+7);ctx.closePath();ctx.stroke();}
         }
         ctx.restore();
+        if(g.open&&g.remainingTime>0) {
+            ctx.save();ctx.fillStyle=g.remainingTime<1.5?"#f2c57e":"#b1eee2";
+            ctx.font="bold 13px Arial";ctx.textAlign="center";
+            ctx.fillText(`${g.remainingTime.toFixed(1)}s`,g.x+g.width/2,g.y+g.height+18);ctx.restore();
+        }
     }
 }

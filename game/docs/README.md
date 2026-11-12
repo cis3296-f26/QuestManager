@@ -6,6 +6,7 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Current reviews and level guides
 
+- [Timed cave vault and falling spikes](TIMED_CAVE_PLAYTEST.md)
 - [Level 1 opening review](OPENING_QUALITY_REVIEW.md)
 - [Levels 2–4 quality review](OTHER_LEVEL_QUALITY_REVIEW.md)
 - [Master integration review](MASTER_INTEGRATION_REVIEW.md)

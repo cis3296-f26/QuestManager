@@ -15,10 +15,14 @@ export function validateCaveMechanics(config) {
         if(!switches.some(s=>s.gateIds?.includes(gate.id)))errors.push(`Gate ${gate.id} has no connected switch.`);
     }
     for(const s of switches) {
-        if(!box(s)||!["touch","plate"].includes(s.mode)||!s.gateIds?.length||
+        if(s.openDuration !== undefined && (!Number.isFinite(s.openDuration) || s.openDuration <= 0))
+            errors.push(`Invalid switch duration: ${s.id}.`);
+        if(!box(s)||!["touch","plate","stomp"].includes(s.mode)||!s.gateIds?.length||
             s.gateIds.some(id=>!gates.some(g=>g.id===id)))errors.push(`Invalid switch: ${s.id}.`);
-        if(s.mode==="plate"&&!config.platforms.some(p=>!p.type&&p.y===s.y+s.height&&p.x<=s.x&&p.x+p.width>=s.x+s.width))
+        if(s.mode!=="touch"&&!config.platforms.some(p=>!p.type&&p.y===s.y+s.height&&p.x<=s.x&&p.x+p.width>=s.x+s.width))
             errors.push(`Pressure plate ${s.id} needs a stable landing.`);
+        if(s.routePlatformIds?.some(id=>!config.platforms.some(p=>p.id===id)))
+            errors.push(`Switch ${s.id} has an unknown route platform.`);
     }
     return errors;
 }

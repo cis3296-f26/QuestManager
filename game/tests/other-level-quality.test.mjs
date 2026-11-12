@@ -15,12 +15,13 @@ const hash=v=>createHash("sha256").update(JSON.stringify(v)).digest("hex");
 const id=p=>p?.id??p?.config?.id;
 const overlaps=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 
-test("quality pass preserves approved Level 1, every coin ID, later challenge geometry and moving/collapse configurations",()=>{
+test("cave revisions preserve Levels 1–3, the approved cave entrance, coin IDs, moving/collapse definitions and flags",()=>{
     assert.equal(hash(levels[0]),baseline.level1);
     for(const ref of baseline.others) {
         const config=levels.find(l=>l.id===ref.id);
         assert.deepEqual(config.coins.map(c=>c.id),ref.coins);
-        assert.equal(hash(config.stages.slice(1)),ref.laterStages,`Level ${ref.id}: later gameplay changed`);
+        if(ref.id===4)assert.equal(hash(config.stages[0]),ref.entrance,"approved cave entrance changed");
+        else assert.equal(hash(config.stages.slice(1)),ref.laterStages,`Level ${ref.id}: later gameplay changed`);
         assert.equal(hash(config.platforms.filter(p=>p.type)),ref.moving);
         assert.equal(hash(config.finish),ref.finish);
     }

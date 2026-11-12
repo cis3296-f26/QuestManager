@@ -190,13 +190,14 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
             const warnings = played("crack"), impacts = played("break");
             p.reset({ x: rock.x, feetY: 460 }); frame();
             assert.equal(played("crack"), warnings + 1);
-            p.reset({ x: rock.x + 200, feetY: 460 });
+            p.reset({ x: rock.x - 200, feetY: 460 });
             for (let i = 0; i < 130; i++) frame();
             assert.equal(played("break"), impacts + 1);
             assert.equal(played("crack"), warnings + 1);
             const switches = played("switch"), gates = played("gate");
-            p.reset({ x: 12330, feetY: 300 });
-            p.supportPlatform = a.level.platforms.find(surface => surface.id === "l4-switch-shelf");
+            const switchConfig = a.level.puzzle.switches[0];
+            p.reset({ x: switchConfig.x + 10, feetY: switchConfig.y + switchConfig.height - 1 });
+            p.grounded = false; p.velocityY = 200;
             frame(); frame(); assert.equal(a.level.puzzle.gates[0].open, true);
             assert.equal(played("switch"), switches + 1); assert.equal(played("gate"), gates + 1);
         }
