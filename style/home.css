@@ -13,14 +13,15 @@ body {
 
 /* Green tabs above the main panel. */
 #mainNav {
-    display: flex;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(8px, 1.4vw, 20px);
     margin: 0 16px;
 }
 
 #mainNav .nav-link {
-    flex: 1;
-    max-width: 280px;
+    min-width: 0;
+    min-height: 44px;
     padding: 12px 20px;
     border: 2px solid #51452b;
     border-bottom: none;
@@ -34,6 +35,26 @@ body {
 #mainNav .nav-link.active {
     background: #3d5f26;
     color: white;
+}
+
+#mainNav .nav-link:focus-visible {
+    outline: 3px solid #51452b;
+    outline-offset: 3px;
+}
+
+/* Keep labels readable and targets comfortable on narrow phones. */
+@media (max-width: 520px) {
+    #mainNav {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    #mainNav .nav-link {
+        grid-column: span 2;
+    }
+
+    #mainNav .nav-link:nth-child(n + 4) {
+        grid-column: span 3;
+    }
 }
 
 /* Cream panel with two equal columns. */
