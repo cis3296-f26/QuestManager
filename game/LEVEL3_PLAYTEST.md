@@ -28,7 +28,7 @@ coordinates below. S marks slimes, M marks mushrooms. Only real terrain is drawn
 
 | Section | World x | Intended play |
 | --- | --- | --- |
-| Forest Entrance | 0–2400 | Safe spawn, one short branch-and-coin detour, Coin 1 at 310 and one isolated slime. |
+| Among the Roots | 0–2400 | Cross the root gap at 500–620, climb the y390 root bank, choose the supported bough at x1000–1320 for Coin 1 at x1180/y270, then return to the lower slime encounter. |
 | Branching Forest Paths | 2400–5400 | Follow lower terrain or climb 2700 → 2940 → 3200 to the Hidden Bough. Avoid its short mushroom patrol and collect Coin 2 at 3490. Drop back near 3820. Find the low Fern Passage at 4450 and reconnect near 4970. |
 | Moving Canopy | 5400–8500 | Wait on the wooden dock at 6220. Board the horizontal ferry at 6460–6660 and exit at 6880. Approach the tree lift from 7400, ride from y365 to y260, then jump to the high branch at 7800 across the root ravine. Stay on the upper route past the far-bank thorns and reconnect at 8110. |
 | Heart of the Forest | 8500–11800 | Time the mushroom bypass, then cross the cracked bridge at 9750. The optional nest climb starts at 10600; cross the swaying bough at 11030 and cracked ledge at 11300 for Coin 3 at 11490. Both cracked bridges warn for 1.1 seconds and are over real pits. Reconnect to the clearing at 11800. |

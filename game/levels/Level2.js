@@ -1,5 +1,6 @@
 import { level2Scenery } from "./Level2Scenery.js";
 import { defineLevel, ground as g, ledge as p, creature as e, thorns as h } from "./design/defineLevel.js";
+const bank = (id, x, end, y) => ({ ...g(id, x, end), y, height: 540 - y, terrain: true });
 const crumble = { type: "collapsing", collapseDelay: 1, appearance: "wood" };
 
 // Course pass: reward the opening detour, keep bypasses over actual danger,
@@ -7,6 +8,12 @@ const crumble = { type: "collapsing", collapseDelay: 1, appearance: "wood" };
 export const level2 = defineLevel({
     id: 2, name: "The Winding Grove", theme: "forest", mapSummary: "Forest · Canopy paths and winding clearings",
     worldWidth: 18000, audio: { music: "forest" }, spawn: { x: 80, feetY: 460 }, scenery: level2Scenery, finishId: "l2-flag",
+    landscape: { forest: [
+        [-100,155],[160,185],[420,150],[760,205],[1040,170],[1380,195],[1630,155],[2010,185],
+        [2300,165],[2690,210],[3000,160],[3370,190],[3650,175],[4050,205],[4350,160],
+        [4710,195],[5030,170],[5420,210],[5700,155],[6060,190],[6410,165],[6770,200],
+        [7080,170],[7470,195],[7760,150],[8150,185],[8480,165],[8850,205]
+    ] },
     explorationAreas: [
         {
             id: "l2-leafy-canopy", title: "Leafy Canopy", kind: "elevated",
@@ -17,7 +24,7 @@ export const level2 = defineLevel({
             exit: { x: 6370, y: 396, width: 50, height: 64 },
             platformIds: ["l2-canopy-1", "grove-lift", "l2-canopy", "grove-canopy-bough", "l2-canopy-exit"],
             discoveryPlatforms: ["l2-canopy"], coinId: "level-2-coin-2",
-            foreground: [{ kind: "leaves", x: 5140, y: 235, width: 160, height: 50 }]
+            foreground: [{ organic: true, kind: "leaves", x: 5140, y: 235, width: 160, height: 50 }]
         },
         {
             id: "l2-ferry-branch", title: "The Winding Crossing", kind: "alternate",
@@ -27,7 +34,7 @@ export const level2 = defineLevel({
             entrance: { x: 7300, y: 301, width: 60, height: 64 },
             exit: { x: 7940, y: 396, width: 60, height: 64 },
             platformIds: ["l2-bend-exit", "grove-ferry", "l2-shallow-1"], discoveryPlatforms: ["grove-ferry"],
-            foreground: [{ kind: "leaves", x: 7420, y: 340, width: 80, height: 42 }]
+            foreground: [{ organic: true, kind: "leaves", x: 7420, y: 340, width: 80, height: 42 }]
         },
         {
             id: "l2-root-gallery", title: "Root Gallery", kind: "passage",
@@ -38,25 +45,26 @@ export const level2 = defineLevel({
             exit: { x: 16020, y: 396, width: 60, height: 64 },
             platformIds: ["l2-root-gallery-shelf", "l2-gold-3", "grove-crumble-15750"],
             discoveryPlatforms: ["l2-root-gallery-shelf"], coinId: "level-2-coin-3",
-            foreground: [{ kind: "roots", x: 15540, y: 309, width: 140, height: 70 }]
+            foreground: [{ organic: true, kind: "roots", x: 15540, y: 309, width: 140, height: 70 }]
         }
     ],
     stages: [
         {
-            id: "introduction", start: 0, end: 3010, difficulty: "easy-medium", title: "The Winding Grove",
-            hint: "Slimes can be stomped; mushrooms cannot. Use the ferry across the gap; the canopy lift comes later.",
-            purpose: "Begin with familiar jumps, one isolated slime, then a mushroom bypass ending at a horizontal ferry.",
-            requiredRoute: ["l2-start", "l2-first-landing", "l2-intro-east", "l2-intro-bypass-1", "l2-intro-bypass-2", "l2-lift-approach", "grove-intro-ferry"],
-            optionalRoutes: [{ purpose: "Take one jump to the easy coin, then return to the main path.", platforms: ["l2-practice-1"] },
+            id: "introduction", start: 0, end: 3010, difficulty: "easy-medium", title: "The Root Walk",
+            hint: "Cross to the root bank. Gold waits on the supported bough; the ferry is farther along.",
+            purpose: "Jump to a root bank, choose the bough over a slime or the lower dell, then approach the existing mushroom and ferry in separate encounters.",
+            requiredRoute: ["l2-start", "l2-first-landing", "l2-intro-dell", "l2-intro-bank", "l2-intro-east", "l2-intro-bypass-1", "l2-intro-bypass-2", "l2-lift-approach", "grove-intro-ferry"],
+            optionalRoutes: [{ purpose: "Jump from the root bank onto the supported bough for gold and bypass the ground slime.", coinId: "level-2-coin-1", platforms: ["l2-practice-1"] },
                 { purpose: "Avoid the mushroom and ride the ferry across to Fern Walk.", platforms: ["l2-intro-bypass-1", "l2-intro-bypass-2", "l2-lift-approach", "grove-intro-ferry"] }],
-            platforms: [g("l2-start", 0, 700), g("l2-first-landing", 830, 1680), g("l2-intro-east", 1840, 2820),
-                p("l2-practice-1", 200, 365, 160, "easy-coin-detour"), p("l2-first-stomp", 980, 365, 180, "stomp-opportunity"),
+            platforms: [bank("l2-start", 0, 520, 460), bank("l2-first-landing", 650, 900, 420),
+                bank("l2-intro-dell", 900, 1500, 460), bank("l2-intro-bank", 1640, 1840, 430), g("l2-intro-east", 1840, 2820),
+                p("l2-practice-1", 960, 335, 360, "supported-coin-bypass", { appearance: "wood" }),
                 p("l2-intro-bypass-1", 1980, 365, 170, "enemy-bypass"), p("l2-intro-bypass-2", 2210, 295, 200, "enemy-bypass"),
                 p("l2-lift-approach", 2590, 335, 200, "ferry-boarding-bank"),
                 p("grove-intro-ferry", 2890, 365, 120, "gap-crossing", { type: "moving", axis: "x", distance: 230, speed: 55, pause: 0.4, appearance: "wood", connection: { from: "l2-lift-approach", to: "l2-fern-1" } })],
-            enemies: [e("l2-first-slime", "slime", 1250, 1120, 1450, "Teach a forest stomp with room after the first pit.", 80),
+            enemies: [e("l2-first-slime", "slime", 1190, 1120, 1230, "The bough bypasses this short patrol; the lower path leaves recovery before the next gap.", 80),
                 e("l2-intro-mushroom", "mushroom", 2350, 2200, 2510, "A mushroom bypass that reconnects at the ferry.", 85)],
-            coins: [{ id: "level-2-coin-1", x: 280, y: 335, difficulty: "easy" }]
+            coins: [{ id: "level-2-coin-1", x: 1180, y: 305, difficulty: "easy" }]
         },
         {
             id: "exploration", start: 3010, end: 6330, difficulty: "medium", title: "Fern Walk and Canopy Crossing",

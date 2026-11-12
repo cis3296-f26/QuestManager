@@ -3,7 +3,7 @@ import { treeBounds } from "./SceneryGeometry.js";
 
 // Flat canvas scenery with gentle parallax. No physics or level state is changed.
 export class GrasslandRenderer {
-    drawBackground(ctx, viewWidth, viewHeight, cameraX, groundY, theme = "grassland", openingLandscape = null) {
+    drawBackground(ctx, viewWidth, viewHeight, cameraX, groundY, theme = "grassland", landscape = null) {
         ctx.save();
         ctx.fillStyle = "#b9e1ef";
         ctx.fillRect(0, 0, viewWidth, viewHeight);
@@ -25,28 +25,32 @@ export class GrasslandRenderer {
             groundY + 8, 710, 175, "#a3c7b0");
         this.drawHills(ctx, viewWidth, viewHeight, cameraX * 0.32,
             groundY + 42, 530, 170, "#83ae8d");
-        if (theme === "forest") this.drawForest(ctx, viewWidth, cameraX, groundY);
+        if (theme === "forest") this.drawForest(ctx, viewWidth, cameraX, groundY, null, landscape?.forest);
         if (theme === "deep-forest") {
             // Richer foliage builds gradually; the sky and gameplay colors stay bright.
             const density = Math.min(1, cameraX / 5400) * Math.min(1, Math.max(0, (12600 - cameraX) / 1600));
-            this.drawForest(ctx, viewWidth, cameraX, groundY, density);
+            this.drawForest(ctx, viewWidth, cameraX, groundY, density, landscape?.forest);
         }
-        if (openingLandscape) drawOpeningLandscape(ctx, this, viewWidth, viewHeight, cameraX, openingLandscape);
+        if (landscape?.clouds) drawOpeningLandscape(ctx, this, viewWidth, viewHeight, cameraX, landscape);
         ctx.restore();
     }
 
     // Low-contrast tree silhouettes add depth to forest levels without hiding hazards.
-    drawForest(ctx, width, cameraX, groundY, density = null) {
+    drawForest(ctx, width, cameraX, groundY, density = null, layout = null) {
         const offset = cameraX * 0.45;
         const spacing = density === null ? 180 : 145;
         const first = Math.floor(offset / spacing) - 1;
-        for (let i = first; i < first + Math.ceil(width / spacing) + 3; i++) {
-            const x = i * spacing - offset;
+        const trees = layout ?? Array.from({ length: Math.ceil(width / spacing) + 3 }, (_, n) => [
+            (first + n) * spacing, 145 + (((first + n) % 3 + 3) % 3) * 20
+        ]);
+        for (const [i, tree] of trees.entries()) {
+            const x = tree[0] - offset;
+            if (x < -90 || x > width + 90) continue;
             ctx.save();
             // Fixed tree positions avoid scenery sliding as density changes. Extra
             // silhouettes fade in toward the heart, then out in the final clearing.
             if (density !== null && ((i % 3 + 3) % 3) === 1) ctx.globalAlpha *= density;
-            const height = 145 + ((i % 3 + 3) % 3) * 20 + (density ?? 0) * 55;
+            const height = tree[1] + (density ?? 0) * 55;
             ctx.fillStyle = density > .5 ? "#789c82" : "#8aab91";
             ctx.fillRect(x - 7, groundY - height + 35, 14, height - 35);
             ctx.fillStyle = density > .5 ? "#81a68b" : "#91b49a";
@@ -96,7 +100,17 @@ export class GrasslandRenderer {
                 decoration.x < cameraX - 30 || decoration.x > cameraX + viewWidth + 30) continue;
             ctx.save();
             ctx.translate(decoration.x, baseY);
-            if (decoration.type === "branch-tree") {
+            if (decoration.type === "trestle") {
+                // A support behind an authored static route, never a new collider.
+                const top = decoration.top - baseY, reach = decoration.reach;
+                ctx.strokeStyle = "#795c3f"; ctx.lineWidth = 9;
+                ctx.beginPath(); ctx.moveTo(-reach, top); ctx.lineTo(reach, top);
+                for (const post of [-reach * .65, reach * .65]) {
+                    ctx.moveTo(post, top); ctx.lineTo(post, 0);
+                    ctx.moveTo(post, top + 35); ctx.lineTo(0, top);
+                }
+                ctx.stroke();
+            } else if (decoration.type === "branch-tree") {
                 const top = decoration.top - baseY, reach = decoration.reach;
                 ctx.fillStyle = "#795c3f";
                 ctx.fillRect(-12, top - 45, 24, -top + 45);

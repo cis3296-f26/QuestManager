@@ -1,6 +1,7 @@
 import { defineLevel, ground, ledge, creature, thorns } from "./design/defineLevel.js";
 import { level4Scenery } from "./Level4Scenery.js";
 const g=(...a)=>({...ground(...a),appearance:"rock"});
+const bank=(id,x,end,y)=>({...g(id,x,end),y,height:540-y,terrain:true});
 const p=(...a)=>({...ledge(...a),appearance:"rock"});
 const slime=(id,x,min,max,purpose)=>({...creature(id,"cave-slime",x,min,max,purpose,90),stompable:true});
 const bat=(id,x,min,max,feetY,purpose)=>({...creature(id,"bat",x,min,max,purpose,80,feetY),flying:true,stompable:false,width:36});
@@ -8,9 +9,13 @@ const rock=(id,x,warningDuration=1)=>({id,x,y:92,width:24,height:54,warningDurat
     trigger:{x:x-110,y:200,width:220,height:330}});
 
 export const level4=defineLevel({
-    id:4,name:"Crystal Cave",theme:"cave",worldWidth:16000,spawn:{x:80,feetY:460},
+    id:4,name:"Crystal Cave",theme:"cave",worldWidth:16000,spawn:{x:80,feetY:410},
     mapSummary:"Crystal Cave · Falling rocks, glowing passages and a sealed crystal vault",
     scenery:level4Scenery,audio:{music:"cave"},finishId:"l4-flag",
+    landscape:{caveRooms:[
+        {x:-200,width:860,roof:165},{x:750,width:680,roof:220},{x:1580,width:1000,roof:140},
+        {x:2750,width:900,roof:190},{x:3820,width:720,roof:155}
+    ]},
     explorationAreas:[
         {id:"l4-high-crystals",title:"Crystal Gallery",kind:"elevated",
             purpose:"Climb above the cave slime for the medium coin, then reconnect on the far bank.",
@@ -29,15 +34,17 @@ export const level4=defineLevel({
             foreground:[{kind:"crystals",x:12960,y:233,width:125,height:50}]}
     ],
     stages:[
-        {id:"entrance",start:0,end:2800,difficulty:"medium",title:"Cave Entrance",
-            hint:"Purple slimes can be stomped. Bats are dangerous; wait or pass beneath them.",
-            purpose:"A safe welcome, one clear coin jump, then separate ground-slime and bat introductions.",
-            requiredRoute:["l4-start","l4-entrance-east"],
-            optionalRoutes:[{purpose:"One short jump earns the easy coin.",coinId:"level-4-coin-1",platforms:["l4-first-coin"]}],
-            platforms:[g("l4-start",0,850),g("l4-entrance-east",970,2660),p("l4-first-coin",220,365,180,"easy-coin-detour")],
-            enemies:[slime("l4-first-slime",1350,1200,1550,"An isolated cave slime with safe approach and landing space."),
-                bat("l4-first-bat",2100,1960,2220,365,"A visible high patrol teaches walking beneath a bat before later jumps.")],
-            coins:[{id:"level-4-coin-1",x:330,y:335,difficulty:"easy"}]},
+        {id:"entrance",start:0,end:2800,difficulty:"medium",title:"The Crystal Alcove",
+            hint:"Take the stone arch or explore the lower crystal alcove for gold. Bats patrol above the far bank.",
+            purpose:"Enter on a rock shelf, choose an arch crossing or lower coin alcove, then meet a slime and overhead bat with separate recovery banks.",
+            requiredRoute:["l4-start","l4-entrance-bank","l4-entrance-arch","l4-entrance-east","l4-bat-bank","l4-entrance-return"],
+            optionalRoutes:[{purpose:"Drop into the crystal alcove for the first coin, then jump from its far lip back to the main passage.",coinId:"level-4-coin-1",platforms:["l4-first-coin"]}],
+            platforms:[bank("l4-start",0,420,410),bank("l4-entrance-bank",550,740,440),
+                bank("l4-first-coin",740,1050,500),p("l4-entrance-arch",740,365,340,"alcove-bypass"),
+                bank("l4-entrance-east",1150,1740,460),bank("l4-bat-bank",1880,2230,430),bank("l4-entrance-return",2230,2660,460)],
+            enemies:[slime("l4-first-slime",1460,1410,1500,"A short ground patrol after the alcove return, with room to land after a stomp before the next pit."),
+                bat("l4-first-bat",2050,1960,2150,335,"An overhead patrol on the raised bank; observe it from the approach and walk safely beneath.")],
+            coins:[{id:"level-4-coin-1",x:900,y:470,difficulty:"easy"}]},
         {id:"passages",start:2800,end:6000,difficulty:"medium",title:"Crystal Passages",
             hint:"The lower passage continues. Teal crystals hint at a higher route to gold.",
             purpose:"Choose a direct lower path or climb the crystal gallery for Coin 2, then reconnect.",

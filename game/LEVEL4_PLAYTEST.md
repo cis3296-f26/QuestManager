@@ -22,7 +22,7 @@ See [the layout diagram](docs/crystal-cave-layout.svg). Coordinates are world pi
 
 | Section | World x | Intended play |
 | --- | --- | --- |
-| Cave Entrance | 0–2800 | Safe spawn, broad easy-coin shelf at 220–400, first slime at 1200–1550, then a high bat patrol at 1960–2220. Walk beneath the bat or time a jump. |
+| The Crystal Alcove | 0–2800 | Spawn on the y410 shelf. Cross to x550, then choose the stone arch at x740–1080/y365 or the lower coin alcove at x740–1050/y500. Rejoin at x1150, meet a short slime patrol, then walk beneath the overhead bat on the far bank. |
 | Crystal Passages | 2800–6000 | Main route stays low. Optional shelves at 3180, 3420 and 3660 lead to the Crystal Gallery, Coin 2 and a drop back to the far bank. |
 | Stalactite Cavern | 6000–9600 | Teal-tipped rocks at 6500, 6910, 7670 and 9020 warn before falling. The first warning is 1.2s. A shelf at 6780 bypasses thorns. Watch separate rock/slime encounters rather than rushing blind. |
 | Ancient Crystal Chamber | 9600–13600 | Pass a slime, rock and bat, board the broad dock at 10480, then ride the suspended stone slab across the 440px chasm. After the landing, choose the lower route or cracked-slab vault puzzle. |
@@ -32,7 +32,7 @@ The ferry crosses open space between the dock and landing; no ordinary stepping 
 
 | Coin | Stable ID | Location and challenge |
 | --- | --- | --- |
-| Easy | `level-4-coin-1` | x330, y335: one short jump onto the entrance shelf. |
+| Easy | `level-4-coin-1` | x900, y470: optional lower alcove; jump from its far lip to the main passage at x1150/y460. |
 | Medium | `level-4-coin-2` | x3930, y230: optional elevated Crystal Gallery; reconnect on the lower passage. |
 | Hard | `level-4-coin-3` | x13050, y230: climb at 11860, cross the cracked slab at 12100, land on the blue pressure plate at 12300, then enter the sealed upper vault. |
 

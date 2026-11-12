@@ -1,5 +1,7 @@
 # Gameplay quality review and Level 1 opening demonstration
 
+> This records the approved Level 1 demonstration. The subsequent Levels 2–4 pass is documented in [Other-level quality review](OTHER_LEVEL_QUALITY_REVIEW.md); its later changes supersede the historical descriptions of those levels below.
+
 Review baseline: `game-prototype`, remote commit `438a10a8a48806401e20454c019eb64a5a6c44a9`.
 
 This pass changes only Level 1's opening, x0–2040, plus opt-in rendering support for that opening and corresponding validation/tests. Publishing this scoped revision was authorized after the before/after review. Levels 2–4 are evaluated here but not redesigned. This is a demonstration awaiting human playtesting, not a claim that the game is polished or finished.

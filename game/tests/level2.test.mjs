@@ -17,10 +17,14 @@ test("Level 2 has three distinct achievements, safe decoration placement and sup
         "patrol cannot walk into a pit or beyond its ledge");
     }
     for (const decoration of level2.scenery) {
-        const margin = decoration.type === "tree" ? 55 : decoration.type === "bush" ? 30 : 20;
-        assert.ok(level2.platforms.some((platform) => platform.y === level2.groundY &&
-            decoration.x - margin >= platform.x && decoration.x + margin <= platform.x + platform.width),
-        `scenery overlaps a pit: ${decoration.type} at ${decoration.x}`);
+        const baseY = decoration.baseY ?? level2.groundY;
+        const feet = decoration.type === "trestle" ? [-.65, .65].map(sign => ({
+            x: decoration.x + sign * decoration.reach, margin: 5
+        })) : [{ x: decoration.x, margin: decoration.type === "tree" ? 55 * (decoration.scale ?? 1) :
+            decoration.type === "branch-tree" ? 15 : decoration.type === "bush" ? 30 : 20 }];
+        for (const foot of feet) assert.ok(level2.platforms.some(platform => !platform.type && platform.y === baseY &&
+            foot.x - foot.margin >= platform.x && foot.x + foot.margin <= platform.x + platform.width),
+            `scenery foot has no support: ${decoration.type} at ${foot.x}, y${baseY}`);
     }
     assert.ok(level2.platforms.every((platform) => platform.y >= 210));
 });
@@ -30,9 +34,10 @@ test("all three Level 2 coins and the finish climb are reachable at 30/60/120 FP
 });
 
 test("every ground gap is crossable without a hidden floor, and missed jumps fall", () => {
-    const ground = level2.platforms.filter((platform) => platform.y === level2.groundY);
+    const ground = level2.platforms.filter(platform => !platform.type && (platform.y === level2.groundY || platform.terrain));
     for (let i = 0; i < ground.length - 1; i++) {
         const edge = ground[i].x + ground[i].width, next = ground[i + 1].x;
+        if (next === edge) continue; // Descending adjoining terrain is a step, not a gap.
         if (edge === 2820) {
             assert.equal(next, 3280, "the ferry spans a real 460px river, not an ordinary jump");
             continue; // Dedicated ferry boarding and no-bypass tests cover this crossing.
@@ -41,7 +46,8 @@ test("every ground gap is crossable without a hidden floor, and missed jumps fal
         // Isolate the ground jump from optional raised routes and enemy timing.
         for (const fps of [30, 60, 120]) {
             const level = new LevelManager(level2), player = level.player;
-            player.x = edge - 24;
+            player.reset({ x: edge - 24, feetY: ground[i].y });
+            player.supportPlatform = ground[i];
             jump(player, 650);
             for (let frame = 0; frame < fps; frame++) {
                 moveHorizontally(player, 1, 280, level2.worldWidth, 1 / fps);

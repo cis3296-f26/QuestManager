@@ -21,6 +21,17 @@ export function drawExplorationFoliage(ctx, exploration, cameraX, viewWidth) {
             ctx.quadraticCurveTo(veil.width * 0.82, -6, veil.width, veil.height);
             ctx.stroke();
         }
+        if (veil.organic) {
+            ctx.strokeStyle = "#795c3f"; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(0, 9);
+            ctx.quadraticCurveTo(veil.width * .5, -8, veil.width, 14); ctx.stroke();
+            for (let i = 0; i < 7; i++) {
+                const x = (i + .5) * veil.width / 7, y = 5 + (i % 2) * 7;
+                ctx.fillStyle = i % 2 ? "#729252" : "#4e7446";
+                ctx.beginPath(); ctx.ellipse(x, y, 11, 4, i % 2 ? -.5 : .5, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.restore(); continue;
+        }
         for (let i = 0; i < 5; i++) {
             ctx.fillStyle = i % 2 ? "#729252" : "#4e7446";
             ctx.beginPath();

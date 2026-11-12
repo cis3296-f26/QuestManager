@@ -119,7 +119,7 @@ test("cave slimes reuse stomp/bounce and bats are deadly from above, side and be
 test("bat patrol stays within its airborne bounds and resets without needing a floor",()=>{
     for(const fps of [30,60,120]) {
         const level=new LevelManager(level4),bat=level.enemies.find(e=>e.flying);
-        for(let i=0;i<fps*12;i++){bat.update(1/fps);assert.ok(bat.x>=bat.minX&&bat.x<=bat.maxX);assert.equal(bat.feetY,365);}
+        for(let i=0;i<fps*12;i++){bat.update(1/fps);assert.ok(bat.x>=bat.minX&&bat.x<=bat.maxX);assert.equal(bat.feetY,bat.spawnFeetY);}
         assert.ok(bat.walkTime>11);level.restart();assert.equal(bat.x,bat.startX);assert.equal(bat.walkTime,0);assert.equal(bat.direction,1);
     }
 });

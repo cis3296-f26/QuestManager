@@ -1,5 +1,6 @@
 import { level3Scenery } from "./Level3Scenery.js";
 import { defineLevel, ground as g, ledge as p, creature as e, thorns as h } from "./design/defineLevel.js";
+const bank = (id, x, end, y) => ({ ...g(id, x, end), y, height: 540 - y, terrain: true });
 const wood = { appearance: "wood" };
 const crumble = { type: "collapsing", collapseDelay: 1.1, ...wood };
 
@@ -10,6 +11,12 @@ export const level3 = defineLevel({
     mapSummary: "Deep Forest · Tree lifts, hidden boughs and woodland bridges",
     audio: { music: "deepForest" }, spawn: { x: 80, feetY: 460 },
     scenery: level3Scenery, finishId: "l3-flag",
+    landscape: { forest: [
+        [-120,180],[90,225],[230,200],[590,240],[760,205],[1100,230],[1250,190],
+        [1630,245],[1800,210],[2170,235],[2330,200],[2710,250],[2880,220],[3250,240],
+        [3410,195],[3800,235],[3970,210],[4350,245],[4520,200],[4890,235],[5050,190],
+        [5430,230],[5590,210],[5970,225],[6150,185],[6520,205],[6890,175],[7280,190]
+    ] },
     explorationAreas: [
         {
             id: "l3-hidden-bough", title: "The Hidden Bough", kind: "elevated",
@@ -20,7 +27,7 @@ export const level3 = defineLevel({
             exit: { x: 3820, y: 396, width: 60, height: 64 },
             platformIds: ["l3-branch-1", "l3-branch-2", "l3-bough", "l3-branch-exit"],
             discoveryPlatforms: ["l3-bough"], coinId: "level-3-coin-2",
-            foreground: [{ kind: "leaves", x: 3380, y: 238, width: 115, height: 46 }]
+            foreground: [{ organic: true, kind: "leaves", x: 3380, y: 238, width: 115, height: 46 }]
         },
         {
             id: "l3-fern-passage", title: "Fern Passage", kind: "passage",
@@ -31,7 +38,7 @@ export const level3 = defineLevel({
             exit: { x: 4970, y: 396, width: 60, height: 64 },
             platformIds: ["l3-passage-entry", "l3-passage-shelf", "l3-passage-exit"],
             discoveryPlatforms: ["l3-passage-shelf"],
-            foreground: [{ kind: "hedge", x: 4460, y: 310, width: 150, height: 65 }]
+            foreground: [{ organic: true, kind: "roots", x: 4460, y: 310, width: 150, height: 65 }]
         },
         {
             id: "l3-last-nest", title: "The Last Nest", kind: "challenge",
@@ -42,20 +49,23 @@ export const level3 = defineLevel({
             exit: { x: 12000, y: 396, width: 60, height: 64 },
             platformIds: ["l3-nest-step-1", "l3-nest-step-2", "l3-nest-bough", "l3-nest-crumble", "l3-nest-exit"],
             discoveryPlatforms: ["l3-nest-crumble"], coinId: "level-3-coin-3",
-            foreground: [{ kind: "leaves", x: 11370, y: 268, width: 100, height: 44 }]
+            foreground: [{ organic: true, kind: "leaves", x: 11370, y: 268, width: 100, height: 44 }]
         }
     ],
     stages: [
         {
             id: "entrance", start: 0, end: 2400, difficulty: "easy-medium",
-            title: "Forest Entrance", hint: "Familiar jumps first. Follow the branches into the trees.",
-            purpose: "Offer a safe welcome, an easy coin and one isolated slime before the routes branch.",
-            requiredRoute: ["l3-start", "l3-entrance-east"],
-            optionalRoutes: [{ purpose: "One short branch detour rewards the first jump with gold.", platforms: ["l3-intro-branch-1"] }],
-            platforms: [g("l3-start", 0, 900), g("l3-entrance-east", 1030, 2260),
-                p("l3-intro-branch-1", 220, 365, 180, "easy-coin-detour")],
-            enemies: [e("l3-entrance-slime", "slime", 1400, 1320, 1630, "One isolated stomp or avoidance encounter after a safe first landing.", 80)],
-            coins: [{ id: "level-3-coin-1", x: 310, y: 335, difficulty: "easy" }]
+            title: "Among the Roots", hint: "Cross onto the high root. The tree bough holds gold; a lower route continues beneath it.",
+            purpose: "Climb across a visible root gap, choose the high bough or sheltered lower floor, then read a slime patrol before the exit crossing.",
+            requiredRoute: ["l3-start", "l3-root-bank", "l3-root-slope", "l3-entrance-east", "l3-entrance-return"],
+            optionalRoutes: [{ purpose: "Jump from the high root onto the supported bough for gold, then drop safely beyond the lower patrol approach.",
+                coinId: "level-3-coin-1", platforms: ["l3-intro-branch-1"] }],
+            platforms: [bank("l3-start", 0, 500, 460), bank("l3-root-bank", 620, 900, 390),
+                bank("l3-root-slope", 900, 1220, 430), bank("l3-entrance-east", 1220, 1700, 460),
+                bank("l3-entrance-return", 1840, 2260, 430),
+                p("l3-intro-branch-1", 1000, 300, 320, "root-bough-coin", wood)],
+            enemies: [e("l3-entrance-slime", "slime", 1440, 1380, 1460, "A visible lower patrol after the root descent; the bough gives an optional approach from above.", 80)],
+            coins: [{ id: "level-3-coin-1", x: 1180, y: 270, difficulty: "easy" }]
         },
         {
             id: "branching", start: 2400, end: 5400, difficulty: "medium",

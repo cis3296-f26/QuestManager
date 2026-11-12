@@ -12,6 +12,7 @@ import { treeBounds } from "../rendering/SceneryGeometry.js";
 import { validateLevel } from "../levels/design/validateLevel.js";
 const level1=levels[0],opening=level1.stages[0];
 const baseline=JSON.parse(readFileSync(new URL("./fixtures/opening-scope-baseline.json",import.meta.url)));
+const approved=JSON.parse(readFileSync(new URL("./fixtures/other-quality-scope.json",import.meta.url)));
 const hash=v=>createHash("sha256").update(JSON.stringify(v)).digest("hex");
 const overlaps=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 const id=p=>p?.id??p?.config?.id;
@@ -20,8 +21,8 @@ const recorder=()=>{
     return {ctx,calls};
 };
 
-test("quality pass is restricted to Level 1 opening; later content and every saved coin ID are unchanged",()=>{
-    for(const ref of baseline.unmodifiedLevels)assert.equal(hash(levels.find(l=>l.id===ref.id)),ref.hash,`Level ${ref.id} changed`);
+test("approved Level 1 content and every saved coin ID remain unchanged during later-level quality passes",()=>{
+    assert.equal(hash(level1),approved.level1,"approved Level 1 must remain unchanged");
     assert.equal(hash(level1.stages.slice(1)),baseline.laterLevel1);
     assert.equal(hash(level1.scenery.filter(d=>d.x>=2040)),baseline.laterScenery);
     assert.equal(hash(level1.coins.slice(1)),baseline.laterCoins);
@@ -29,13 +30,13 @@ test("quality pass is restricted to Level 1 opening; later content and every sav
     assert.equal(opening.end,2040);assert.equal(level1.worldWidth,16000);
 });
 
-test("Levels 2–4 retain identical grass/terrain drawing commands at representative camera positions",()=>{
-    for(const ref of baseline.traces) {
-        const config=levels.find(l=>l.id===ref.id),r=new GrasslandRenderer(),{ctx,calls}=recorder();
+test("approved Level 1 retains identical drawing commands while other levels receive new art",()=>{
+    for(const ref of approved.traces) {
+        const config=level1,r=new GrasslandRenderer(),{ctx,calls}=recorder();
         r.drawBackground(ctx,960,540,ref.camera,460,config.theme,config.openingLandscape);
         r.drawDecorations(ctx,config.scenery,460,ref.camera,960);
         r.drawPlatforms(ctx,config.platforms.filter(p=>!p.type),ref.camera,960);
-        assert.equal(hash(calls),ref.hash,`Level ${ref.id} at camera ${ref.camera}: changed rendering`);
+        assert.equal(hash(calls),ref.hash,`Level 1 at camera ${ref.camera}: changed rendering`);
     }
 });
 
