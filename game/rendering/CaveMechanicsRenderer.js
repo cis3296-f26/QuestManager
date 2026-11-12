@@ -1,5 +1,14 @@
 // Render current state only; warning shake never moves the collision rectangles.
 export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={}) {
+    // Sealed alcoves are visibly stone, unlike blue-edged jump-through runways.
+    for(const wall of level.config.barriers??[]) {
+        if(wall.x+wall.width<cameraX||wall.x>cameraX+width)continue;
+        ctx.fillStyle="#91869f";ctx.fillRect(wall.x,wall.y,wall.width,wall.height);
+        ctx.strokeStyle="#d0c7d7";ctx.lineWidth=2;ctx.strokeRect(wall.x,wall.y,wall.width,wall.height);
+        ctx.fillStyle="#b4a7c2";
+        for(let y=wall.y+8;y<wall.y+wall.height;y+=28)
+            ctx.fillRect(wall.x+5,y,Math.min(12,wall.width-10),3);
+    }
     for(const rock of level.stalactites) {
         if(rock.x+rock.width<cameraX||rock.x>cameraX+width)continue;
         const {x,y,width:w,height:h,state}=rock;
@@ -40,7 +49,7 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
         ctx.fillText(s.active?(s.openDuration?`${s.remainingTime.toFixed(1)}s`:"OPEN"):
             s.openDuration?`${s.openDuration}s SWITCH`:"BLUE SEAL",s.x+s.width/2,s.y-5);
         if(s.openDuration) {
-            ctx.fillStyle="#b1eee2";ctx.fillText(s.active?"← CLIMB BACK":"STOMP TO OPEN",s.x+s.width/2,s.y-23);
+            ctx.fillStyle="#b1eee2";ctx.fillText(s.active?"← RUN BACK":s.mode==="stomp"?"STOMP TO OPEN":"STEP TO OPEN",s.x+s.width/2,s.y-23);
         }
         ctx.textAlign="start";
     }
@@ -65,10 +74,14 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
                 ctx.lineTo(g.x+g.width-6,y);ctx.lineTo(g.x+g.width/2,y+7);ctx.closePath();ctx.stroke();}
         }
         ctx.restore();
+        if(g.exitSide==="left") {
+            ctx.save();ctx.fillStyle="#b1eee2";ctx.font="10px Arial";ctx.textAlign="right";
+            ctx.fillText("EXIT →",g.x-10,g.y+g.height-32);ctx.restore();
+        }
         if(g.open&&g.remainingTime>0) {
             ctx.save();ctx.fillStyle=g.remainingTime<1.5?"#f2c57e":"#b1eee2";
             ctx.font="bold 13px Arial";ctx.textAlign="center";
-            ctx.fillText(`${g.remainingTime.toFixed(1)}s`,g.x+g.width/2,g.y+g.height+18);ctx.restore();
+            ctx.fillText(`${g.remainingTime.toFixed(1)}s`,g.x+g.width/2,g.countdownY??g.y+g.height+18);ctx.restore();
         }
     }
 }

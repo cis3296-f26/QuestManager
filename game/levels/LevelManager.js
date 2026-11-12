@@ -17,7 +17,8 @@ export class LevelManager {
         this.enemies = config.enemies.map((enemy) => new Enemy(enemy, enemy.feetY ?? config.groundY));
         this.exploration = new Exploration(config.explorationAreas);
         this.stalactites = (config.stalactites ?? []).map(c => new Stalactite(c));
-        this.puzzle = new GatePuzzle(config.switches, config.gates);
+        this.puzzle = new GatePuzzle(config.switches, config.gates,
+            [...this.platforms.filter(p=>p.collision==="solid"), ...(config.barriers??[])]);
         const { platform, flagInset } = config.finish;
         this.flagX = platform.x + platform.width - flagInset;
         this.complete = false;

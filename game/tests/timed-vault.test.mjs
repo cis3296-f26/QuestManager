@@ -24,7 +24,7 @@ test("timed switches close on schedule at every rate; holding the button cannot 
     }
 });
 
-test("leaving and restomping reopens an expired gate, or refreshes the current countdown",()=>{
+test("leaving and stepping again reopens an expired gate, or refreshes the current countdown",()=>{
     const puzzle=timed(),p=stand();puzzle.update(p,box(p));
     puzzle.update(p,box(p),2);assert.equal(puzzle.switches[0].remainingTime,1.5);
     p.grounded=false;p.y=330;puzzle.update(p,box(p),.1);
@@ -52,84 +52,111 @@ test("restart clears every timed gate, countdown, contact latch and activation c
     assert.ok(level.puzzle.gates.every(g=>!g.open&&g.remainingTime===0&&g.openTime===0));
 });
 
-test("the actual cave button ignores walking and upward contact; only landing on it activates it",()=>{
+test("the floor plate activates on walking contact, never from the runway above",()=>{
     for(const fps of [30,60,120]) {
-        const level=new LevelManager(level4),p=level.player,s=level.puzzle.switches[0];
-        p.reset({x:s.x+10,feetY:460});
-        for(let i=0;i<fps/2;i++)assert.equal(stepLevel(level,0,1/fps).death,null);
-        assert.equal(level.puzzle.activationCount,0);
-        jump(p,650);let landed=false;
-        for(let i=0;i<fps&&!landed;i++) {
-            assert.equal(stepLevel(level,0,1/fps).death,null);
-            if(!p.grounded)assert.equal(level.puzzle.activationCount,0);
-            landed=p.grounded;
-        }
-        assert.equal(landed,true);assert.equal(level.puzzle.activationCount,1);
-        assert.equal(level.puzzle.gates[0].open,true);
+        const level=new LevelManager({...level4,spawn:{x:12990,feetY:460}}),p=level.player;
+        for(let i=0;i<fps/4;i++)assert.equal(stepLevel(level,1,1/fps).death,null);
+        assert.equal(level.puzzle.activationCount,1);
+        level.restart();p.reset({x:13040,feetY:365});
+        p.supportPlatform=level.platforms.find(p=>p.id==="l4-vault-runway");
         for(let i=0;i<fps*4;i++)assert.equal(stepLevel(level,0,1/fps).death,null);
-        assert.equal(level.puzzle.gates[0].open,false);assert.equal(level.puzzle.activationCount,1);
-        jump(p,650);
-        for(let i=0;i<fps;i++)assert.equal(stepLevel(level,0,1/fps).death,null);
-        assert.equal(level.puzzle.activationCount,2);
+        assert.equal(level.puzzle.activationCount,0);assert.equal(level.puzzle.gates[0].open,false);
     }
 });
 
-// Real jump/landing inputs, no invincibility or hazard removal. The test starts
-// beside the lower switch; separate full-course witnesses start at normal spawn.
-function playVault(fps, activate=true) {
+// Only ordinary movement/jump inputs after starting at the declared lower entrance.
+// Full-course witnesses in level4.test start at the actual level spawn.
+function playVault(fps, delay=0, exitDelay=0) {
     const level=new LevelManager({...level4,spawn:{x:12990,feetY:460}}),coins=new CoinManager(level4.coins),p=level.player;
-    let phase=activate?0:1,jumped=false,elapsed=0;
+    let phase=0,wait=0,insideTime=null,landedTime=null,elapsed=0,exitWait=0;
     const visited=new Set();
-    for(let frame=0;frame<fps*7;frame++) {
-        let direction=0,doJump=false;
-        if(phase===0){direction=p.x<13040?1:0;
-            if(!jumped&&p.grounded){doJump=true;jumped=true;}
-            if(level.puzzle.switches[0].active){phase=1;jumped=false;}}
-        if(phase===1){direction=-1;if(!jumped&&p.grounded){doJump=true;jumped=true;}
-            if(jumped&&p.grounded&&p.supportPlatform?.id==="l4-vault-lower-step"){phase=2;jumped=false;}}
-        if(phase===2){direction=p.x>12825?-1:0;if(p.x<=12825&&p.grounded){phase=3;jumped=false;}}
-        if(phase===3){direction=-1;if(!jumped&&p.grounded){doJump=true;jumped=true;}
-            if(jumped&&p.grounded&&p.supportPlatform?.id==="l4-vault-upper-step"){phase=4;jumped=false;}}
-        if(phase===4){direction=1;if(!jumped&&p.grounded){doJump=true;jumped=true;}}
-        if(doJump)jump(p,650);
+    for(let frame=0;frame<fps*13;frame++) {
+        let direction=0;
+        if(phase===0){direction=1;if(level.puzzle.activationCount){phase=1;direction=0;}}
+        if(phase===1){wait+=1/fps;if(wait>=delay){jump(p,650);phase=2;}}
+        if(phase===2&&p.grounded){phase=3;landedTime=frame/fps;}
+        if(phase===3){direction=-1;if(coins.pending.has("level-4-coin-3")){phase=4;direction=0;}}
+        if(phase===4){exitWait+=1/fps;if(exitWait>=exitDelay)direction=1;}
         assert.equal(stepLevel(level,direction,1/fps).death,null);coins.update(p,1/fps);
         if(p.supportPlatform)visited.add(p.supportPlatform.id);
+        if(insideTime===null&&p.x+p.width<=level.puzzle.gates[0].x)insideTime=frame/fps;
         elapsed=(frame+1)/fps;
-        if(!activate&&phase===3&&p.x<=12728.1)break;
-        if(coins.pending.has("level-4-coin-3"))break;
+        if(phase===4&&p.x>=13280&&p.grounded)break;
     }
-    return {level,coins,elapsed,visited};
+    return {level,coins,elapsed,visited,insideTime,landedTime};
 }
 
-test("the lower-floor switch and return climb reach Coin 3 before expiry at 30/60/120 FPS",()=>{
-    for(const fps of [30,60,120]) {
-        const {level,coins,elapsed,visited}=playVault(fps);
+test("step → jump through runway → run LEFT reaches the protected coin with a forgiving timer at every rate",()=>{
+    assert.ok(!level4.platforms.some(p=>["l4-vault-lower-step","l4-vault-upper-step"].includes(p.id)));
+    const times=[];
+    for(const fps of [30,60,120])for(const delay of [0,.5,1]) {
+        const {level,coins,elapsed,visited,insideTime,landedTime}=playVault(fps,delay);
         assert.equal(coins.pending.has("level-4-coin-3"),true);
-        assert.ok(visited.has("l4-vault-lower-step")&&visited.has("l4-vault-upper-step"));
-        // Includes the initial jump onto the switch before its timer even starts.
-        assert.ok(elapsed<4);assert.ok(level.puzzle.gates[0].remainingTime>.1);
+        assert.ok(visited.has("l4-vault-runway")&&visited.has("l4-vault"));
+        assert.ok(landedTime>delay&&landedTime<delay+.65,"one direct jump lands on the runway");
+        assert.ok(insideTime<3.5&&insideTime>landedTime,"gate crossed before deadline, after runway landing");
+        assert.ok(elapsed<7);assert.ok(level.player.x>=13280,"exit rejoins lower main route");
+        if(delay===0)times.push(insideTime);
+    }
+    assert.ok(Math.max(...times)-Math.min(...times)<.1);
+});
+
+test("the protected side always permits exit after timeout, but never entry from the closed side",()=>{
+    for(const fps of [30,60,120]) {
+        const {level,coins,elapsed}=playVault(fps,0,4);
+        assert.equal(coins.pending.size,1);assert.ok(elapsed<10);
+        assert.ok(level.player.x>=13280);assert.equal(level.puzzle.gates[0].open,false);
     }
 });
 
-test("the added return steps do not bypass the closed door or replace the timed switch",()=>{
+test("closed chamber blocks normal jumping from below, left and right, including fast corner sweeps",()=>{
     for(const fps of [30,60,120]) {
-        const {level,coins}=playVault(fps,false);
-        assert.equal(coins.pending.size,0);assert.equal(level.puzzle.activationCount,0);
-        // The low step cannot jump straight onto the vault on its right side.
-        const l=new LevelManager(level4),p=l.player;
-        p.reset({x:12850,feetY:382});jump(p,650);
-        let highest=382;
-        for(let i=0;i<fps&&!p.grounded;i++){assert.equal(stepLevel(l,0,1/fps).death,null);highest=Math.min(highest,p.y+p.height);}
-        assert.ok(highest>260);
-        for(const x of [12850,12890,12909]) {
-            const attempt=new LevelManager(level4),coins=new CoinManager(level4.coins),p=attempt.player;
-            p.reset({x,feetY:382});jump(p,650);
-            for(let i=0;i<fps;i++) {
-                assert.equal(stepLevel(attempt,1,1/fps).death,null);coins.update(p,1/fps);
-                if(!p.grounded)assert.equal(attempt.puzzle.activationCount,0);
+        // Local perimeter probes, not substitutes for the full-input course routes.
+        for(const [x,feetY,direction] of [[12400,460,0],[12490,460,0],[12600,460,0],
+            [12690,365,-1],[12720,365,-1],[12250,300,1]]) {
+            const level=new LevelManager({...level4,spawn:{x,feetY}}),p=level.player,coins=new CoinManager(level4.coins);
+            for(let f=0;f<fps*2;f++) {
+                if(p.grounded)jump(p,650);
+                assert.equal(stepLevel(level,direction,1/fps).death,null);coins.update(p,1/fps);
             }
-            assert.equal(coins.pending.size,0,"cannot grab the vault coin by jumping through its floor from the low step");
+            assert.equal(coins.pending.size,0,`${fps}: no bypass from ${x}/${feetY}`);
+            assert.equal(level.puzzle.activationCount,0);
         }
+        const level=new LevelManager(level4),gate=level.puzzle.gates[0],p=level.player;
+        for(const [from,to] of [[{x:12720,y:290},{x:12400,y:290}],
+            [{x:12480,y:396},{x:12480,y:280}],[{x:12250,y:220},{x:12500,y:220}],
+            [{x:12300,y:330},{x:12480,y:280}]]) {
+            Object.assign(p,to,{velocityY:200,grounded:false});
+            level.puzzle.update(p,{...from,width:32,height:64},1/fps);
+            assert.ok(!(p.x+32>12364&&p.x<gate.x&&p.y+64>184&&p.y<365),"swept walls reject entry into the sealed interior");
+        }
+    }
+});
+
+test("expired attempt is blocked; returning to the floor plate refreshes it and a normal retry succeeds",()=>{
+    for(const fps of [30,60,120]) {
+        const level=new LevelManager({...level4,spawn:{x:12990,feetY:460}}),p=level.player;
+        const until=(condition,direction)=>{
+            for(let i=0;i<fps*4&&!condition();i++)assert.equal(stepLevel(level,direction,1/fps).death,null);
+            assert.ok(condition(),"bounded normal-input waypoint must be reached");
+        };
+        until(()=>level.puzzle.activationCount>0,1);
+        for(let i=0;i<fps*4;i++)assert.equal(stepLevel(level,0,1/fps).death,null);
+        assert.equal(level.puzzle.gates[0].open,false);
+        jump(p,650);until(()=>p.grounded,0);
+        for(let i=0;i<fps*2;i++)assert.equal(stepLevel(level,-1,1/fps).death,null);
+        assert.ok(p.x>=12668-1e-6,"expired door blocks the return dash");
+        // Leave the right end of the runway, drop, and walk back onto the switch.
+        until(()=>p.x>=13210,1);
+        until(()=>p.grounded,0);
+        until(()=>level.puzzle.switches[0].active,-1);
+        assert.equal(level.puzzle.activationCount,2);
+        jump(p,650);until(()=>p.grounded,0);
+        const coins=new CoinManager(level4.coins);
+        for(let i=0;i<fps*3&&!coins.pending.size;i++) {
+            assert.equal(stepLevel(level,-1,1/fps).death,null);coins.update(p,1/fps);
+        }
+        assert.equal(coins.pending.has("level-4-coin-3"),true);
     }
 });
 

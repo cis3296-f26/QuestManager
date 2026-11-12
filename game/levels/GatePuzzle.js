@@ -5,7 +5,11 @@ const bounds = p => ({ x: p.x, y: p.y, width: p.width, height: p.height });
 // Attempt state only. Opening a gate never changes a permanent save or a level
 // definition. Optional openDuration makes a plate a reusable timed switch.
 export class GatePuzzle {
-    constructor(switches = [], gates = []) {
+    constructor(switches = [], gates = [], barriers = []) {
+        // Opt-in masonry uses the existing swept gate-wall collision path.
+        // Normal platforms remain jump-through; solid floor references retain
+        // their identity so the shared gravity/support system still owns landing.
+        this.barriers = barriers;
         this.switches = switches.map(config => ({ ...config, active: false }));
         this.gates = gates.map(config => ({ ...config, open: false }));
         this.reset();
@@ -39,9 +43,14 @@ export class GatePuzzle {
         for (const gate of this.gates) if (gate.open) gate.openTime = Math.min(.35, gate.openTime + dt);
         // Resolve walls first: a fast player cannot activate a switch through a
         // closed gate. Timed gates close only when the doorway is clear.
-        for (const gate of this.gates.filter(g => !g.open && !ignoreWalls)) {
+        for (const gate of ignoreWalls ? [] : [...this.barriers, ...this.gates.filter(g => !g.open)]) {
             const hit = sweepAABB(previous, bounds(player), gate, gate);
             if (!hit) continue;
+            // Entry stays timed. A closed gate can always be left from its
+            // protected side, so collecting the coin can never trap the player.
+            const leaving = gate.exitSide === "left" && hit.normalX < 0 &&
+                previous.x + player.width <= gate.x + 1e-7 && player.x > previous.x;
+            if (leaving) { gate.open = true; gate.openTime = 0; continue; }
             if (!hit.normalX && !hit.normalY) {
                 // Corners have no single normal; embedded debug/restored starts
                 // also need separation. Use CONTACT position, never overshoot.

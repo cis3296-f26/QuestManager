@@ -32,7 +32,7 @@ export function validateLevel(config) {
     const fail = (message) => errors.push(message);
     const { platforms = [], enemies = [], coins = [], hazards = [], stages = [] } = config;
     const ids = new Set();
-    for (const object of [...platforms, ...enemies, ...coins, ...hazards, ...(config.stalactites ?? []), ...(config.switches ?? []), ...(config.gates ?? [])]) {
+    for (const object of [...platforms, ...enemies, ...coins, ...hazards, ...(config.stalactites ?? []), ...(config.switches ?? []), ...(config.gates ?? []), ...(config.barriers ?? [])]) {
         if (!object.id || ids.has(object.id)) fail(`Missing or duplicate object ID: ${object.id}`);
         ids.add(object.id);
     }

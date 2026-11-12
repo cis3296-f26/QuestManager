@@ -211,7 +211,8 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
             if (board) board.onLand();
             if (id === 4) {
                 Object.assign(a.level.stalactites[0], { state: "warning", warningTime: .2, warningCount: 1 });
-                a.level.puzzle.switches[0].active = true; a.level.puzzle.gates[0].open = true;
+                Object.assign(a.level.puzzle.switches[0], { active: true, remainingTime: 2.5 });
+                Object.assign(a.level.puzzle.gates[0], { open: true, remainingTime: 2.5 });
             }
             key("Escape"); assert.equal(a.pause.screen, "main");
             const before = snapshot();
@@ -226,6 +227,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
             frame(100); assert.equal(snapshot(), before, "resume must not consume paused wall time");
             frame(1 / fps); assert.notEqual(snapshot(), before); assert.equal(a.coins.pending.size, 1);
             if (board) assert.ok(board.warningTime < .1);
+            if (id === 4) assert.ok(a.level.puzzle.switches[0].remainingTime < 2.5 && a.level.puzzle.switches[0].remainingTime > 2.4, "only the resumed tick advances the vault countdown");
         }
         key("Escape"); click("pauseRestart");
         const pending = [...a.coins.pending]; click("pauseCancel"); assert.deepEqual([...a.coins.pending], pending);

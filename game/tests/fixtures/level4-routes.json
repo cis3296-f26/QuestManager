@@ -1,7 +1,7 @@
 [
   {
     "fps": 30,
-    "totalFrames": 1824,
+    "totalFrames": 1914,
     "jumpFrames": [
       24,
       51,
@@ -29,12 +29,12 @@
       1242,
       1269,
       1311,
-      1398,
+      1383,
       1419,
-      1440,
       1461,
-      1536,
-      1695
+      1587,
+      1626,
+      1785
     ],
     "inputs": [
       {
@@ -98,49 +98,14 @@
         "direction": 0
       },
       {
-        "from": 1419,
-        "to": 1422,
-        "direction": -1
-      },
-      {
-        "from": 1422,
-        "to": 1425,
-        "direction": -1
-      },
-      {
-        "from": 1425,
-        "to": 1428,
-        "direction": -1
-      },
-      {
-        "from": 1428,
-        "to": 1431,
-        "direction": -1
-      },
-      {
-        "from": 1431,
-        "to": 1434,
-        "direction": -1
-      },
-      {
-        "from": 1434,
-        "to": 1437,
-        "direction": -1
-      },
-      {
-        "from": 1437,
-        "to": 1440,
-        "direction": -1
-      },
-      {
         "from": 1440,
         "to": 1443,
-        "direction": -1
+        "direction": 0
       },
       {
         "from": 1443,
         "to": 1446,
-        "direction": -1
+        "direction": 0
       },
       {
         "from": 1446,
@@ -163,35 +128,155 @@
         "direction": -1
       },
       {
-        "from": 1596,
-        "to": 1599,
+        "from": 1458,
+        "to": 1461,
+        "direction": -1
+      },
+      {
+        "from": 1461,
+        "to": 1464,
+        "direction": -1
+      },
+      {
+        "from": 1464,
+        "to": 1467,
         "direction": 0
       },
       {
-        "from": 1599,
-        "to": 1602,
+        "from": 1467,
+        "to": 1470,
         "direction": 0
       },
       {
-        "from": 1647,
-        "to": 1650,
+        "from": 1470,
+        "to": 1473,
+        "direction": -1
+      },
+      {
+        "from": 1473,
+        "to": 1476,
+        "direction": -1
+      },
+      {
+        "from": 1476,
+        "to": 1479,
+        "direction": -1
+      },
+      {
+        "from": 1479,
+        "to": 1482,
+        "direction": -1
+      },
+      {
+        "from": 1482,
+        "to": 1485,
+        "direction": -1
+      },
+      {
+        "from": 1485,
+        "to": 1488,
+        "direction": -1
+      },
+      {
+        "from": 1488,
+        "to": 1491,
+        "direction": -1
+      },
+      {
+        "from": 1491,
+        "to": 1494,
+        "direction": -1
+      },
+      {
+        "from": 1494,
+        "to": 1497,
+        "direction": -1
+      },
+      {
+        "from": 1497,
+        "to": 1500,
+        "direction": -1
+      },
+      {
+        "from": 1500,
+        "to": 1503,
+        "direction": -1
+      },
+      {
+        "from": 1503,
+        "to": 1506,
+        "direction": -1
+      },
+      {
+        "from": 1506,
+        "to": 1509,
+        "direction": -1
+      },
+      {
+        "from": 1509,
+        "to": 1512,
+        "direction": -1
+      },
+      {
+        "from": 1512,
+        "to": 1515,
+        "direction": -1
+      },
+      {
+        "from": 1515,
+        "to": 1518,
+        "direction": -1
+      },
+      {
+        "from": 1518,
+        "to": 1521,
+        "direction": -1
+      },
+      {
+        "from": 1521,
+        "to": 1524,
+        "direction": -1
+      },
+      {
+        "from": 1524,
+        "to": 1527,
+        "direction": -1
+      },
+      {
+        "from": 1527,
+        "to": 1530,
+        "direction": -1
+      },
+      {
+        "from": 1686,
+        "to": 1689,
         "direction": 0
       },
       {
-        "from": 1650,
-        "to": 1653,
+        "from": 1689,
+        "to": 1692,
         "direction": 0
       },
       {
-        "from": 1653,
-        "to": 1656,
+        "from": 1737,
+        "to": 1740,
+        "direction": 0
+      },
+      {
+        "from": 1740,
+        "to": 1743,
+        "direction": 0
+      },
+      {
+        "from": 1743,
+        "to": 1746,
         "direction": 0
       }
     ]
   },
   {
     "fps": 60,
-    "totalFrames": 3631,
+    "totalFrames": 3806,
     "jumpFrames": [
       54,
       186,
@@ -212,19 +297,20 @@
       1866,
       2046,
       2112,
-      2352,
+      2358,
       2406,
       2484,
       2538,
-      2622,
-      2790,
-      2838,
-      2874,
-      2916,
-      3066,
-      3174,
-      3276,
-      3372
+      2634,
+      2760,
+      2832,
+      2910,
+      3162,
+      3240,
+      3348,
+      3450,
+      3498,
+      3540
     ],
     "inputs": [
       {
@@ -283,46 +369,6 @@
         "direction": 0
       },
       {
-        "from": 2832,
-        "to": 2838,
-        "direction": -1
-      },
-      {
-        "from": 2838,
-        "to": 2844,
-        "direction": -1
-      },
-      {
-        "from": 2844,
-        "to": 2850,
-        "direction": -1
-      },
-      {
-        "from": 2850,
-        "to": 2856,
-        "direction": -1
-      },
-      {
-        "from": 2856,
-        "to": 2862,
-        "direction": -1
-      },
-      {
-        "from": 2862,
-        "to": 2868,
-        "direction": -1
-      },
-      {
-        "from": 2868,
-        "to": 2874,
-        "direction": -1
-      },
-      {
-        "from": 2874,
-        "to": 2880,
-        "direction": -1
-      },
-      {
         "from": 2880,
         "to": 2886,
         "direction": -1
@@ -348,25 +394,140 @@
         "direction": -1
       },
       {
-        "from": 3186,
-        "to": 3192,
+        "from": 2910,
+        "to": 2916,
+        "direction": -1
+      },
+      {
+        "from": 2916,
+        "to": 2922,
+        "direction": -1
+      },
+      {
+        "from": 2922,
+        "to": 2928,
         "direction": 0
       },
       {
-        "from": 3282,
-        "to": 3288,
+        "from": 2928,
+        "to": 2934,
+        "direction": -1
+      },
+      {
+        "from": 2934,
+        "to": 2940,
+        "direction": -1
+      },
+      {
+        "from": 2940,
+        "to": 2946,
+        "direction": -1
+      },
+      {
+        "from": 2946,
+        "to": 2952,
+        "direction": -1
+      },
+      {
+        "from": 2952,
+        "to": 2958,
+        "direction": -1
+      },
+      {
+        "from": 2958,
+        "to": 2964,
+        "direction": -1
+      },
+      {
+        "from": 2964,
+        "to": 2970,
+        "direction": -1
+      },
+      {
+        "from": 2970,
+        "to": 2976,
+        "direction": -1
+      },
+      {
+        "from": 2976,
+        "to": 2982,
+        "direction": -1
+      },
+      {
+        "from": 2982,
+        "to": 2988,
+        "direction": -1
+      },
+      {
+        "from": 2988,
+        "to": 2994,
+        "direction": -1
+      },
+      {
+        "from": 2994,
+        "to": 3000,
+        "direction": -1
+      },
+      {
+        "from": 3000,
+        "to": 3006,
+        "direction": -1
+      },
+      {
+        "from": 3006,
+        "to": 3012,
+        "direction": -1
+      },
+      {
+        "from": 3012,
+        "to": 3018,
+        "direction": -1
+      },
+      {
+        "from": 3018,
+        "to": 3024,
+        "direction": -1
+      },
+      {
+        "from": 3024,
+        "to": 3030,
+        "direction": -1
+      },
+      {
+        "from": 3030,
+        "to": 3036,
+        "direction": -1
+      },
+      {
+        "from": 3036,
+        "to": 3042,
+        "direction": -1
+      },
+      {
+        "from": 3042,
+        "to": 3048,
+        "direction": -1
+      },
+      {
+        "from": 3360,
+        "to": 3366,
         "direction": 0
       },
       {
-        "from": 3288,
-        "to": 3294,
+        "from": 3456,
+        "to": 3462,
+        "direction": 0
+      },
+      {
+        "from": 3462,
+        "to": 3468,
         "direction": 0
       }
     ]
   },
   {
     "fps": 120,
-    "totalFrames": 7223,
+    "totalFrames": 7588,
     "jumpFrames": [
       108,
       372,
@@ -391,20 +552,20 @@
       4068,
       4200,
       4320,
-      4656,
+      4680,
       4776,
-      4920,
-      5028,
-      5196,
-      5460,
-      5520,
+      4932,
+      5040,
+      5232,
+      5484,
       5628,
-      5712,
-      5796,
-      6096,
+      5784,
       6300,
-      6504,
-      6708
+      6456,
+      6672,
+      6876,
+      6972,
+      7056
     ],
     "inputs": [
       {
@@ -448,46 +609,6 @@
         "direction": 0
       },
       {
-        "from": 5628,
-        "to": 5640,
-        "direction": -1
-      },
-      {
-        "from": 5640,
-        "to": 5652,
-        "direction": -1
-      },
-      {
-        "from": 5652,
-        "to": 5664,
-        "direction": -1
-      },
-      {
-        "from": 5664,
-        "to": 5676,
-        "direction": -1
-      },
-      {
-        "from": 5676,
-        "to": 5688,
-        "direction": -1
-      },
-      {
-        "from": 5688,
-        "to": 5700,
-        "direction": -1
-      },
-      {
-        "from": 5700,
-        "to": 5712,
-        "direction": -1
-      },
-      {
-        "from": 5712,
-        "to": 5724,
-        "direction": -1
-      },
-      {
         "from": 5724,
         "to": 5736,
         "direction": -1
@@ -513,18 +634,138 @@
         "direction": -1
       },
       {
-        "from": 6336,
-        "to": 6348,
+        "from": 5784,
+        "to": 5796,
+        "direction": -1
+      },
+      {
+        "from": 5796,
+        "to": 5808,
+        "direction": -1
+      },
+      {
+        "from": 5808,
+        "to": 5820,
         "direction": 0
       },
       {
-        "from": 6528,
-        "to": 6540,
+        "from": 5820,
+        "to": 5832,
         "direction": 0
       },
       {
-        "from": 6540,
-        "to": 6552,
+        "from": 5832,
+        "to": 5844,
+        "direction": -1
+      },
+      {
+        "from": 5844,
+        "to": 5856,
+        "direction": -1
+      },
+      {
+        "from": 5856,
+        "to": 5868,
+        "direction": -1
+      },
+      {
+        "from": 5868,
+        "to": 5880,
+        "direction": -1
+      },
+      {
+        "from": 5880,
+        "to": 5892,
+        "direction": -1
+      },
+      {
+        "from": 5892,
+        "to": 5904,
+        "direction": -1
+      },
+      {
+        "from": 5904,
+        "to": 5916,
+        "direction": -1
+      },
+      {
+        "from": 5916,
+        "to": 5928,
+        "direction": -1
+      },
+      {
+        "from": 5928,
+        "to": 5940,
+        "direction": -1
+      },
+      {
+        "from": 5940,
+        "to": 5952,
+        "direction": -1
+      },
+      {
+        "from": 5952,
+        "to": 5964,
+        "direction": -1
+      },
+      {
+        "from": 5964,
+        "to": 5976,
+        "direction": -1
+      },
+      {
+        "from": 5976,
+        "to": 5988,
+        "direction": -1
+      },
+      {
+        "from": 5988,
+        "to": 6000,
+        "direction": -1
+      },
+      {
+        "from": 6000,
+        "to": 6012,
+        "direction": -1
+      },
+      {
+        "from": 6012,
+        "to": 6024,
+        "direction": -1
+      },
+      {
+        "from": 6024,
+        "to": 6036,
+        "direction": -1
+      },
+      {
+        "from": 6036,
+        "to": 6048,
+        "direction": -1
+      },
+      {
+        "from": 6048,
+        "to": 6060,
+        "direction": -1
+      },
+      {
+        "from": 6060,
+        "to": 6072,
+        "direction": -1
+      },
+      {
+        "from": 6696,
+        "to": 6708,
+        "direction": 0
+      },
+      {
+        "from": 6888,
+        "to": 6900,
+        "direction": 0
+      },
+      {
+        "from": 6900,
+        "to": 6912,
         "direction": 0
       }
     ]

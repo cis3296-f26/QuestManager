@@ -699,83 +699,110 @@
   },
   {
     "fps": 30,
-    "totalFrames": 249,
+    "totalFrames": 142,
     "jumpFrames": [
-      27,
-      111,
-      132,
-      153,
-      174
+      3,
+      117
     ],
     "inputs": [
       {
-        "from": 132,
-        "to": 135,
+        "from": 3,
+        "to": 6,
         "direction": -1
       },
       {
-        "from": 135,
-        "to": 138,
+        "from": 6,
+        "to": 9,
         "direction": -1
       },
       {
-        "from": 138,
-        "to": 141,
+        "from": 9,
+        "to": 12,
         "direction": -1
       },
       {
-        "from": 141,
-        "to": 144,
+        "from": 12,
+        "to": 15,
         "direction": -1
       },
       {
-        "from": 144,
-        "to": 147,
+        "from": 15,
+        "to": 18,
         "direction": -1
       },
       {
-        "from": 147,
-        "to": 150,
+        "from": 18,
+        "to": 21,
         "direction": -1
       },
       {
-        "from": 150,
-        "to": 153,
+        "from": 21,
+        "to": 24,
         "direction": -1
       },
       {
-        "from": 153,
-        "to": 156,
+        "from": 24,
+        "to": 27,
         "direction": -1
       },
       {
-        "from": 156,
-        "to": 159,
+        "from": 27,
+        "to": 30,
         "direction": -1
       },
       {
-        "from": 159,
-        "to": 162,
+        "from": 30,
+        "to": 33,
         "direction": -1
       },
       {
-        "from": 162,
-        "to": 165,
+        "from": 33,
+        "to": 36,
         "direction": -1
       },
       {
-        "from": 165,
-        "to": 168,
+        "from": 36,
+        "to": 39,
         "direction": -1
       },
       {
-        "from": 168,
-        "to": 171,
+        "from": 39,
+        "to": 42,
+        "direction": -1
+      },
+      {
+        "from": 42,
+        "to": 45,
+        "direction": -1
+      },
+      {
+        "from": 45,
+        "to": 48,
+        "direction": -1
+      },
+      {
+        "from": 48,
+        "to": 51,
+        "direction": -1
+      },
+      {
+        "from": 51,
+        "to": 54,
+        "direction": -1
+      },
+      {
+        "from": 54,
+        "to": 57,
+        "direction": -1
+      },
+      {
+        "from": 57,
+        "to": 60,
         "direction": -1
       }
     ],
     "start": {
-      "x": 11780,
+      "x": 12990,
       "feetY": 460
     },
     "areaId": "l4-hidden-vault",
@@ -783,88 +810,110 @@
   },
   {
     "fps": 60,
-    "totalFrames": 503,
+    "totalFrames": 284,
     "jumpFrames": [
-      54,
-      222,
-      270,
-      312,
-      354
+      6,
+      234
     ],
     "inputs": [
       {
-        "from": 264,
-        "to": 270,
+        "from": 6,
+        "to": 12,
         "direction": -1
       },
       {
-        "from": 270,
-        "to": 276,
-        "direction": 0
-      },
-      {
-        "from": 276,
-        "to": 282,
+        "from": 12,
+        "to": 18,
         "direction": -1
       },
       {
-        "from": 282,
-        "to": 288,
+        "from": 18,
+        "to": 24,
         "direction": -1
       },
       {
-        "from": 288,
-        "to": 294,
+        "from": 24,
+        "to": 30,
         "direction": -1
       },
       {
-        "from": 294,
-        "to": 300,
+        "from": 30,
+        "to": 36,
         "direction": -1
       },
       {
-        "from": 300,
-        "to": 306,
+        "from": 36,
+        "to": 42,
         "direction": -1
       },
       {
-        "from": 306,
-        "to": 312,
+        "from": 42,
+        "to": 48,
         "direction": -1
       },
       {
-        "from": 312,
-        "to": 318,
+        "from": 48,
+        "to": 54,
         "direction": -1
       },
       {
-        "from": 318,
-        "to": 324,
+        "from": 54,
+        "to": 60,
         "direction": -1
       },
       {
-        "from": 324,
-        "to": 330,
+        "from": 60,
+        "to": 66,
         "direction": -1
       },
       {
-        "from": 330,
-        "to": 336,
+        "from": 66,
+        "to": 72,
         "direction": -1
       },
       {
-        "from": 336,
-        "to": 342,
+        "from": 72,
+        "to": 78,
         "direction": -1
       },
       {
-        "from": 342,
-        "to": 348,
+        "from": 78,
+        "to": 84,
+        "direction": -1
+      },
+      {
+        "from": 84,
+        "to": 90,
+        "direction": -1
+      },
+      {
+        "from": 90,
+        "to": 96,
+        "direction": -1
+      },
+      {
+        "from": 96,
+        "to": 102,
+        "direction": -1
+      },
+      {
+        "from": 102,
+        "to": 108,
+        "direction": -1
+      },
+      {
+        "from": 108,
+        "to": 114,
+        "direction": -1
+      },
+      {
+        "from": 114,
+        "to": 120,
         "direction": -1
       }
     ],
     "start": {
-      "x": 11780,
+      "x": 12990,
       "feetY": 460
     },
     "areaId": "l4-hidden-vault",
@@ -872,89 +921,110 @@
   },
   {
     "fps": 120,
-    "totalFrames": 998,
+    "totalFrames": 569,
     "jumpFrames": [
-      108,
-      336,
-      444,
-      540,
-      612,
-      696
+      12,
+      468
     ],
     "inputs": [
       {
-        "from": 528,
-        "to": 540,
-        "direction": 0
-      },
-      {
-        "from": 540,
-        "to": 552,
+        "from": 12,
+        "to": 24,
         "direction": -1
       },
       {
-        "from": 552,
-        "to": 564,
+        "from": 24,
+        "to": 36,
         "direction": -1
       },
       {
-        "from": 564,
-        "to": 576,
+        "from": 36,
+        "to": 48,
         "direction": -1
       },
       {
-        "from": 576,
-        "to": 588,
+        "from": 48,
+        "to": 60,
         "direction": -1
       },
       {
-        "from": 588,
-        "to": 600,
+        "from": 60,
+        "to": 72,
         "direction": -1
       },
       {
-        "from": 600,
-        "to": 612,
+        "from": 72,
+        "to": 84,
         "direction": -1
       },
       {
-        "from": 612,
-        "to": 624,
+        "from": 84,
+        "to": 96,
         "direction": -1
       },
       {
-        "from": 624,
-        "to": 636,
+        "from": 96,
+        "to": 108,
         "direction": -1
       },
       {
-        "from": 636,
-        "to": 648,
+        "from": 108,
+        "to": 120,
         "direction": -1
       },
       {
-        "from": 648,
-        "to": 660,
+        "from": 120,
+        "to": 132,
         "direction": -1
       },
       {
-        "from": 660,
-        "to": 672,
+        "from": 132,
+        "to": 144,
         "direction": -1
       },
       {
-        "from": 672,
-        "to": 684,
+        "from": 144,
+        "to": 156,
         "direction": -1
       },
       {
-        "from": 684,
-        "to": 696,
-        "direction": 0
+        "from": 156,
+        "to": 168,
+        "direction": -1
+      },
+      {
+        "from": 168,
+        "to": 180,
+        "direction": -1
+      },
+      {
+        "from": 180,
+        "to": 192,
+        "direction": -1
+      },
+      {
+        "from": 192,
+        "to": 204,
+        "direction": -1
+      },
+      {
+        "from": 204,
+        "to": 216,
+        "direction": -1
+      },
+      {
+        "from": 216,
+        "to": 228,
+        "direction": -1
+      },
+      {
+        "from": 228,
+        "to": 240,
+        "direction": -1
       }
     ],
     "start": {
-      "x": 11780,
+      "x": 12990,
       "feetY": 460
     },
     "areaId": "l4-hidden-vault",

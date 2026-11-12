@@ -19,15 +19,20 @@ const routes=suffix=>JSON.parse(readFileSync(new URL(`./fixtures/level4-${suffix
 
 function play(route) {
     const level=new LevelManager(level4),coins=new CoinManager(level4.coins),jumps=new Set(route.jumpFrames),visited=new Set();
+    let timedEntry=false;
     for(let frame=0;frame<route.totalFrames;frame++) {
         if(jumps.has(frame)){assert.equal(level.player.grounded,true);jump(level.player,650);}
         const direction=route.inputs.find(i=>frame>=i.from&&frame<i.to)?.direction??1;
+        const beforeRight=level.player.x+level.player.width;
         assert.equal(stepLevel(level,direction,1/route.fps).death,null);
+        const gate=level.puzzle.gates[0];
+        if(beforeRight>gate.x&&level.player.x+level.player.width<=gate.x&&
+            level.player.y+level.player.height===365&&gate.remainingTime>0)timedEntry=true;
         coins.update(level.player,1/route.fps);
         if(level.player.supportPlatform)visited.add(id(level.player.supportPlatform));
     }
     assert.equal(level.checkCompletion(),true);
-    return {level,coins,visited};
+    return {level,coins,visited,timedEntry};
 }
 
 test("Crystal Cave has five purposeful sections, three stable coins and no content beyond Level 4",()=>{
@@ -44,14 +49,14 @@ test("Crystal Cave has five purposeful sections, three stable coins and no conte
 
 test("all-coin routes ride the ferry and beat the timed vault; main routes skip both secrets",()=>{
     for(const suffix of ["routes","main-routes"])for(const route of routes(suffix)) {
-        const {level,coins,visited}=play(route),all=suffix==="routes";
+        const {level,coins,visited,timedEntry}=play(route),all=suffix==="routes";
         assert.equal(coins.pending.size,all?3:0);
         assert.ok(visited.has("l4-ferry"),`${route.fps} ${suffix}: must ride across the chasm`);
         // Timed gates have closed again by the finish; use actual activation and
-        // the two return-step visits to establish that the puzzle was solved.
+        // the runway and protected-floor visits to establish that the puzzle was solved.
         assert.equal(level.puzzle.gates[0].open,false);assert.equal(level.puzzle.switches[0].active,false);
-        assert.equal(level.puzzle.activationCount>0,all);
-        if(all){assert.ok(visited.has("l4-vault-lower-step")&&visited.has("l4-vault-upper-step"));assert.equal(level.exploration.discovered.size,2);}
+        assert.equal(level.puzzle.activationCount>0,all);assert.equal(timedEntry,all,"all-coin route must cross leftward through the timed door, not bypass the enclosure");
+        if(all){assert.ok(visited.has("l4-vault-runway")&&visited.has("l4-vault"));assert.equal(level.exploration.discovered.size,2);}
         else assert.equal(level.exploration.discovered.size,0);
         assert.ok(level.stalactites.every(r=>r.warningCount===1));
         level.restart();coins.discard();
@@ -59,21 +64,14 @@ test("all-coin routes ride the ferry and beat the timed vault; main routes skip 
     }
 });
 
-test("the untriggered gate actually seals Coin 3 instead of being bypassable from the lower route",()=>{
+test("ground below the sealed optional vault remains a coin-free main-route bypass",()=>{
     for(const fps of [30,60,120]) {
-        const level=new LevelManager(level4),p=level.player,coins=new CoinManager(level4.coins);
-        p.reset({x:12640,feetY:260});p.supportPlatform=level.platforms.find(p=>id(p)==="l4-vault");
-        // A test setup at the vault entrance, deliberately without touching the plate.
-        jump(p,650);
+        const level=new LevelManager({...level4,spawn:{x:12310,feetY:460}}),p=level.player,coins=new CoinManager(level4.coins);
         for(let i=0;i<fps*2;i++) {
             assert.equal(stepLevel(level,1,1/fps).death,null);coins.update(p,1/fps);
-            assert.ok(p.x+p.width<=12700+1e-6);
         }
-        assert.equal(coins.pending.size,0);assert.equal(level.puzzle.gates[0].open,false);
-        // Ground below the same gate remains a valid, coin-free bypass.
-        level.restart();p.reset({x:12640,feetY:460});
-        for(let i=0;i<fps/2;i++){assert.equal(stepLevel(level,1,1/fps).death,null);}
-        assert.ok(p.x>12750);assert.equal(level.puzzle.gates[0].open,false);
+        assert.ok(p.x>12800);assert.equal(coins.pending.size,0);
+        assert.equal(level.puzzle.activationCount,0);assert.equal(level.puzzle.gates[0].open,false);
     }
 });
 
@@ -109,7 +107,7 @@ test("cracked slab warns above a real pit; a last-moment jump reaches the approa
         assert.equal(death,"fall");level.restart();stand();
         for(let i=0;i<Math.floor(fps*(board.config.collapseDelay-.1));i++)assert.equal(stepLevel(level,0,1/fps).death,null);
         jump(p,650);
-        for(let i=0;i<fps*2&&!p.grounded;i++)assert.equal(stepLevel(level,p.x<12330?1:0,1/fps).death,null);
+        for(let i=0;i<fps*2&&!p.grounded;i++)assert.equal(stepLevel(level,p.x<12255?1:0,1/fps).death,null);
         assert.equal(id(p.supportPlatform),"l4-switch-shelf");assert.equal(level.puzzle.gates[0].open,false);
     }
 });
