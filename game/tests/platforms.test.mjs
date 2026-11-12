@@ -164,7 +164,7 @@ test("a collapsed board above safe terrain drops the player onto that terrain wi
 
 test("Level 2 runtime platforms reset after an attempt and leave enemy supports static", () => {
     const level = new LevelManager(levels[1]);
-    assert.equal(level.platforms.filter((platform) => platform.type === "moving").length, 3);
+    assert.equal(level.platforms.filter((platform) => platform.type === "moving").length, 4);
     assert.equal(level.platforms.filter((platform) => platform.type === "collapsing").length, 2);
     for (const enemy of level.enemies) assert.ok(level.platforms.some((platform) => !platform.type &&
         platform.y === enemy.feetY && enemy.minX >= platform.x && enemy.maxX + enemy.width <= platform.x + platform.width));
@@ -187,39 +187,36 @@ test("Level 2 remains completable with three coins and live platform/enemy behav
     assertAuthoredRoute(levels[1]);
 });
 
-test("Level 2 ferry and lift can be boarded, ridden and exited to static terrain", () => {
-    for (const fps of [30, 60, 120]) {
-        for (const id of ["grove-ferry", "grove-lift"]) for (const phase of [0, 1.2, 3.3]) {
-            const level = new LevelManager(levels[1]), { player, platforms } = level;
-            const ride = platforms.find((platform) => platform.config?.id === id);
-            const ferry = id === "grove-ferry";
+test("Level 2 horizontal crossings and the canopy lift can be boarded, ridden and exited", () => {
+    for (const fps of [30, 60, 120]) for (const phase of [0, 1.2, 3.3]) {
+        for (const id of ["grove-ferry", "grove-intro-ferry", "grove-lift"]) {
+            const level = new LevelManager(levels[1]), {player, platforms} = level;
             level.updatePlatforms(phase);
-            player.reset({ x: ferry ? 7480 : 2820, feetY: ferry ? 365 : 330 });
-            let boardedJump = false;
-            let approachingLift = false;
-            for (let frame = 0; frame < fps * 8 && player.supportPlatform !== ride; frame++) {
-                if (!ferry && ride.y >= 345) approachingLift = true;
-                if (ferry && !boardedJump && ride.x <= 7590 && player.grounded) { jump(player, 650); boardedJump = true; }
-                tick(player, platforms, 1 / fps, (ferry ? boardedJump : approachingLift) ? 1 : 0);
+            const ride = platforms.find(p => p.config?.id === id);
+            const vertical = id === "grove-lift", intro = id === "grove-intro-ferry";
+            player.reset({x:vertical?4790:intro?2820:7480,feetY:vertical?365:intro?330:365});
+            let launched = false;
+            for(let frame=0;frame<fps*9 && player.supportPlatform!==ride;frame++) {
+                const ready = vertical ? ride.y>=340 : intro ? ride.x<=2920 : ride.x<=7590;
+                if (!launched && ready && player.grounded) {jump(player,650);launched=true;}
+                const stop = vertical ? 4940 : intro ? 2940 : Infinity;
+                tick(player,platforms,1/fps,launched && player.x<stop?1:0);
             }
-            assert.equal(player.supportPlatform, ride, `${id} cannot be boarded at ${fps} FPS`);
-            const offset = player.x - ride.x;
-            // Ride a complete out-and-back cycle (including both pauses), without input.
-            const seconds = 2 * (Math.abs(ride.config.distance) / ride.config.speed + ride.config.pause);
-            for (let i = 0; i < Math.ceil(seconds * fps); i++) {
-                tick(player, platforms, 1 / fps);
-                assert.equal(player.supportPlatform, ride);
-                assert.ok(Math.abs(player.x - ride.x - offset) < 1e-6);
+            assert.equal(player.supportPlatform,ride,`${id} boarding ${fps} FPS phase ${phase}`);
+            const offset=player.x-ride.x, cycle=2*(Math.abs(ride.config.distance)/ride.config.speed+ride.config.pause);
+            for(let i=0;i<Math.ceil(cycle*fps);i++) {
+                tick(player,platforms,1/fps);assert.equal(player.supportPlatform,ride);
+                assert.ok(Math.abs(player.x-ride.x-offset)<1e-6);
             }
-            if (!ferry) for (let i = 0; i < fps * 7 && ride.y > 261; i++) tick(player, platforms, 1 / fps);
-            if (ferry) for (let i = 0; i < fps * 7 && ride.x < 7769; i++) tick(player, platforms, 1 / fps);
-            jump(player, 650);
-            assert.equal(player.supportPlatform, null);
-            const stop = ferry ? 8070 : 3160;
-            for (let i = 0; i < fps * 3 && !player.grounded; i++) tick(player, platforms, 1 / fps, player.x < stop ? 1 : 0);
-            assert.equal(player.grounded, true);
-            assert.ok(!player.supportPlatform.type, "exit must reach original static terrain");
-            assert.ok(player.x > (ferry ? 7880 : 2990));
+            for(let i=0;i<fps*8 && (vertical?ride.y>261:intro?ride.x<2980:ride.x<7769);i++) tick(player,platforms,1/fps);
+            // Walk to a generous takeoff point before leaving the canopy lift.
+            if(vertical) for(let i=0;i<fps && player.x<4980;i++) tick(player,platforms,1/fps,1);
+            jump(player,650);
+            const stop=vertical?5150:intro?3150:8070;
+            for(let i=0;i<fps*3&&!player.grounded;i++) tick(player,platforms,1/fps,player.x<stop?1:0);
+            assert.equal(player.grounded,true);assert.ok(!player.supportPlatform.type);
+            assert.ok(player.x>(vertical?5120:intro?2990:7880));
+            if(vertical)assert.equal(player.supportPlatform.id,"l2-canopy");
         }
     }
 });

@@ -115,8 +115,14 @@ test("new canopy bough can be boarded, ridden and exited from three phases at ev
             assert.equal(p.supportPlatform, bough);
             assert.ok(Math.abs(p.x - bough.x - offset) < 1e-6);
         }
+        // The exit is intentionally too far for a jump from the near endpoint.
+        // Ride right and use a clear takeoff point instead of assuming every phase works.
+        for (let frame=0; frame<fps*8; frame++) {
+            assert.equal(stepLevel(level, p.x-bough.x<50?1:0, 1/fps).death,null);
+            if(bough.x>=5685 && p.x-bough.x>=50) break;
+        }
         jump(p, 650);
-        for (let frame = 0; frame < fps * 2 && !p.grounded; frame++) assert.equal(stepLevel(level, p.x < 5870 ? 1 : 0, 1 / fps).death, null);
+        for (let frame = 0; frame < fps * 2 && !p.grounded; frame++) assert.equal(stepLevel(level, p.x < 5970 ? 1 : 0, 1 / fps).death, null);
         assert.equal(p.supportPlatform?.id, "l2-canopy-exit");
     }
 });
