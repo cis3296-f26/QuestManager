@@ -15,7 +15,7 @@ import { GrasslandRenderer } from "../rendering/GrasslandRenderer.js";
 const platformId = (p) => p?.id ?? p?.config?.id;
 
 test("Deep Forest has five intentional sections, distinct coins and only existing enemy/platform behaviors", () => {
-    assert.deepEqual(levels.map(l => l.id), [1, 2, 3]);
+    assert.deepEqual(levels.map(l => l.id), [1, 2, 3, 4]);
     assert.equal(level3.stages.length, 5); assert.equal(level3.theme, "deep-forest");
     assert.equal(level3.audio.music, "deepForest");
     assert.deepEqual(level3.coins.map(c => c.id), [1, 2, 3].map(n => `level-3-coin-${n}`));
@@ -103,7 +103,7 @@ test("new level uses completion-only coin persistence, unlocks Level 4 metadata 
     progress.completeLevel(3, [level3.coins[1].id]);
     const reloaded = new LevelProgressManager(store); levels.forEach(l => reloaded.registerLevel(l)); reloaded.setUser("A");
     assert.deepEqual(reloaded.getLevel(3).coinIds, [level3.coins[1].id]);
-    assert.equal(reloaded.getLevel(4).unlocked, true); assert.equal(levels.some(l => l.id === 4), false);
+    assert.equal(reloaded.getLevel(4).unlocked, true); assert.equal(levels.some(l => l.id === 4), true);
     reloaded.completeLevel(3, level3.coins.map(c => c.id)); reloaded.completeLevel(3, []);
     assert.equal(reloaded.getLevel(3).fullyCompleted, true);
     assert.deepEqual(reloaded.totalCoins, { earned: 3, possible: 30 });

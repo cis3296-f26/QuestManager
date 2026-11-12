@@ -1,3 +1,4 @@
+import { drawCrystalCluster } from "./CaveRenderer.js";
 // World-space foliage hides a portion of optional terrain, never collision geometry.
 // Draw before hazards/enemies/coins/player so threats and collectible silhouettes stay legible.
 export function drawExplorationFoliage(ctx, exploration, cameraX, viewWidth) {
@@ -6,6 +7,10 @@ export function drawExplorationFoliage(ctx, exploration, cameraX, viewWidth) {
         ctx.save();
         ctx.globalAlpha *= 0.52 - (exploration.reveal.get(area.id) ?? 0) * 0.40;
         ctx.translate(veil.x, veil.y);
+        if(veil.kind==="crystals") {
+            for(let i=0;i<3;i++)drawCrystalCluster(ctx,(i+.5)*veil.width/3,veil.height,(veil.height/40),i%2?"#a99bdf":"#71d7d0");
+            ctx.restore();continue;
+        }
         if (veil.kind === "roots") {
             ctx.strokeStyle = "#795c3f";
             ctx.lineWidth = 7;

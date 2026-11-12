@@ -25,16 +25,17 @@ function fixture(hash = "") {
     globalThis.document = { getElementById: (id) => elements[id], querySelectorAll: () => nodes, createElement: element };
     globalThis.window = { addEventListener: (key, callback) => windowListeners[key] = callback };
     globalThis.location = { hash };
-    let saved = [], completed = false, secondCompleted = false, plays = 0, returns = 0;
+    let saved = [], completed = false, secondCompleted = false, thirdCompleted = false, plays = 0, returns = 0;
     const map = new WorldMap({ levels,
-        getProgress: (id) => ({ unlocked: id === 1 || (id === 2 && completed) || (id === 3 && secondCompleted),
-            completed: id === 1 && completed || id === 2 && secondCompleted, coinIds: id === 1 ? saved : [], fullyCompleted: id === 1 && saved.length === 3 }),
+        getProgress: (id) => ({ unlocked: id === 1 || (id === 2 && completed) || (id === 3 && secondCompleted) || (id === 4 && thirdCompleted),
+            completed: id === 1 && completed || id === 2 && secondCompleted || id === 3 && thirdCompleted, coinIds: id === 1 ? saved : [], fullyCompleted: id === 1 && saved.length === 3 }),
         getTotal: () => ({ earned: saved.length, possible: 30 }),
         onPlay: () => plays++, onMap: () => returns++
     });
     return { map, elements, nodes,
         get plays() { return plays; }, get returns() { return returns; },
         save(ids) { saved = ids; completed = true; map.refresh(); },
+        completeThird() { thirdCompleted = true; map.refresh(); },
         completeSecond() { secondCompleted = true; map.refresh(); },
         route(hash) { globalThis.location.hash = hash; windowListeners.hashchange(); },
         restore() { Object.assign(globalThis, previous); }
@@ -108,7 +109,7 @@ test("finishing Level 1 unlocks Level 2 and explicit Next navigation without req
 
 
 
-test("Level 2 unlocks Deep Forest selection and Next; unfinished Crystal Cave remains unavailable", () => {
+test("Level 2 unlocks Deep Forest selection and Next; Crystal Cave stays locked until Level 3 completion", () => {
     const f = fixture("#level-2");
     try {
         f.save([]); f.route("#level-2");
@@ -125,4 +126,20 @@ test("Level 2 unlocks Deep Forest selection and Next; unfinished Crystal Cave re
         assert.ok(f.nodes.slice(3).every(n => n.disabled));
         f.route("#level-4"); assert.equal(f.map.playing, false);
     } finally { f.restore(); }
+});
+
+test("completing Deep Forest unlocks Crystal Cave details and Next but Level 5 remains unavailable",()=>{
+    const f=fixture("#level-3");
+    try {
+        f.save([]);f.completeSecond();f.route("#level-3");
+        assert.equal(f.nodes[3].disabled,true);f.completeThird();
+        assert.equal(f.nodes[3].disabled,false);assert.equal(f.map.hasNext(),true);
+        f.nodes[3].listeners.click();
+        assert.match(f.elements.levelSelectionContent.children[0].textContent,/Crystal Cave/);
+        assert.equal(f.elements.levelSelectionContent.children[2].children.length,3);
+        f.map.select(3);f.map.openNext();assert.equal(globalThis.location.hash,"#level-4");f.route("#level-4");
+        assert.equal(f.map.playing,true);assert.equal(f.map.hasNext(),false);
+        f.map.select(3);f.map.openNext();assert.equal(globalThis.location.hash,"#level-4");
+        assert.ok(f.nodes.slice(4).every(n=>n.disabled));
+    } finally {f.restore();}
 });

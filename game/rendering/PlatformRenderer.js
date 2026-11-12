@@ -11,14 +11,15 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
         ctx.translate(platform.x + width / 2 + shake, platform.y + progress * progress * 85);
         if (falling) { ctx.rotate(progress * 0.12); ctx.globalAlpha *= 1 - progress; }
         ctx.translate(-width / 2, 0);
-        ctx.fillStyle = "#aa8055";
+        const stone=config.appearance==="rock";
+        ctx.fillStyle = stone?"#92869f":"#aa8055";
         ctx.strokeStyle = "#51452b";
         ctx.lineWidth = 2;
         ctx.fillRect(0, 0, width, height);
         ctx.strokeRect(1, 1, width - 2, height - 2);
-        ctx.fillStyle = "#638647";
+        ctx.fillStyle = stone?"#d0c7d7":"#638647";
         ctx.fillRect(0, 0, width, config.appearance === "grass" ? 8 : 4);
-        ctx.strokeStyle = "#795c3f";
+        ctx.strokeStyle = stone?"#6c617c":"#795c3f";
         for (let x = 28; x < width - 4; x += 28) {
             ctx.beginPath(); ctx.moveTo(x, 5); ctx.lineTo(x, height - 2); ctx.stroke();
         }

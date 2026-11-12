@@ -106,7 +106,7 @@ test("a first-gesture effect can play after successful unlock without starting m
 test("original synthesized assets are cached, quiet, finite, distinct and click-free at loop seams", () => {
     const assets = createSynthAssets(new FakeAudioContext());
     const durations = [];
-    for (const key of ["map", "grassland", "forest", "deepForest"]) {
+    for (const key of ["map", "grassland", "forest", "deepForest", "cave"]) {
         const buffer = assets.music(key), samples = buffer.getChannelData(0);
         assert.equal(assets.music(key), buffer); assert.ok(buffer.duration > 20 && buffer.duration < 27);
         let peak = 0, energy = 0;
@@ -114,7 +114,7 @@ test("original synthesized assets are cached, quiet, finite, distinct and click-
         assert.ok(peak < .25); assert.ok(Math.sqrt(energy / samples.length) < .05);
         assert.ok(Math.abs(samples[0] - samples.at(-1)) < .002); durations.push(buffer.duration);
     }
-    assert.equal(new Set(durations).size, 4);
+    assert.equal(new Set(durations).size, 5);
     const peak = (buffer) => buffer.getChannelData(0).reduce((n, value) => Math.max(n, Math.abs(value)), 0);
     assert.ok(peak(assets.effect("footstep")) < peak(assets.effect("jump")) / 2);
     for (const key of ["jump", "land", "footstep", "coin", "stomp", "death", "damage", "crack", "break", "victory"]) assert.ok(peak(assets.effect(key)) < .3);

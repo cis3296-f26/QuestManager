@@ -5,10 +5,18 @@ export class GameAudioEvents {
     jump() { this.footPhase = 0; this.audio.stopEffect("footstep"); this.audio.play("jump"); }
     capture(level, coins) {
         return { grounded: level.player.grounded, walkPhase: level.player.walkPhase,
-            coins: new Set(coins.pending), platforms: new Map(level.platforms.filter((p) => p.type === "collapsing").map((p) => [p, p.state])) };
+            coins: new Set(coins.pending),
+            rocks: new Map(level.stalactites.map(r=>[r,{warning:r.warningCount,impact:r.impactCount}])),
+            switches: level.puzzle.activationCount,
+            platforms: new Map(level.platforms.filter((p) => p.type === "collapsing").map((p) => [p, p.state])) };
     }
     after(before, level, coins, result) {
         const player = level.player;
+        for(const [rock,previous] of before.rocks) {
+            if(rock.warningCount>previous.warning)this.audio.play("crack");
+            if(rock.impactCount>previous.impact)this.audio.play("break");
+        }
+        if(level.puzzle.activationCount>before.switches){this.audio.play("switch");this.audio.play("gate");}
         for (const id of coins.pending) if (!before.coins.has(id)) this.audio.play("coin");
         for (const enemy of result.stomped) this.audio.play("stomp");
         if (!before.grounded && player.grounded && !result.stomped.length) this.audio.play("land");

@@ -202,7 +202,7 @@ test("defeat is harmless immediately, freezes patrols, shrinks then disappears, 
 
 test("both levels configure slime stomps only, and level restarts/replays restore every enemy", () => {
     for (const config of levels) {
-        assert.ok(config.enemies.every((enemy) => enemy.stompable === (enemy.appearance === "slime")));
+        assert.ok(config.enemies.every((enemy) => enemy.stompable === (["slime","cave-slime"].includes(enemy.appearance))));
         for (const fps of [30, 60, 120]) {
             const attempt = new LevelManager(config), slime = attempt.enemies.find((enemy) => enemy.stompable);
             const player = attempt.player;
@@ -231,3 +231,4 @@ test("both levels configure slime stomps only, and level restarts/replays restor
 test("Level 2 remains completable with all three coins and swept enemy interactions enabled", () => {
     assertAuthoredRoute(levels[1]);
 });
+

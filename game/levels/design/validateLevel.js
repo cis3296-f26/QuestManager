@@ -1,3 +1,4 @@
+import { validateCaveMechanics } from "./validateCaveMechanics.js";
 import { movement } from "../../engine/Movement.js";
 import { jump, moveHorizontally, applyGravity } from "../../engine/Physics.js";
 import { Player } from "../../entities/Player.js";
@@ -27,11 +28,11 @@ export function jumpEnvelope(fps) {
 // Structural checks never edit level definitions, runtime state, saves, or the database.
 // Successful route simulations are still required: a geometric check cannot establish fairness.
 export function validateLevel(config) {
-    const errors = [...validateExploration(config), ...validatePlatformPurpose(config), ...validateTreeSpacing(config.scenery, config.groundY)], warnings = [];
+    const errors = [...validateCaveMechanics(config), ...validateExploration(config), ...validatePlatformPurpose(config), ...validateTreeSpacing(config.scenery, config.groundY)], warnings = [];
     const fail = (message) => errors.push(message);
     const { platforms = [], enemies = [], coins = [], hazards = [], stages = [] } = config;
     const ids = new Set();
-    for (const object of [...platforms, ...enemies, ...coins, ...hazards]) {
+    for (const object of [...platforms, ...enemies, ...coins, ...hazards, ...(config.stalactites ?? []), ...(config.switches ?? []), ...(config.gates ?? [])]) {
         if (!object.id || ids.has(object.id)) fail(`Missing or duplicate object ID: ${object.id}`);
         ids.add(object.id);
     }
@@ -85,8 +86,10 @@ export function validateLevel(config) {
         const feetY = enemy.feetY ?? config.groundY;
         const patrol = { x: enemy.minX, y: feetY - enemy.height, width: enemy.maxX - enemy.minX + enemy.width, height: enemy.height };
         if (!rectangle(patrol) || enemy.startX < enemy.minX || enemy.startX > enemy.maxX || !enemy.purpose || !(enemy.speed > 0)) fail(`Invalid patrol or missing purpose: ${enemy.id}.`);
-        if (!platforms.some((p) => !p.type && p.y === feetY && patrol.x >= p.x && patrol.x + patrol.width <= p.x + p.width)) fail(`Unsupported patrol: ${enemy.id}.`);
+        if (!enemy.flying && !platforms.some((p) => !p.type && p.y === feetY && patrol.x >= p.x && patrol.x + patrol.width <= p.x + p.width)) fail(`Unsupported patrol: ${enemy.id}.`);
         if (platforms.some((p) => !p.type && overlaps(patrol, p))) fail(`Enemy patrol intersects terrain: ${enemy.id}.`);
+        if (enemy.flying && (feetY - enemy.height < movement.hudBottom || feetY > movement.viewHeight || enemy.stompable)) fail(`Invalid flying patrol: ${enemy.id}.`);
+        if (patrol.x < 0 || patrol.x + patrol.width > config.worldWidth) fail(`Patrol leaves level bounds: ${enemy.id}.`);
         if (overlaps(spawn, patrol)) fail(`Enemy patrol covers spawn: ${enemy.id}.`);
         if (hazards.some((h) => overlaps(patrol, h))) fail(`Enemy patrol intersects a hazard: ${enemy.id}.`);
     }

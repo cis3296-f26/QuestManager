@@ -152,6 +152,16 @@ export class GrasslandRenderer {
         for (const platform of platforms) {
             if (platform.x + platform.width < cameraX || platform.x > cameraX + viewWidth) continue;
             const { x, y, width, height } = platform;
+            if (platform.appearance === "rock") {
+                ctx.fillStyle="#92869f";ctx.fillRect(x,y,width,height);
+                ctx.fillStyle="#615c73";ctx.fillRect(x,y+height-4,width,4);
+                ctx.fillStyle="#d0c7d7";ctx.fillRect(x,y,width,4);
+                ctx.fillStyle="#aca1b9";
+                const first=Math.max(0,Math.floor((cameraX-x)/64));
+                const last=Math.min(Math.ceil(width/64),Math.ceil((cameraX+viewWidth-x)/64));
+                for(let i=first;i<last;i++)if(i*64+29<width)ctx.fillRect(x+i*64+14,y+Math.min(height-8,15),15,3);
+                continue;
+            }
             if (platform.appearance === "wood") {
                 ctx.fillStyle = "#aa8055"; ctx.fillRect(x, y, width, height);
                 ctx.strokeStyle = "#795c3f"; ctx.lineWidth = 2;

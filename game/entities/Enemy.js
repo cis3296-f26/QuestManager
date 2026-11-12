@@ -1,6 +1,6 @@
 export class Enemy {
-    constructor({ startX, minX, maxX, width, height, speed, appearance = "slime", stompable = false }, feetY) {
-        Object.assign(this, { startX, minX, maxX, width, height, speed, feetY, appearance, stompable });
+    constructor({ startX, minX, maxX, width, height, speed, appearance = "slime", stompable = false, flying = false }, feetY) {
+        Object.assign(this, { startX, minX, maxX, width, height, speed, feetY, appearance, stompable, flying });
         this.spawnFeetY = feetY;
         this.defeatDuration = 0.28;
         this.reset();
@@ -73,4 +73,5 @@ export class Enemy {
             player.y + player.height > this.feetY - this.height;
     }
 }
+
 

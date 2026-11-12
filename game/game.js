@@ -1,3 +1,5 @@
+import { CaveRenderer } from "./rendering/CaveRenderer.js";
+import { drawCaveMechanics } from "./rendering/CaveMechanicsRenderer.js";
 import { drawEnemy } from "./rendering/EnemyRenderer.js";
 import { GrasslandRenderer } from "./rendering/GrasslandRenderer.js";
 import { drawInteractivePlatforms } from "./rendering/PlatformRenderer.js";
@@ -41,6 +43,7 @@ const deathDelay = 0.7;
 let deathTimeLeft = 0;
 const avatar = new AvatarRenderer();
 const grassland = new GrasslandRenderer();
+const cave = new CaveRenderer();
 
 let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
@@ -250,7 +253,7 @@ function update(dt) {
     const beforeAudio = audioEvents.capture(level, coins);
     const result = stepLevel(level, Number(right) - Number(left), dt);
     if (result.death) {
-        const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…" };
+        const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: "A falling rock caught you! Restarting…" };
         startDeath(message[result.death], result.death);
         return;
     }
@@ -277,11 +280,12 @@ function drawPlayer() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    grassland.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme);
+    const scenery = level.config.theme === "cave" ? cave : grassland;
+    scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme);
 
     ctx.save();
     ctx.translate(-cameraX, 0);
-    grassland.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
+    scenery.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
     grassland.drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
     drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawExplorationFoliage(ctx, level.exploration, cameraX, canvas.width);
@@ -301,6 +305,7 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
+    drawCaveMechanics(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawHazards(ctx, level.config.hazards ?? []);
     enemies.forEach((enemy) => drawEnemy(ctx, enemy, cameraX, canvas.width));
     coins.draw(ctx, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });

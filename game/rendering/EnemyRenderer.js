@@ -18,13 +18,14 @@ export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
     ctx.clip();
 
     if (enemy.appearance === "mushroom") drawMushroom(ctx, enemy.walkTime);
-    else drawSlime(ctx, enemy.walkTime);
+    else if(enemy.appearance==="bat")drawBat(ctx,enemy.walkTime);
+    else drawSlime(ctx, enemy.walkTime,enemy.appearance==="cave-slime");
     ctx.restore();
 }
 
-function drawSlime(ctx, time) {
+function drawSlime(ctx, time, cave=false) {
     const wobble = Math.sin(time * 9);
-    ctx.fillStyle = "#6e944f";
+    ctx.fillStyle = cave?"#8c8dc4":"#6e944f";
     ctx.strokeStyle = "#403725";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -36,7 +37,7 @@ function drawSlime(ctx, time) {
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = "#a5ba71";
+    ctx.fillStyle = cave?"#a2ddd5":"#a5ba71";
     ctx.beginPath();
     ctx.ellipse(10, 9 + wobble, 4, 2, -0.4, 0, Math.PI * 2);
     ctx.fill();
@@ -86,3 +87,16 @@ function drawMushroom(ctx, time) {
     ctx.fillRect(21, 16 + bob, 2, 3);
 }
 
+
+
+function drawBat(ctx,time) {
+    const flap=Math.sin(time*14)*5;
+    ctx.fillStyle="#625078";ctx.strokeStyle="#e0cbe5";ctx.lineWidth=1;
+    for(const side of [-1,1]) {
+        ctx.beginPath();ctx.moveTo(16,12);ctx.lineTo(16+side*15,3+flap);
+        ctx.lineTo(16+side*12,17);ctx.lineTo(16+side*7,14);ctx.lineTo(16+side*4,20);ctx.closePath();ctx.fill();ctx.stroke();
+    }
+    ctx.fillStyle="#8f78a2";ctx.beginPath();ctx.ellipse(16,13,5,8,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.moveTo(11,9);ctx.lineTo(11,2);ctx.lineTo(15,6);ctx.lineTo(18,6);ctx.lineTo(21,2);ctx.lineTo(21,10);ctx.fill();
+    ctx.fillStyle="#faf0e6";ctx.fillRect(13,10,2,3);ctx.fillRect(18,10,2,3);
+}

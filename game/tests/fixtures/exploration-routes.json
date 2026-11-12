@@ -601,5 +601,122 @@
     },
     "areaId": "l3-last-nest",
     "levelId": 3
+  },
+  {
+    "fps": 30,
+    "totalFrames": 147,
+    "jumpFrames": [
+      6,
+      21,
+      39,
+      63,
+      84,
+      114
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3100,
+      "feetY": 460
+    },
+    "areaId": "l4-high-crystals",
+    "levelId": 4
+  },
+  {
+    "fps": 60,
+    "totalFrames": 294,
+    "jumpFrames": [
+      12,
+      42,
+      78,
+      120,
+      168,
+      228
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3100,
+      "feetY": 460
+    },
+    "areaId": "l4-high-crystals",
+    "levelId": 4
+  },
+  {
+    "fps": 120,
+    "totalFrames": 587,
+    "jumpFrames": [
+      12,
+      84,
+      156,
+      240,
+      336,
+      456
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3100,
+      "feetY": 460
+    },
+    "areaId": "l4-high-crystals",
+    "levelId": 4
+  },
+  {
+    "fps": 30,
+    "totalFrames": 171,
+    "jumpFrames": [
+      0,
+      15,
+      36,
+      57,
+      90,
+      111,
+      132
+    ],
+    "inputs": [],
+    "start": {
+      "x": 11780,
+      "feetY": 460
+    },
+    "areaId": "l4-hidden-vault",
+    "levelId": 4
+  },
+  {
+    "fps": 60,
+    "totalFrames": 341,
+    "jumpFrames": [
+      0,
+      30,
+      72,
+      114,
+      168,
+      216,
+      264
+    ],
+    "inputs": [],
+    "start": {
+      "x": 11780,
+      "feetY": 460
+    },
+    "areaId": "l4-hidden-vault",
+    "levelId": 4
+  },
+  {
+    "fps": 120,
+    "totalFrames": 681,
+    "jumpFrames": [
+      0,
+      72,
+      156,
+      240,
+      336,
+      432,
+      528
+    ],
+    "inputs": [],
+    "start": {
+      "x": 11780,
+      "feetY": 460
+    },
+    "areaId": "l4-hidden-vault",
+    "levelId": 4
   }
 ]

@@ -48,7 +48,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const key = (code, extra = {}) => canvas.emit("keydown", { code, repeat: false, ...extra });
     let time = 0;
     const frame = (seconds = 1 / 60) => { time += seconds * 1000; a.audio.context?.advance(seconds); a.gameLoop(time); };
-    const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms,
+    const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, puzzle: a.level.puzzle,
         coins: { time: a.coins.time, pending: [...a.coins.pending], saved: [...a.coins.saved], effects: a.coins.effects },
         reveal: [...a.level.exploration.reveal], notice: a.level.exploration.noticeTime, camera: a.camera });
     if (process.env.QUESTMANAGER_TEST_AUDIO === "1") {
@@ -82,15 +82,36 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.audio.scene, "grassland"); assert.ok(a.audio.music);
         console.log("PASS actual audio wiring: single jump, landing, pickup, stomp, death and victory; earned coins silent; replay music restored.");
     }
-    for (const id of [1, 2, 3]) {
+    for (const id of [1, 2, 3, 4]) {
         if (id > 1) { a.progress.completeLevel(id - 1, []); a.map.refresh(); a.map.openLevel(id); await turn(); }
         assert.equal(a.level.config.id, id);
         assert.equal(a.audio.scene, a.level.config.audio.music);
+        if (id === 4 && process.env.QUESTMANAGER_TEST_AUDIO === "1") {
+            const played = name => a.audio.context.sources.filter(source => source.starts.length && source.buffer === a.audio.assets.effect(name)).length;
+            a.restartLevel(); canvas.focus(); frame(); frame();
+            const p = a.level.player, rock = a.level.stalactites[0];
+            const warnings = played("crack"), impacts = played("break");
+            p.reset({ x: rock.x, feetY: 460 }); frame();
+            assert.equal(played("crack"), warnings + 1);
+            p.reset({ x: rock.x + 200, feetY: 460 });
+            for (let i = 0; i < 130; i++) frame();
+            assert.equal(played("break"), impacts + 1);
+            assert.equal(played("crack"), warnings + 1);
+            const switches = played("switch"), gates = played("gate");
+            p.reset({ x: 12330, feetY: 300 });
+            p.supportPlatform = a.level.platforms.find(surface => surface.id === "l4-switch-shelf");
+            frame(); frame(); assert.equal(a.level.puzzle.gates[0].open, true);
+            assert.equal(played("switch"), switches + 1); assert.equal(played("gate"), gates + 1);
+        }
         for (const fps of [30, 60, 120]) {
             a.restartLevel(); canvas.focus(); frame(); frame(1 / fps);
             a.coins.pending.add(a.level.config.coins[1].id);
             const board = a.level.platforms.find((p) => p.type === "collapsing");
             if (board) board.onLand();
+            if (id === 4) {
+                Object.assign(a.level.stalactites[0], { state: "warning", warningTime: .2, warningCount: 1 });
+                a.level.puzzle.switches[0].active = true; a.level.puzzle.gates[0].open = true;
+            }
             key("Escape"); assert.equal(a.pause.screen, "main");
             const before = snapshot();
             // Deliberately retain canvas focus here: the explicit pause gate must freeze independently of the DOM.
@@ -110,6 +131,8 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         click("pauseRestart"); key("KeyR"); assert.equal(a.pause.screen, "restart"); click("pauseConfirm");
         assert.equal(a.level.player.x, a.level.config.spawn.x); assert.equal(a.coins.pending.size, 0);
         assert.ok(a.level.enemies.every((e) => e.x === e.startX));
+        assert.ok(a.level.stalactites.every(r => r.state === "hanging" && r.warningTime === 0));
+        assert.ok(a.level.puzzle.gates.every(g => !g.open));
         assert.ok(a.level.platforms.filter((p) => p.type).every((p) => p.elapsed === 0 && p.state === "stable"));
         a.coins.pending.add(a.level.config.coins[2].id);
         key("Escape"); click("pauseWorldMap"); click("pauseCancel"); assert.equal(a.coins.pending.size, 1);
@@ -120,7 +143,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         // Header navigation must use the same confirmation path.
         click("backToMap"); assert.equal(a.pause.screen, "map"); escapeDialog(); click("pauseResume");
     }
-    // Exercise actual Level 3 save, coming-soon Next and replay wiring. Teleports
+    // Exercise actual Level 4 save, coming-soon Next and replay wiring. Teleports
     // here set up the UI boundary; continuous route fixtures prove playability separately.
     a.restartLevel(); canvas.focus(); frame();
     a.coins.pending.add(a.level.config.coins[2].id);
@@ -129,16 +152,16 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     finisher.grounded = true; finisher.velocityY = 0; finisher.supportPlatform = a.level.config.finish.platform;
     frame(); await turn();
     assert.equal(element("levelCompleteDialog").open, true);
-    assert.equal(element("levelCompleteTitle").textContent, "Level 3 Complete!");
-    assert.deepEqual([...a.progress.getLevel(3).coinIds], [a.level.config.coins[2].id]);
-    assert.equal(a.progress.getLevel(4).unlocked, true);
+    assert.equal(element("levelCompleteTitle").textContent, "Level 4 Complete!");
+    assert.deepEqual([...a.progress.getLevel(4).coinIds], [a.level.config.coins[2].id]);
+    assert.equal(a.progress.getLevel(5).unlocked, true);
     assert.equal(element("nextLevel").disabled, true);
     assert.match(element("nextLevel").textContent, /Coming soon/);
     element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
     assert.equal(a.level.complete, false); assert.equal(a.level.player.x, a.level.config.spawn.x);
-    assert.equal(a.audio.scene, "deepForest");
+    assert.equal(a.audio.scene, "cave");
     assert.ok(a.coins.saved.has(a.level.config.coins[2].id));
-    console.log("PASS Level 3 completion, saved coins, replay and unavailable Level 4 wiring.");
+    console.log("PASS Level 4 completion, saved coins, replay and unavailable Level 5 wiring.");
     a.startDeath("Test transition"); canvas.focus(); key("Escape"); assert.equal(a.pause.paused, false);
     for (let i = 0; i < 50; i++) frame();
     assert.equal(a.deathTime, 0);

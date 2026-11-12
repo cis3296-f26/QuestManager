@@ -140,7 +140,7 @@ export class AudioManager {
     die(reason) {
         if (this.transition) return;
         this.transition = true; this.pending = null; this.stopEffects(); this.stopMusic();
-        this.play(reason === "thorns" ? "damage" : "death", { cue: true });
+        this.play(["thorns", "stalactite"].includes(reason) ? "damage" : "death", { cue: true });
     }
     complete() {
         if (this.transition) return;

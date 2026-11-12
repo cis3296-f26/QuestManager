@@ -13,6 +13,8 @@ export function defineLevel({ stages, finishId, ...properties }) {
     if (!finish) throw new Error(`Missing finish platform: ${finishId}`);
     return { ...properties, groundY: 460, stages, platforms, enemies: flatten("enemies"),
         hazards: flatten("hazards"), coins: flatten("coins"),
+        stalactites: flatten("stalactites"), switches: flatten("switches"), gates: flatten("gates"),
         sections: stages.map((stage) => ({ x: stage.start, title: stage.title, hint: stage.hint })),
         finish: { platform: finish, flagInset: 40 } };
 }
+

@@ -12,10 +12,15 @@ export function stepLevel(level, direction, dt) {
     const previousX = player.x;
     moveHorizontally(player, direction, movement.speed, config.worldWidth, dt);
     applyGravity(player, movement.gravity, platforms, dt, { previousX });
+    level.puzzle.update(player, previous, dt);
     enemies.forEach((enemy) => enemy.update(dt));
     const contact = resolveEnemyInteractions(player, previous, enemies, { dt, gravity: movement.gravity, platforms });
+    // Update every rock, even if the first one hits. Audio/reset snapshots must
+    // never depend on hazard ordering or short-circuit an active timer.
+    let fallingRock = false;
+    for (const rock of level.stalactites) fallingRock = rock.update(dt, player, previous, platforms) || fallingRock;
     const death = contact.deadly ? "enemy" : player.y >= movement.viewHeight ? "fall" :
-        touchesHazard(player, config.hazards ?? []) ? "thorns" : null;
+        touchesHazard(player, config.hazards ?? []) ? "thorns" : fallingRock ? "stalactite" : null;
     const discovered = death ? [] : level.exploration.update(player, dt);
     return { death, stomped: contact.stomped, discovered };
 }
