@@ -26,7 +26,7 @@ function firstContact(start, end, enemy, since) {
 
 // Resolve contacts in time order, independent of the order enemies appear in a level.
 // No level geometry, persistence, appearance names or death UI belongs here.
-export function resolveEnemyInteractions(player, previous, enemies, { dt, gravity, platforms }) {
+export function resolveEnemyInteractions(player, previous, enemies, { dt, gravity, platforms, ignoreDamage = false }) {
     let start = previous, since = 0;
     const stomped = [];
     // Every successful pass removes at least one active enemy from collision checks.
@@ -34,6 +34,8 @@ export function resolveEnemyInteractions(player, previous, enemies, { dt, gravit
         const end = { x: player.x, y: player.y, width: player.width, height: player.height };
         const contacts = enemies.filter((enemy) => enemy.active)
             .map((enemy) => firstContact(start, end, enemy, since)).filter(Boolean)
+            .filter(contact => !ignoreDamage || contact.enemy.stompable && contact.normalY === -1 &&
+                end.y > start.y && player.velocityY >= 0)
             .sort((a, b) => a.time - b.time);
         if (!contacts.length) break;
         const time = contacts[0].time;
@@ -63,4 +65,5 @@ export function resolveEnemyInteractions(player, previous, enemies, { dt, gravit
     }
     return { deadly: false, stomped };
 }
+
 

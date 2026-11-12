@@ -2,6 +2,7 @@
 export class PauseMenu {
     constructor({ document, pause, settings, onRestart, onMap, returnFocus }) {
         Object.assign(this, { pause, settings, onRestart, onMap, returnFocus });
+        this.extraPanels = new Map();
         this.element = (id) => document.getElementById(id);
         this.dialog = this.element("pauseDialog");
         this.element("pauseButton").addEventListener("click", () => pause.open());
@@ -22,6 +23,11 @@ export class PauseMenu {
         settings.subscribe(() => this.syncSettings());
         pause.subscribe(() => this.render());
         this.syncSettings();
+    }
+    registerPanel(screen, panel) {
+        this.extraPanels.set(screen, panel);
+        panel.element.hidden = true;
+        this.dialog.appendChild(panel.element);
     }
     syncSettings() {
         const values = this.settings.values;
@@ -50,6 +56,8 @@ export class PauseMenu {
             this.returnFocus();
             return;
         }
+        const extra = this.extraPanels.get(screen);
+        for (const [name, panel] of this.extraPanels) panel.element.hidden = name !== screen;
         const confirm = screen === "restart" || screen === "map";
         this.element("pauseMainPanel").hidden = screen !== "main";
         this.element("pauseSettingsPanel").hidden = screen !== "settings";
@@ -59,8 +67,13 @@ export class PauseMenu {
             ? "Any coins collected during this attempt that haven't been saved will be lost."
             : screen === "map" ? "Any new coins collected during this attempt will not be saved unless you complete the level."
                 : screen === "settings" ? "Adjust your preferences. Gameplay stays paused." : "Take a break. Your current attempt is preserved.";
+        if (extra) {
+            this.element("pauseTitle").textContent = extra.title;
+            this.element("pauseDescription").textContent = extra.description;
+        }
         if (confirm) this.element("pauseConfirm").textContent = screen === "restart" ? "Restart" : "Return to Map";
         if (!this.dialog.open) this.dialog.showModal();
+        if (extra) { extra.focus.focus(); return; }
         this.element(confirm ? "pauseCancel" : screen === "settings" ? "masterVolume" : "pauseResume").focus();
     }
 }

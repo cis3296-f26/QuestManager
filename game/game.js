@@ -1,3 +1,4 @@
+import { developmentBuild } from "./dev/buildConfig.js";
 import { CaveRenderer } from "./rendering/CaveRenderer.js";
 import { drawCaveMechanics } from "./rendering/CaveMechanicsRenderer.js";
 import { drawEnemy } from "./rendering/EnemyRenderer.js";
@@ -55,6 +56,8 @@ let playing = false;
 let accountSession;
 let sessionReady = false;
 let attemptRevision = 0;
+let testingLevel = false;
+let developer = null;
 const settings = new GameSettings(new SettingsPersistence(storage));
 const audio = new AudioManager(settings);
 const audioEvents = new GameAudioEvents(audio);
@@ -65,14 +68,43 @@ const pauseMenu = new PauseMenu({ document, pause, settings,
     onRestart: () => restartLevel(), onMap: () => worldMap.openMap(),
     returnFocus: () => { if (playing && !completionDialog.open) canvas.focus(); } });
 
+// Production config is false. No developer UI or implementation modules are
+// loaded unless the explicitly opted-in local server supplies a development build.
+if (developmentBuild) {
+    const { installDeveloperTools } = await import("./dev/installDeveloperTools.js");
+    developer = installDeveloperTools({ document, pause, pauseMenu, levels, getLevel: () => level,
+        changed: () => {
+            keys.clear(); clock.reset(); updateCoinHUD();
+            // A teleport is a deliberate camera cut; ordinary travel still uses
+            // smooth follow. The player must be visible even while paused.
+            if (player.x < cameraX || player.x + player.width > cameraX + canvas.width) {
+                cameraX = Math.max(0, Math.min(worldWidth - canvas.width,
+                    player.x + player.width / 2 - canvas.width * .45));
+            }
+        },
+        loadLevel: (id) => {
+            if (!developer.canLoad(id, levels)) return;
+            developer.testLevelId = id;
+            const hash = `#test-level-${id}`;
+            if (location.hash === hash) worldMap.render();
+            else location.hash = hash;
+        },
+        restart: () => restartLevel(), onMap: () => worldMap.openMap()
+    });
+}
+
 function updateCoinHUD() {
     // The visible HUD is drawn inside the canvas; announce pickups without another panel.
-    document.getElementById("coinCounter").textContent = `Coins: ${coins.count}/3. Reach the flag to save new coins.`;
+    document.getElementById("coinCounter").textContent = level.developerAssisted
+        ? `Coins: ${coins.count}/3. TEST RUN — PROGRESS NOT SAVED.`
+        : `Coins: ${coins.count}/3. Reach the flag to save new coins.`;
 }
 
 function changeAccount(userId) {
     if (userId === progress.userId) return;
     pause.close();
+    developer?.resetSession();
+    developer?.panel.sync();
     settings.setUser(userId);
     progress.setUser(userId);
     if (completionDialog.open) {
@@ -92,11 +124,12 @@ async function finishLevel() {
     const revision = attemptRevision;
     const userId = progress.userId;
     const attemptIds = [...coins.pending];
+    const assisted = level.developerAssisted;
     // Check identity again at the save boundary (including sign-outs in another tab).
-    const verified = await accountSession.verifyAccount(userId);
+    const verified = assisted ? false : await accountSession.verifyAccount(userId);
     if (revision !== attemptRevision || !level.complete) return;
-    const saved = verified
-        ? progress.completeLevel(level.config.id, attemptIds)
+    const saved = verified && !assisted && !level.developerAssisted
+        ? progress.completeLevel(level.config.id, attemptIds, { developerAssisted: level.developerAssisted })
         : progress.getLevel(level.config.id);
     worldMap.refresh();
     const nextButton = document.getElementById("nextLevel");
@@ -104,12 +137,14 @@ async function finishLevel() {
     nextButton.textContent = nextButton.disabled ? "Next Level · Coming soon" : "Next Level";
     coins.reset(saved.coinIds);
     updateCoinHUD();
-    completionTitle.textContent = `Level ${level.config.id} Complete!`;
+    completionTitle.textContent = `Level ${level.config.id} Complete!${assisted || level.developerAssisted ? " · TEST RUN" : ""}`;
+    document.getElementById("completionSaveStatus").classList.toggle("is-test-run", assisted || level.developerAssisted);
     document.getElementById("levelCompleteDescription").textContent = `You reached the flag! Replay ${level.config.name} or return to the World Map.`;
     document.getElementById("completionCoinCount").textContent = `Coin Collection: ${saved.coinIds.length}/3`;
     renderCoinProgress(document.getElementById("completionCoins"), level.config.coins, saved.coinIds);
     document.getElementById("perfectCoins").hidden = !saved.fullyCompleted;
-    document.getElementById("completionSaveStatus").textContent = !verified
+    document.getElementById("completionSaveStatus").textContent = assisted || level.developerAssisted
+        ? "TEST RUN — PROGRESS NOT SAVED" : !verified
         ? "Your account could not be verified. This attempt was not saved; replay to try again."
         : progress.persistent ? "Progress saved for your account on this browser."
             : "Progress kept for this session only; it will not survive closing or refreshing this page.";
@@ -129,6 +164,7 @@ function restartLevel() {
     clock.reset();
     attemptRevision++;
     level.restart();
+    developer?.beginAttempt({ bypass: testingLevel && !progress.getLevel(level.config.id).unlocked });
     coins.reset(progress.getLevel(level.config.id).coinIds);
     updateCoinHUD();
     cameraX = 0;
@@ -160,7 +196,8 @@ function closeCompletion() {
     completionDialog.close();
 }
 
-function playLevel(config) {
+function playLevel(config, { developerBypass = false } = {}) {
+    testingLevel = developerBypass;
     closeCompletion();
     level.load(config);
     ({ groundY, worldWidth } = config);
@@ -169,6 +206,7 @@ function playLevel(config) {
     coins = new CoinManager(config.coins);
     restartLevel();
     playing = true;
+    if (developerBypass) developer?.markAttempt();
     audio.setScene(config.audio?.music ?? "grassland", { gameplay: true });
     document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
     canvas.setAttribute("aria-label", `Level ${config.id}: ${config.name} platform game`);
@@ -176,6 +214,7 @@ function playLevel(config) {
 }
 
 function showMap() {
+    testingLevel = false;
     playing = false;
     pause.close();
     closeCompletion();
@@ -202,7 +241,8 @@ canvas.addEventListener("keydown", event => {
     if (level.complete || deathTimeLeft > 0) return;
 
     const controls = ["ArrowLeft", "ArrowRight", "KeyA", "KeyD", "Space", "KeyW", "ArrowUp"];
-    if (!controls.includes(event.code)) return;
+    const flyControls = developer?.enabled && developer.fly && ["KeyS", "ArrowDown", "ShiftLeft", "ShiftRight"].includes(event.code);
+    if (!controls.includes(event.code) && !flyControls) return;
 
     // Stop arrows and Space from scrolling the page while playing.
     event.preventDefault();
@@ -211,7 +251,8 @@ canvas.addEventListener("keydown", event => {
     if (
         ["Space", "KeyW", "ArrowUp"].includes(event.code) &&
         !event.repeat &&
-        player.grounded
+        player.grounded &&
+        !developer?.fly
     ) {
         jump(player, jumpStrength);
         audioEvents.jump();
@@ -251,7 +292,8 @@ function update(dt) {
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
     const beforeAudio = audioEvents.capture(level, coins);
-    const result = stepLevel(level, Number(right) - Number(left), dt);
+    const direction = Number(right) - Number(left);
+    const result = developer ? developer.step(direction, keys, dt) : stepLevel(level, direction, dt);
     if (result.death) {
         const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: "A falling rock caught you! Restarting…" };
         startDeath(message[result.death], result.death);
@@ -265,7 +307,7 @@ function update(dt) {
     if (coins.update(player, dt)) updateCoinHUD();
     audioEvents.after(beforeAudio, level, coins, result);
 
-    if (level.checkCompletion()) {
+    if (level.checkCompletion() || developer?.checkFlyingFinish()) {
         audio.complete();
         keys.clear();
         status.textContent = "Flag reached! Saving collectible progress…";
@@ -326,6 +368,7 @@ function draw() {
     }
     drawCoinHUD(ctx, level.config.coins, coins.saved, coins.pending, canvas.width);
     drawDiscoveryNotice(ctx, level.exploration);
+    developer?.draw(ctx, coins, cameraX);
 
     if (deathTimeLeft > 0) {
         const fade = 1 - deathTimeLeft / deathDelay;
@@ -344,12 +387,15 @@ function gameLoop(time) {
     const dt = clock.frame(time, sessionReady && playing && !pause.paused &&
         !completionDialog.open && document.activeElement === canvas);
     if (dt !== null && dt > 0) {
-        update(dt);
-        player.animation.update(player, dt, {
-            dead: deathTimeLeft > 0,
-            deathProgress: 1 - deathTimeLeft / deathDelay,
-            complete: level.complete
-        });
+        for (const step of developer ? developer.steps(dt) : [dt]) {
+            if (level.complete) break;
+            update(step);
+            player.animation.update(player, step, {
+                dead: deathTimeLeft > 0,
+                deathProgress: 1 - deathTimeLeft / deathDelay,
+                complete: level.complete
+            });
+        }
     }
 
     document.getElementById("pauseButton").disabled = !pause.canPause() || pause.paused;
@@ -377,6 +423,8 @@ connectGameSession(changeAccount).then((session) => {
         getProgress: (id) => progress.getLevel(id),
         getTotal: () => progress.totalCoins,
         onPlay: playLevel,
+        getTestLevel: (id) => developer?.available && developer.enabled && developer.testLevelId === id
+            ? levels.find(config => config.id === id) ?? null : null,
         onMap: showMap,
         onMapRequest: () => {
             if (pause.canPause()) pause.open("map");

@@ -3,8 +3,8 @@ import { renderLevelSelection } from "./LevelSelection.js";
 
 // Navigation reads the same account-scoped achievements as the running game.
 export class WorldMap {
-    constructor({ levels, getProgress, getTotal, onPlay, onMap, onMapRequest }) {
-        Object.assign(this, { levels, getProgress, getTotal, onPlay, onMap });
+    constructor({ levels, getProgress, getTotal, onPlay, onMap, onMapRequest, getTestLevel = () => null }) {
+        Object.assign(this, { levels, getProgress, getTotal, onPlay, onMap, getTestLevel });
         this.selectedId = levels[0].id;
         this.playing = false;
         this.map = document.getElementById("worldMapView");
@@ -103,13 +103,15 @@ export class WorldMap {
     render(moveFocus = true) {
         if (this.selectionDialog.open) this.selectionDialog.close();
         const match = /^#level-(\d+)$/.exec(location.hash);
-        const config = match && this.isPlayable(Number(match[1])) ? this.findLevel(Number(match[1])) : null;
+        const test = /^#test-level-(\d+)$/.exec(location.hash);
+        const testConfig = test ? this.getTestLevel(Number(test[1])) : null;
+        const config = match && this.isPlayable(Number(match[1])) ? this.findLevel(Number(match[1])) : testConfig;
         this.playing = Boolean(config);
         this.map.hidden = this.playing;
         this.level.hidden = !this.playing;
         if (config) {
             this.select(config.id);
-            this.onPlay(config);
+            this.onPlay(config, { developerBypass: Boolean(testConfig) });
         } else {
             this.select(this.selectedId);
             this.onMap();

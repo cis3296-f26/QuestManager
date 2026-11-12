@@ -21,6 +21,7 @@ export class LevelManager {
         const { platform, flagInset } = config.finish;
         this.flagX = platform.x + platform.width - flagInset;
         this.complete = false;
+        this.developerAssisted = false;
     }
 
     restart() {
@@ -31,6 +32,7 @@ export class LevelManager {
         this.stalactites.forEach(s => s.reset());
         this.puzzle.reset();
         this.complete = false;
+        this.developerAssisted = false;
     }
 
     updatePlatforms(dt) {

@@ -17,12 +17,12 @@ export class GatePuzzle {
         this.activationCount = 0;
     }
 
-    update(player, previous, dt = 0) {
+    update(player, previous, dt = 0, { ignoreWalls = false } = {}) {
         for (const s of this.switches) if (s.active) s.activationTime = Math.min(.35, s.activationTime + dt);
         for (const gate of this.gates) if (gate.open) gate.openTime = Math.min(.35, gate.openTime + dt);
         // Resolve walls first: a fast player cannot activate a switch through a
         // closed gate. Open gates never close or crush players during an attempt.
-        for (const gate of this.gates.filter(g => !g.open)) {
+        for (const gate of this.gates.filter(g => !g.open && !ignoreWalls)) {
             const hit = sweepAABB(previous, bounds(player), gate, gate);
             if (!hit) continue;
             if (!hit.normalX && !hit.normalY) {

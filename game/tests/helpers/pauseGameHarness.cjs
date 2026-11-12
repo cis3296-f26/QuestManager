@@ -8,7 +8,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     let document;
     const node = (id = "") => ({ id, hidden: false, disabled: false, open: false, children: [], handlers: new Map(),
         classList: { add() {}, toggle() {} }, setAttribute() {},
-        replaceChildren(...children) { this.children = children; }, appendChild(child) { this.children.push(child); },
+        replaceChildren(...children) { this.children = children; }, appendChild(child) { this.children.push(child); if (child.id) elements.set(child.id, child); },
         querySelector() { return null; },
         addEventListener(type, handler) { this.handlers.set(type, [...(this.handlers.get(type) ?? []), handler]); },
         emit(type, extra = {}) { const event = { target: this, preventDefault() { this.prevented = true; }, ...extra }; for (const fn of this.handlers.get(type) ?? []) fn(event); return event; },
@@ -31,16 +31,30 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const context = vm.createContext({ document, window, location, requestAnimationFrame() {}, console });
     const client = new vm.SyntheticModule(["supabase"], function () { this.setExport("supabase", supabase); }, { context });
     await client.link(() => {}); await client.evaluate();
-    const create = (source, id) => new vm.SourceTextModule(source, { context, identifier: id, importModuleDynamically: async () => client });
-    const source = fs.readFileSync(path.join(root, "game/game.js"), "utf8") +
-        "\nglobalThis.api={level,pause,settings,audio,keys,clock,gameLoop,restartLevel,startDeath,progress,get coins(){return coins},get camera(){return cameraX},get deathTime(){return deathTimeLeft},get map(){return worldMap},get playing(){return playing}};";
-    const entry = create(source, "game/game.js"), cache = new Map();
-    await entry.link((specifier, ref) => {
-        const id = path.posix.normalize(path.posix.join(path.posix.dirname(ref.identifier), specifier));
+    const cache = new Map();
+    const resolve = (specifier, ref) => path.posix.normalize(path.posix.join(path.posix.dirname(ref.identifier), specifier));
+    const load = (id) => {
         if (!cache.has(id)) cache.set(id, create(id === "game/rendering/AvatarRenderer.js"
-            ? "export class AvatarRenderer {load(){} draw(){}}" : fs.readFileSync(path.join(root, id), "utf8"), id));
+            ? "export class AvatarRenderer {load(){} draw(){}}" :
+            id === "game/dev/buildConfig.js" && process.env.QUESTMANAGER_TEST_DEV === "1"
+                ? "export const developmentBuild = true;" : fs.readFileSync(path.join(root, id), "utf8"), id));
         return cache.get(id);
+    };
+    const linker = (specifier, ref) => load(resolve(specifier, ref));
+    const create = (source, id) => new vm.SourceTextModule(source, { context, identifier: id,
+        importModuleDynamically: async (specifier, ref) => {
+            const target = resolve(specifier, ref);
+            if (target.endsWith("supabaseClient.js")) return client;
+            const module = load(target);
+            if (module.status === "unlinked") await module.link(linker);
+            if (module.status === "linked") await module.evaluate();
+            return module;
+        }
     });
+    const source = fs.readFileSync(path.join(root, "game/game.js"), "utf8") +
+        "\nglobalThis.api={level,pause,settings,audio,developer,keys,clock,gameLoop,restartLevel,startDeath,progress,get coins(){return coins},get camera(){return cameraX},get deathTime(){return deathTimeLeft},get map(){return worldMap},get playing(){return playing}};";
+    const entry = create(source, "game/game.js");
+    await entry.link(linker);
     await entry.evaluate(); await turn();
     const a = context.api, canvas = element("gameCanvas");
     const click = (id) => element(id).emit("click");
@@ -51,6 +65,67 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, puzzle: a.level.puzzle,
         coins: { time: a.coins.time, pending: [...a.coins.pending], saved: [...a.coins.saved], effects: a.coins.effects },
         reveal: [...a.level.exploration.reveal], notice: a.level.exploration.noticeTime, camera: a.camera });
+
+    if (process.env.QUESTMANAGER_TEST_DEV === "1") {
+        const dev = a.developer;
+        assert.ok(dev); assert.equal(dev.enabled, false);
+        const snapshotDisk = () => JSON.stringify([...disk].filter(([k]) => !k.includes("settings")));
+        const baseline = snapshotDisk();
+        const openTools = () => {
+            key("Escape"); click("pauseSettings"); click("openDeveloperMode");
+            assert.equal(a.pause.screen, "developer");
+            if (!dev.enabled) {
+                element("enableDeveloperTools").checked = true;
+                element("enableDeveloperTools").emit("change");
+            }
+            click("openAdminTools"); assert.equal(a.pause.screen, "admin");
+        };
+        const toggle = (id, checked) => { element(id).checked = checked; element(id).emit("change"); };
+        canvas.focus(); frame(); openTools();
+        assert.equal(element("pauseMainPanel").hidden, true); assert.equal(element("adminToolsPanel").hidden, false);
+        toggle("devFly", true); toggle("devHitboxes", true);
+        const frozen = snapshot();canvas.focus();key("KeyW");key("KeyD");
+        for (let i = 0; i < 20; i++) frame();assert.equal(snapshot(), frozen);assert.equal(a.keys.size, 0);
+        escapeDialog();assert.equal(a.pause.screen, "developer");click("openAdminTools");click("adminClose");click("pauseResume");
+        frame();const startY = a.level.player.y;key("KeyW");key("KeyD");
+        for (let i = 0; i < 12; i++) frame();canvas.emit("keyup", { code: "KeyW" });canvas.emit("keyup", { code: "KeyD" });
+        assert.ok(a.level.player.y < startY);assert.equal(a.level.developerAssisted, true);
+        openTools();element("devLevel").value = "4";click("devLoad");await turn();
+        assert.equal(a.level.config.id, 4);assert.equal(a.playing, true);assert.equal(a.progress.getLevel(4).unlocked, false);
+        assert.equal(a.level.developerAssisted, true);assert.equal(snapshotDisk(), baseline);
+        frame();openTools();element("devLocation").value = "level-4-coin-2";click("devTeleport");
+        assert.ok(a.level.player.x > 3500 && a.level.player.x < 4100);assert.equal(a.pause.screen, "admin");
+        assert.ok(a.level.player.x >= a.camera && a.level.player.x + 32 <= a.camera + 960, "teleport camera cut is visible before resume");
+        element("devSpeed").value = "2";element("devSpeed").emit("change");assert.equal(dev.speed, 2);
+        // Disable every assistance setting BEFORE the flag. The attempt must remain tainted.
+        element("devSpeed").value = "1";element("devSpeed").emit("change");toggle("devFly", false);toggle("devHitboxes", false);
+        click("adminClose");click("pauseResume");assert.equal(a.level.developerAssisted, true);
+        a.coins.pending.add(a.level.config.coins[2].id);
+        const finish = a.level.player;finish.x = a.level.flagX;finish.y = 460 - finish.height;finish.grounded = true;
+        finish.supportPlatform = a.level.config.finish.platform;finish.velocityY = 0;frame();frame();await turn();
+        assert.equal(element("levelCompleteDialog").open, true);
+        assert.equal(element("completionSaveStatus").textContent, "TEST RUN — PROGRESS NOT SAVED");
+        assert.equal(snapshotDisk(), baseline);assert.equal(a.progress.getLevel(4).completed, false);assert.equal(a.progress.getLevel(5).unlocked, false);
+        element("levelCompleteDialog").returnValue = "replay";element("levelCompleteDialog").close();
+        assert.equal(a.level.developerAssisted, true, "a locked-level bypass remains a test context on restart");
+        a.map.openMap();await turn();a.map.openLevel(1);await turn();
+        assert.equal(a.level.config.id, 1);a.restartLevel();assert.equal(a.level.developerAssisted, false);
+        // A normal attempt after all cheats are disabled may save normally.
+        const normal = a.level.player;a.coins.pending.add(a.level.config.coins[0].id);
+        normal.x = a.level.flagX;normal.y = a.level.config.finish.platform.y - normal.height;normal.velocityY = 0;normal.grounded = true;normal.supportPlatform = a.level.config.finish.platform;
+        canvas.focus();frame();frame();await turn();
+        assert.equal(a.progress.getLevel(1).completed, true);assert.equal(a.progress.getLevel(1).coinIds.length, 1);
+        assert.notEqual(snapshotDisk(), baseline);
+        element("levelCompleteDialog").returnValue = "replay";element("levelCompleteDialog").close();
+        frame();openTools();toggle("devFly", true);
+        account = "developer-B";authCallback("SIGNED_IN", { user: { id: account } });await turn();
+        assert.equal(dev.enabled, false);assert.equal(dev.fly, false);assert.equal(a.coins.pending.size, 0);
+        assert.equal(a.progress.getLevel(1).completed, false);
+        console.log("PASS development entry wiring: gated panels, pause, flight, locked bypass, safe teleport, sticky no-save completion, clean normal save and account reset.");
+        return;
+    }
+    assert.equal(a.developer, null);
+    assert.ok(!cache.has("game/dev/installDeveloperTools.js"), "production never loads developer implementation");
     if (process.env.QUESTMANAGER_TEST_AUDIO === "1") {
         await a.audio.unlock();
         const played = (name) => a.audio.context.sources.filter((source) => source.starts.length && source.buffer === a.audio.assets.effect(name)).length;

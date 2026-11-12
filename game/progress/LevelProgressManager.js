@@ -56,7 +56,9 @@ export class LevelProgressManager {
     }
 
     // Call only after reaching the flag. Merge IDs, never increment a counter.
-    completeLevel(id, attemptIds) {
+    completeLevel(id, attemptIds, { developerAssisted = false } = {}) {
+        // Defense at the persistence boundary as well as the completion UI.
+        if (developerAssisted) return this.getLevel(id);
         const allowed = this.definitions.get(id);
         if (!allowed) throw new Error("Register the level before saving its achievements.");
         // Merge another tab's completed runs before writing this one.
@@ -74,3 +76,4 @@ export class LevelProgressManager {
         return this.getLevel(id);
     }
 }
+

@@ -4,6 +4,7 @@ export class GamePauseManager {
         this.canPause = canPause;
         this.screen = null;
         this.listeners = new Set();
+        this.extraScreens = new Map();
     }
     get paused() { return this.screen !== null; }
     subscribe(listener) { this.listeners.add(listener); return () => this.listeners.delete(listener); }
@@ -17,12 +18,15 @@ export class GamePauseManager {
         if (this.paused || !this.canPause() || !["main", "restart", "map"].includes(screen)) return false;
         return this.change(screen);
     }
+    registerScreens(parents) {
+        for (const [screen, parent] of Object.entries(parents)) this.extraScreens.set(screen, parent);
+    }
     navigate(screen) {
-        if (!this.paused || !(screen === "main" || this.screen === "main" && ["settings", "restart", "map"].includes(screen))) return false;
+        if (typeof screen !== "string" || !this.paused || !(screen === "main" || this.screen === "main" && ["settings", "restart", "map"].includes(screen) || this.extraScreens.get(screen) === this.screen || this.extraScreens.get(this.screen) === screen)) return false;
         return this.change(screen);
     }
     close() { return this.change(null); }
-    escape() { return this.screen === "main" ? this.close() : this.navigate("main"); }
+    escape() { return this.screen === "main" ? this.close() : this.navigate(this.extraScreens.get(this.screen) ?? "main"); }
 }
 
 // Wall time never enters gameplay after a pause, focus loss, or navigation.

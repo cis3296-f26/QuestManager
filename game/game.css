@@ -348,3 +348,15 @@ h1 {
 
 
 
+
+/* These nodes only exist in explicitly enabled local development builds. */
+.dev-entry, #developerPanel button, #adminToolsPanel button {
+    min-height: 42px; border: 2px solid #6c523b; border-radius: 9px;
+    padding: 9px 14px; margin: 5px 4px 5px 0; background: #3d5f26;
+    color: #faf0e6; font: bold 15px Arial, sans-serif; cursor: pointer;
+}
+#developerPanel button:disabled { opacity: .5; cursor: default; }
+.dev-toggle { justify-content: space-between; border-bottom: 1px solid #deceb9; padding: 10px 0; }
+.dev-help { background: #e9dfcd; padding: 12px; border-radius: 10px; margin: 14px 0; font-size: 13px; line-height: 1.5; }
+#adminToolsPanel select { display: block; width: 100%; margin: 8px 0 12px; padding: 10px; border: 1px solid #bca88d; border-radius: 9px; background: #faf0e6; color: #403725; font-size: 15px; }
+#completionSaveStatus.is-test-run { border: 2px solid #9a6d27; padding: 10px; border-radius: 8px; background: #f3e3bb; color: #654318; font-weight: bold; }
