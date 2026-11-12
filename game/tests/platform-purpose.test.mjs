@@ -5,6 +5,8 @@ import {levels} from "../levels/levels.js";
 import {validatePlatformPurpose} from "../levels/design/validatePlatformPurpose.js";
 import {validateLevel} from "../levels/design/validateLevel.js";
 import {LevelManager} from "../levels/LevelManager.js";
+import {applyGravity, moveHorizontally} from "../engine/Physics.js";
+import {Player} from "../entities/Player.js";
 import {jump} from "../engine/Physics.js";
 import {stepLevel} from "../engine/stepLevel.js";
 import {simulateRoute} from "../levels/design/simulateRoute.js";
@@ -54,4 +56,27 @@ test("the canopy's airborne exit cannot be reached directly without its horizont
         for(let i=0;i<fps*2&&!player.grounded;i++)assert.equal(stepLevel(without,1,1/fps).death,null);
         assert.equal(player.supportPlatform?.id,"l2-canopy-ground", "direct leap must drop to the lower route, not reach the air exit");
     }
+});
+
+
+test("ordinary ledges cannot replace a horizontal platform's intended airborne transfer",()=>{
+    for(const config of levels) for(const ferry of config.platforms.filter(p=>p.type==="moving"&&p.axis==="x")) {
+        const from=config.platforms.find(p=>p.id===ferry.connection.from),to=config.platforms.find(p=>p.id===ferry.connection.to);
+        const surfaces=config.platforms.filter(p=>p.type!=="moving");
+        for(const fps of [30,60,120]) {
+            // Give the attempted bypass the most favorable takeoff: even a one-pixel overhang.
+            const player=new Player({x:from.x+from.width-1,feetY:from.y});jump(player,650);
+            for(let frame=0;frame<fps*2&&!player.grounded&&player.y<540;frame++) {
+                moveHorizontally(player,1,280,config.worldWidth,1/fps);applyGravity(player,1800,surfaces,1/fps);
+            }
+            assert.notEqual(player.supportPlatform?.id,to.id,`${ferry.id}: static route must not duplicate transfer at ${fps} FPS`);
+        }
+    }
+});
+
+test("the intro ferry has a clear bank, open river and isolated far-bank landing",()=>{
+    const l=levels[1],dock=l.platforms.find(p=>p.id==="l2-lift-approach"),boat=l.platforms.find(p=>p.id==="grove-intro-ferry");
+    assert.equal(dock.x+dock.width,2790);assert.equal(boat.x-(dock.x+dock.width),100);
+    assert.equal(l.platforms.some(p=>!p.type&&p.x<3280&&p.x+p.width>2820),false,"no ordinary stepping stones or floor inside the river");
+    assert.equal(l.platforms.some(p=>p.id==="l2-intro-bypass-exit"),false);
 });

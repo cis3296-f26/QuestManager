@@ -33,6 +33,10 @@ test("every ground gap is crossable without a hidden floor, and missed jumps fal
     const ground = level2.platforms.filter((platform) => platform.y === level2.groundY);
     for (let i = 0; i < ground.length - 1; i++) {
         const edge = ground[i].x + ground[i].width, next = ground[i + 1].x;
+        if (edge === 2820) {
+            assert.equal(next, 3280, "the ferry spans a real 460px river, not an ordinary jump");
+            continue; // Dedicated ferry boarding and no-bypass tests cover this crossing.
+        }
         assert.ok(next - edge >= 130 && next - edge <= 190);
         // Isolate the ground jump from optional raised routes and enemy timing.
         for (const fps of [30, 60, 120]) {

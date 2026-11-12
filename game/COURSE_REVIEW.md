@@ -1,3 +1,5 @@
+> This documents the earlier course pass. See [PLATFORM_DESIGN_RULES.md](PLATFORM_DESIGN_RULES.md) for the latest special-platform and river-crossing changes.
+
 # Course review: Levels 1–3
 
 This pass addresses a design problem: a reachable ledge is not automatically a useful

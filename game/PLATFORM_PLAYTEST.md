@@ -13,7 +13,7 @@ Level 2 still unlocks by completing Level 1, without requiring all three coins.
 | Location | Mechanic | What to try |
 | --- | --- | --- |
 | Mushroom Bend, x=7560–7770, top y=335 | Horizontal ferry | Wait on the extended grassy dock ending at x=7510, then board the marked wooden ferry as it approaches. Release movement keys and let it carry you. Jump off toward the far side. |
-| Just before Fern Walk, x=2890–2990, top y=330 | Horizontal ferry | Board from the x2770 dock. Ride across the hole and jump to the x3100 landing. |
+| Just before Fern Walk, x=2890–3120, top y=365 | Horizontal ferry | Board from the x2590–2790 near-bank dock. Ride across the 460px river and jump to the x3280 far-bank landing. |
 | Canopy entrance, x=4910, top y=365–260 | Vertical lift | Board from the x4700 branch when low. Ride upward, then jump onto the x5120 canopy. |
 | Canopy exit, x=5620–5690, top y=300 | Moving bough | Walk or jump from the canopy edge onto the bough, ride it, then wait for the far endpoint, then jump to the x=5900 exit shelf. |
 | Fern Walk, x=4030, top y=365 | Collapsing board | Land, watch for cracks/shaking, then jump away. If you stay, it drops after one second into a real 160px pit. Jump to the visible exit shelf before the warning ends. |

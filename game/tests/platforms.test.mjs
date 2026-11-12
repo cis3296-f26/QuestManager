@@ -194,12 +194,12 @@ test("Level 2 horizontal crossings and the canopy lift can be boarded, ridden an
             level.updatePlatforms(phase);
             const ride = platforms.find(p => p.config?.id === id);
             const vertical = id === "grove-lift", intro = id === "grove-intro-ferry";
-            player.reset({x:vertical?4790:intro?2820:7480,feetY:vertical?365:intro?330:365});
+            player.reset({x:vertical?4790:intro?2740:7480,feetY:vertical?365:intro?335:365});
             let launched = false;
             for(let frame=0;frame<fps*9 && player.supportPlatform!==ride;frame++) {
                 const ready = vertical ? ride.y>=340 : intro ? ride.x<=2920 : ride.x<=7590;
                 if (!launched && ready && player.grounded) {jump(player,650);launched=true;}
-                const stop = vertical ? 4940 : intro ? 2940 : Infinity;
+                const stop = vertical ? 4940 : intro ? 2980 : Infinity;
                 tick(player,platforms,1/fps,launched && player.x<stop?1:0);
             }
             assert.equal(player.supportPlatform,ride,`${id} boarding ${fps} FPS phase ${phase}`);
@@ -208,14 +208,14 @@ test("Level 2 horizontal crossings and the canopy lift can be boarded, ridden an
                 tick(player,platforms,1/fps);assert.equal(player.supportPlatform,ride);
                 assert.ok(Math.abs(player.x-ride.x-offset)<1e-6);
             }
-            for(let i=0;i<fps*8 && (vertical?ride.y>261:intro?ride.x<2980:ride.x<7769);i++) tick(player,platforms,1/fps);
+            for(let i=0;i<fps*8 && (vertical?ride.y>261:intro?ride.x<3110:ride.x<7769);i++) tick(player,platforms,1/fps);
             // Walk to a generous takeoff point before leaving the canopy lift.
             if(vertical) for(let i=0;i<fps && player.x<4980;i++) tick(player,platforms,1/fps,1);
             jump(player,650);
-            const stop=vertical?5150:intro?3150:8070;
+            const stop=vertical?5150:intro?3330:8070;
             for(let i=0;i<fps*3&&!player.grounded;i++) tick(player,platforms,1/fps,player.x<stop?1:0);
             assert.equal(player.grounded,true);assert.ok(!player.supportPlatform.type);
-            assert.ok(player.x>(vertical?5120:intro?2990:7880));
+            assert.ok(player.x>(vertical?5120:intro?3280:7880));
             if(vertical)assert.equal(player.supportPlatform.id,"l2-canopy");
         }
     }

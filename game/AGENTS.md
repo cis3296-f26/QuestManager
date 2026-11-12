@@ -8,6 +8,9 @@ Apply these rules to every current and future level:
   Declare actual departure and destination platforms; make the connection useful.
 - Collapsing platforms belong above pits, enemies or hazards. Do not put a timed
   platform over an otherwise safe floor merely to demonstrate collapse.
+- Do not place ordinary stepping stones beside a special platform that duplicate its
+  crossing. Boarding and exit ledges belong at clear banks/endpoints; preserve an open
+  traversal space and verify a normal jump cannot replace the intended air transfer.
 - Every special platform declares `connection: { from, to }` using platform IDs.
   Run the placement validator and real-input route/boarding tests after changes.
 - Preserve stable coin IDs, completion-based saving and shared movement physics.
