@@ -1,6 +1,7 @@
 // Full silhouettes, including canopy circles and the wide supporting branches.
 // Used for authoring checks/culling only; scenery never enters physics collision.
 export function treeBounds(tree, groundY = 460) {
+    groundY = tree.baseY ?? groundY;
     if (tree.type === "tree") {
         const scale = tree.scale ?? 1;
         return { x: tree.x - 50 * scale, y: groundY - 128 * scale,

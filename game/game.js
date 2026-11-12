@@ -337,7 +337,7 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const scenery = level.config.theme === "cave" ? cave : grassland;
-    scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme);
+    scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme, level.config.openingLandscape);
 
     ctx.save();
     ctx.translate(-cameraX, 0);

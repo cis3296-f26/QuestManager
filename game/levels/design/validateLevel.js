@@ -66,6 +66,9 @@ export function validateLevel(config) {
         if (top - movement.playerHeight - jumpEnvelope(120).rise < movement.hudBottom) fail(`Platform ${p.id} can put the jumping player behind the HUD.`);
         if (p.y < config.groundY && p.y + p.height > config.groundY - movement.playerHeight &&
             platforms.some((ground) => ground !== p && ground.y === config.groundY && ground.x < p.x + p.width && ground.x + ground.width > p.x)) fail(`Platform ${p.id} has insufficient ground headroom.`);
+        if (!p.terrain && platforms.some(bank => bank.terrain && bank.y > p.y &&
+            bank.x < p.x + p.width && bank.x + bank.width > p.x &&
+            p.y + p.height > bank.y - movement.playerHeight)) fail(`Platform ${p.id} has insufficient terrace headroom.`);
         if (p.type === "moving") {
             const envelope = { ...p, x: p.x + (p.axis === "x" ? Math.min(0, p.distance) : 0),
                 y: p.y + (p.axis === "y" ? Math.min(0, p.distance) : 0),
@@ -103,7 +106,7 @@ export function validateLevel(config) {
     for (const h of hazards) if (!rectangle(h) || h.x < 0 || h.x + h.width > config.worldWidth) fail(`Invalid hazard: ${h.id}.`);
     const finish = config.finish?.platform;
     if (!finish || !platforms.includes(finish) || finish.type || config.finish.flagInset < 0 || config.finish.flagInset > finish.width) fail("Finish needs a valid static flag platform.");
-    const ground = platforms.filter((p) => !p.type && p.y === config.groundY).sort((a, b) => a.x - b.x);
+    const ground = platforms.filter((p) => !p.type && (p.y === config.groundY || p.terrain)).sort((a, b) => a.x - b.x);
     const conservativeTravel = jumpEnvelope(30).horizontalTravel;
     for (let i = 1; i < ground.length; i++) {
         const gap = ground[i].x - ground[i - 1].x - ground[i - 1].width;

@@ -1,11 +1,17 @@
 import { level1Scenery } from "./Level1Scenery.js";
 import { defineLevel, ground as g, ledge as p, creature as e, thorns as h } from "./design/defineLevel.js";
 
-// Course pass: reward the opening detour, keep bypasses over actual danger,
-// and drop back to ground instead of adding an empty recovery staircase.
+// The opening uses solid-looking earth silhouettes with the existing one-way
+// landing surfaces. Adjacent terraces only descend; climbs occur across visible
+// pits, avoiding an unsupported change to side-wall/slope physics.
+const bank = (id, x, end, y) => ({ ...g(id, x, end), y, height: 540 - y, terrain: true });
 export const level1 = defineLevel({
     id: 1, name: "The First Adventure", worldWidth: 16000, audio: { music: "grassland" },
-    spawn: { x: 80, feetY: 460 }, scenery: level1Scenery, finishId: "l1-flag",
+    spawn: { x: 80, feetY: 365 }, scenery: level1Scenery, finishId: "l1-flag",
+    openingLandscape: {
+        end: 2040, fadeStart: 1100,
+        clouds: [{ x: 270, y: 145, scale: 1 }, { x: 760, y: 175, scale: .7 }, { x: 1240, y: 125, scale: .85 }]
+    },
     explorationAreas: [
         {
             id: "l1-meadow-canopy", title: "Meadow Overlook", kind: "elevated",
@@ -32,14 +38,18 @@ export const level1 = defineLevel({
     stages: [
         {
             id: "introduction", start: 0, end: 2040, difficulty: "easy",
-            title: "The First Adventure", hint: "Learn the jumps. A slime can be stomped from above.",
-            purpose: "Take one easy jump for gold, return to the path, then cross a gap and meet an isolated slime.",
-            requiredRoute: ["l1-start", "l1-first-landing"],
-            optionalRoutes: [{ purpose: "One broad ledge teaches a coin detour with a safe drop back to the path.", platforms: ["l1-practice-1"] }],
-            platforms: [g("l1-start", 0, 820), g("l1-first-landing", 930, 1900),
-                p("l1-practice-1", 220, 365, 180, "easy-coin-detour")],
-            enemies: [e("l1-first-slime", "slime", 1300, 1200, 1450, "An isolated first stomp after a generous pit landing.", 70)],
-            coins: [{ id: "level-1-coin-1", x: 330, y: 335, difficulty: "easy" }]
+            title: "The Old Oak", hint: "Follow the dell or jump to the oak's gold. Watch the slime from the raised bank.",
+            purpose: "Descend into the dell, choose the supported oak overlook, jump to an observation bank, then read one slime patrol before the exit gap.",
+            requiredRoute: ["l1-start", "l1-descent-bank", "l1-dell", "l1-first-landing", "l1-slime-dell", "l1-exit-bank"],
+            optionalRoutes: [{ purpose: "Jump from the hilltop to the oak overlook for gold, then drop into the dell with room to prepare for the pit.",
+                coinId: "level-1-coin-1", platforms: ["l1-practice-1"] }],
+            platforms: [bank("l1-start", 0, 280, 365), bank("l1-descent-bank", 280, 550, 410),
+                bank("l1-dell", 550, 900, 460), bank("l1-first-landing", 1020, 1280, 420),
+                bank("l1-slime-dell", 1280, 1690, 460), bank("l1-exit-bank", 1830, 2040, 430),
+                p("l1-practice-1", 390, 310, 220, "oak-overlook")],
+            enemies: [e("l1-first-slime", "slime", 1440, 1380, 1480,
+                "Observe from the raised bank, then stomp or jump over one patrol; recover before the separate exit pit.", 60)],
+            coins: [{ id: "level-1-coin-1", x: 555, y: 280, difficulty: "easy" }]
         },
         {
             id: "exploration", start: 2040, end: 5200, difficulty: "easy",

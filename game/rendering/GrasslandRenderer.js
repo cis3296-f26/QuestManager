@@ -1,8 +1,9 @@
+import { drawOpeningLandscape } from "./OpeningLandscape.js";
 import { treeBounds } from "./SceneryGeometry.js";
 
 // Flat canvas scenery with gentle parallax. No physics or level state is changed.
 export class GrasslandRenderer {
-    drawBackground(ctx, viewWidth, viewHeight, cameraX, groundY, theme = "grassland") {
+    drawBackground(ctx, viewWidth, viewHeight, cameraX, groundY, theme = "grassland", openingLandscape = null) {
         ctx.save();
         ctx.fillStyle = "#b9e1ef";
         ctx.fillRect(0, 0, viewWidth, viewHeight);
@@ -30,6 +31,7 @@ export class GrasslandRenderer {
             const density = Math.min(1, cameraX / 5400) * Math.min(1, Math.max(0, (12600 - cameraX) / 1600));
             this.drawForest(ctx, viewWidth, cameraX, groundY, density);
         }
+        if (openingLandscape) drawOpeningLandscape(ctx, this, viewWidth, viewHeight, cameraX, openingLandscape);
         ctx.restore();
     }
 
@@ -88,13 +90,14 @@ export class GrasslandRenderer {
     drawDecorations(ctx, decorations, groundY, cameraX, viewWidth) {
         ctx.save();
         for (const decoration of decorations) {
-            const bounds = treeBounds(decoration, groundY);
+            const baseY = decoration.baseY ?? groundY;
+            const bounds = treeBounds(decoration, baseY);
             if (bounds ? bounds.x + bounds.width < cameraX || bounds.x > cameraX + viewWidth :
                 decoration.x < cameraX - 30 || decoration.x > cameraX + viewWidth + 30) continue;
             ctx.save();
-            ctx.translate(decoration.x, groundY);
+            ctx.translate(decoration.x, baseY);
             if (decoration.type === "branch-tree") {
-                const top = decoration.top - groundY, reach = decoration.reach;
+                const top = decoration.top - baseY, reach = decoration.reach;
                 ctx.fillStyle = "#795c3f";
                 ctx.fillRect(-12, top - 45, 24, -top + 45);
                 ctx.strokeStyle = "#795c3f"; ctx.lineWidth = 10;
@@ -176,8 +179,12 @@ export class GrasslandRenderer {
             ctx.fillRect(x, y, width, height);
             ctx.fillStyle = "#896746";
             ctx.fillRect(x, y + height - 4, width, 4);
-            ctx.fillRect(x, y + 8, 3, height - 8);
-            ctx.fillRect(x + width - 3, y + 8, 3, height - 8);
+            // Joined earth banks share soil below their neighbor's top. Outline
+            // only the exposed riser instead of drawing false pit seams.
+            const left = platform.terrain && platforms.find(p => p !== platform && p.terrain && p.x + p.width === x);
+            const right = platform.terrain && platforms.find(p => p !== platform && p.terrain && p.x === x + width);
+            ctx.fillRect(x, y + 8, 3, Math.max(0, (left ? Math.min(left.y, y + height) : y + height) - y - 8));
+            ctx.fillRect(x + width - 3, y + 8, 3, Math.max(0, (right ? Math.min(right.y, y + height) : y + height) - y - 8));
 
             // Work only on visible dirt tiles, even on very long ground segments.
             const first = Math.max(0, Math.floor((cameraX - x) / 32));
