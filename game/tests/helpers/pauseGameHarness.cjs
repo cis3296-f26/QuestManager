@@ -117,10 +117,32 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.progress.getLevel(1).completed, true);assert.equal(a.progress.getLevel(1).coinIds.length, 1);
         assert.notEqual(snapshotDisk(), baseline);
         element("levelCompleteDialog").returnValue = "replay";element("levelCompleteDialog").close();
-        frame();openTools();toggle("devFly", true);
+        frame();openTools();
+        a.progress.completeLevel(2, ["level-2-coin-2"]);
+        const beforeReset = snapshotDisk();
+        click("devClearCurrentCoins"); assert.equal(element("devCoinResetConfirmation").hidden, false);
+        assert.equal(snapshotDisk(), beforeReset, "opening confirmation must not clear coins");
+        click("devCancelCoinReset"); assert.equal(snapshotDisk(), beforeReset);
+        // A cancelled asynchronous identity verification must not clear anything.
+        click("devClearCurrentCoins");click("devConfirmCoinReset");click("devCancelCoinReset");await turn();
+        assert.equal(snapshotDisk(), beforeReset);
+        click("devClearCurrentCoins");click("devConfirmCoinReset");await turn();
+        assert.equal(a.progress.getLevel(1).coinIds.length, 0);assert.equal(a.coins.saved.size, 0);
+        assert.equal(a.progress.getLevel(1).completed, true);assert.equal(a.progress.getLevel(2).coinIds.length, 1);
+        assert.equal(a.level.developerAssisted, true);assert.equal(a.pause.screen, "admin");
+        click("devClearAllCoins");click("devConfirmCoinReset");await turn();
+        assert.equal(a.progress.totalCoins.earned, 0);assert.equal(a.progress.getLevel(2).completed, true);
+        assert.equal(a.progress.getLevel(3).unlocked, true);
+        // Esc also cancels an open confirmation, preserving all current data.
+        const afterReset = snapshotDisk();click("devClearAllCoins");escapeDialog();
+        assert.equal(element("devCoinResetConfirmation").hidden, true);click("devConfirmCoinReset");await turn();
+        assert.equal(snapshotDisk(), afterReset);click("openAdminTools");
+        toggle("devFly", true);
+        click("devClearAllCoins");
         account = "developer-B";authCallback("SIGNED_IN", { user: { id: account } });await turn();
         assert.equal(dev.enabled, false);assert.equal(dev.fly, false);assert.equal(a.coins.pending.size, 0);
         assert.equal(a.progress.getLevel(1).completed, false);
+        click("devConfirmCoinReset");await turn();assert.equal(a.progress.getLevel(1).completed, false);
         console.log("PASS development entry wiring: gated panels, pause, flight, locked bypass, safe teleport, sticky no-save completion, clean normal save and account reset.");
         return;
     }

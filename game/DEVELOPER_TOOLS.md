@@ -1,6 +1,6 @@
 # Developer Mode: local gameplay testing
 
-These tools are implemented for local development. They do not grant administrative account/database privileges. Nothing changes Supabase, shop balances, level layouts, or existing legitimate achievements.
+These tools are implemented for local development. They do not grant administrative account/database privileges. Nothing changes Supabase, shop balances or level layouts. Existing achievements remain unchanged unless you explicitly confirm the collectible-coin reset described below.
 
 ## Enable from VS Code
 
@@ -52,6 +52,18 @@ Using flight, invincibility, a non-normal speed, teleport or developer level loa
 
 No fake achievements or developer settings are written to localStorage or Supabase. This is protection against accidental development saves, not anti-cheat security against someone editing JavaScript. If production administrator tools or trusted progress validation are added later, enforce authorization and eligibility on a backend; this panel is not that system.
 
+## Clear collected coins for testing
+
+In **Admin Tools → Reset collectible coins**, choose **Clear Current Level Coins** or **Clear All Level Coins**, then **Yes, Clear Coins**. Opening the confirmation does nothing; Cancel or leaving the panel cancels it. The warning states the scope and that the reset cannot be undone.
+
+This intentionally clears **saved special collectible coins for the current account on this browser**, plus the current attempt's temporary pickups. It leaves completed-level flags and unlocks intact. Other accounts, shop currency, audio preferences and Supabase are untouched. Cleared coins immediately become collectible again and map indicators update. With unavailable browser storage/guest play, the reset is session-only and the status explains this.
+
+The account and attempt are verified again at confirmation. Account changes, level changes, cancellation or closing the panel while verification is pending prevent the reset. A per-level reset revision stops a stale tab from restoring its old banked coins during the next completion; new legitimate post-reset pickups can still save normally.
+
+The current attempt becomes a test run, so collecting the cleared coins and reaching the flag in that attempt does not silently bank them again. To earn them normally, turn cheats off and restart a legitimately unlocked level. The reset does not lock the map or require you to replay earlier completed levels.
+
+This explicit destructive reset is the exception to the rule that developer actions leave saved achievements unchanged; ordinary test completions still never award progress.
+
 ## Production default
 
 `game/dev/buildConfig.js` is committed with `developmentBuild = false`. Normal static hosting, VS Code Live Server, `python -m http.server`, or the new server **without** `--dev-tools` keeps the tools off. The game does not load the developer implementation modules or mount their menu sections in that configuration. LocalStorage, query parameters and account settings cannot enable them.
@@ -65,12 +77,12 @@ The explicitly opted-in local server supplies a no-cache configuration response 
 - `dev/DeveloperToolsPanel.js`, `installDeveloperTools.js`, `DebugRenderer.js`: conditional UI installation, existing pause navigation, live hitboxes and visible developer/test indicators.
 - `game.js`, `game.css`: entry gating, controls, clock integration, camera cuts, test completion labeling and themed UI.
 - `engine/stepLevel.js`, `EnemyInteractions.js`, `levels/GatePuzzle.js`: optional flight/damage controls in existing shared collision/simulation; defaults preserve normal behavior.
-- `levels/LevelManager.js`, `progress/LevelProgressManager.js`: attempt reset and an additional persistence-boundary guard.
+- `levels/LevelManager.js`, `progress/LevelProgressManager.js`: attempt reset, a persistence-boundary guard, and confirmed coin-only reset with stale-tab reset revisions.
 - `engine/GamePauseManager.js`, `ui/PauseMenu.js`, `ui/WorldMap.js`: registered subpanels and separate developer navigation without changing normal unlock rules.
-- `tests/developer*.test.mjs`, `tests/helpers/pauseGameHarness.cjs`: access, movement, safety, timers, save protection and actual module/DOM/auth boundary wiring.
+- `tests/developer*.test.mjs`, `tests/helpers/pauseGameHarness.cjs`: access, movement, safety, timers, save protection, confirmed coin-reset behavior and actual module/DOM/auth boundary wiring.
 
 ## Automated verification and manual approval
 
-Executed: `npm test` passed all 144 tests; `npm run validate:levels` passed the Levels 1–4 route/layout checks. Re-run both commands from the repository root after further edits. The automated tests cover development/production module loading, no storage activation, the local server's real HTTP flag responses, shared movement at 30/60/120 FPS, safe teleport/flight exit, invincibility/stomping, speed timer consistency, hitbox coordinates/no mutation, pause hierarchy, sticky eligibility and no-save completion, locked-level navigation, normal saves after clean restart, and account isolation. Existing full all-coin and zero-coin routes remain tested for Levels 1–4.
+Executed: `npm test` passed all 148 tests; `npm run validate:levels` passed the Levels 1–4 route/layout checks. Re-run both commands from the repository root after further edits. The automated tests cover development/production module loading, no storage activation, the local server's real HTTP flag responses, shared movement at 30/60/120 FPS, safe teleport/flight exit, invincibility/stomping, speed timer consistency, hitbox coordinates/no mutation, pause hierarchy, sticky eligibility and no-save completion, locked-level navigation, normal saves after clean restart, and account isolation. Existing full all-coin and zero-coin routes remain tested for Levels 1–4.
 
 The entry tests use real game modules with a lightweight DOM/auth/audio boundary. They are not browser playtests. Manually check keyboard focus/scrolling on a narrow window, all fly directions/Shift, safe flight exit near walls/pits, moving hitboxes, slow/fast hazard timing, teleport camera cuts, and the visible TEST RUN labels. Finish an assisted run and confirm old map progress is unchanged, then restart clean and verify a normal completion still saves. Gameplay feel and the panel's appearance need your approval.

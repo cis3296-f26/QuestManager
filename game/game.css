@@ -360,3 +360,5 @@ h1 {
 .dev-help { background: #e9dfcd; padding: 12px; border-radius: 10px; margin: 14px 0; font-size: 13px; line-height: 1.5; }
 #adminToolsPanel select { display: block; width: 100%; margin: 8px 0 12px; padding: 10px; border: 1px solid #bca88d; border-radius: 9px; background: #faf0e6; color: #403725; font-size: 15px; }
 #completionSaveStatus.is-test-run { border: 2px solid #9a6d27; padding: 10px; border-radius: 8px; background: #f3e3bb; color: #654318; font-weight: bold; }
+
+.dev-reset-warning { margin-top: 10px; padding: 12px; border: 2px solid #9a6d27; border-radius: 9px; background: #f3e3bb; line-height: 1.5; }

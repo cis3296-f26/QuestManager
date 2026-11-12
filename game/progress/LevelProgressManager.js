@@ -27,6 +27,8 @@ export class LevelProgressManager {
                     coin.length > 0 && coin.length < 100 && (!allowed || allowed.includes(coin))))].slice(0, 3)
                 : [];
             clean.levels[id] = { completed: true, coinIds };
+            if (Number.isSafeInteger(record.coinRevision) && record.coinRevision > 0)
+                clean.levels[id].coinRevision = record.coinRevision;
         }
         return clean;
     }
@@ -55,23 +57,49 @@ export class LevelProgressManager {
         return { earned: count, possible: this.totalLevels * 3 };
     }
 
+    mergeStoredProgress() {
+        const latest = this.sanitize(this.store.load(this.userId).data);
+        for (let id = 1; id <= this.totalLevels; id++) {
+            const record = latest.levels[id], current = this.data.levels[id];
+            if (!record) continue;
+            const revision = record.coinRevision ?? 0, currentRevision = current?.coinRevision ?? 0;
+            // An explicit reset supersedes older banked coins. A stale tab's next
+            // completion must not silently union its old collection back in.
+            if (revision > currentRevision || !current) this.data.levels[id] = record;
+            else if (revision === currentRevision) this.data.levels[id] = {
+                completed: true, coinIds: [...new Set([...(current.coinIds ?? []), ...record.coinIds])].slice(0, 3),
+                ...(revision ? { coinRevision: revision } : {})
+            };
+        }
+    }
+
+    // Deliberately destructive developer action, called only after confirmation
+    // and account verification in the game. Keep completion/unlock history intact.
+    clearCoinProgress(levelId = null) {
+        if (levelId !== null && !this.definitions.has(levelId)) throw new Error("Unknown level coin reset.");
+        this.mergeStoredProgress();
+        for (let id = 1; id <= this.totalLevels; id++) {
+            if (levelId !== null && id !== levelId) continue;
+            const record = this.data.levels[id];
+            if (record) this.data.levels[id] = {
+                ...record, coinIds: [], coinRevision: (record.coinRevision ?? 0) + 1
+            };
+        }
+        this.persistent = this.store.save(this.userId, this.data);
+        return { persistent: this.persistent };
+    }
+
     // Call only after reaching the flag. Merge IDs, never increment a counter.
     completeLevel(id, attemptIds, { developerAssisted = false } = {}) {
         // Defense at the persistence boundary as well as the completion UI.
         if (developerAssisted) return this.getLevel(id);
         const allowed = this.definitions.get(id);
         if (!allowed) throw new Error("Register the level before saving its achievements.");
-        // Merge another tab's completed runs before writing this one.
-        const latest = this.sanitize(this.store.load(this.userId).data);
-        for (let levelId = 1; levelId <= this.totalLevels; levelId++) {
-            const record = latest.levels[levelId];
-            if (!record) continue;
-            const existing = this.data.levels[levelId]?.coinIds ?? [];
-            this.data.levels[levelId] = { completed: true, coinIds: [...new Set([...existing, ...record.coinIds])].slice(0, 3) };
-        }
+        this.mergeStoredProgress();
         const existing = this.getLevel(id).coinIds;
         const coinIds = allowed.filter((coin) => existing.includes(coin) || attemptIds.includes(coin));
-        this.data.levels[id] = { completed: true, coinIds };
+        const coinRevision = this.data.levels[id]?.coinRevision;
+        this.data.levels[id] = { completed: true, coinIds, ...(coinRevision ? { coinRevision } : {}) };
         this.persistent = this.store.save(this.userId, this.data);
         return this.getLevel(id);
     }

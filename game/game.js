@@ -89,6 +89,20 @@ if (developmentBuild) {
             if (location.hash === hash) worldMap.render();
             else location.hash = hash;
         },
+        prepareCoinReset: (scope) => ({ scope, levelId: level.config.id,
+            userId: progress.userId, revision: attemptRevision, cancelled: false }),
+        resetCoins: async (request) => {
+            const valid = () => developer?.available && developer.enabled && pause.screen === "admin" &&
+                !request.cancelled && ["current", "all"].includes(request.scope) &&
+                request.userId === progress.userId && request.revision === attemptRevision && request.levelId === level.config.id;
+            if (!valid() || !await accountSession.verifyAccount(request.userId) || !valid())
+                return { message: "Reset cancelled: the account or attempt changed. No coins were cleared." };
+            const result = progress.clearCoinProgress(request.scope === "all" ? null : request.levelId);
+            developer.markAttempt();
+            coins.reset(progress.getLevel(level.config.id).coinIds);
+            worldMap.refresh();
+            return { message: `${request.scope === "all" ? "All saved level coins" : "This level's saved coins"} cleared${result.persistent ? " for this account on this browser" : " for this session only; browser storage is unavailable"}. This attempt remains a test run.` };
+        },
         restart: () => restartLevel(), onMap: () => worldMap.openMap()
     });
 }

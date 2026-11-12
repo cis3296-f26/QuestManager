@@ -2,7 +2,7 @@ import { locationsFor } from "./SafePosition.js";
 
 // Mounted only by the development entry point, inside the existing native dialog.
 export class DeveloperToolsPanel {
-    constructor({document,pause,pauseMenu,manager,levels,loadLevel,restart,onMap,changed}) {
+    constructor({document,pause,pauseMenu,manager,levels,loadLevel,restart,onMap,changed,prepareCoinReset,resetCoins}) {
         Object.assign(this,{document,pause,manager,levels,loadLevel,restart,onMap,changed});
         const make=(tag,text,id)=>{const e=document.createElement(tag);if(text)e.textContent=text;if(id)e.id=id;return e;};
         this.make=make;
@@ -51,6 +51,46 @@ export class DeveloperToolsPanel {
         navigation.appendChild(button("Restart Current Level","devRestart",()=>{pause.close();restart();}));
         navigation.appendChild(button("Return to World Map","devMap",()=>{pause.close();onMap();}));
         this.tools.appendChild(navigation);
+        const resetGroup=make("fieldset");resetGroup.className="settings-group";
+        resetGroup.appendChild(make("legend","Reset collectible coins"));
+        resetGroup.appendChild(make("p","Clears saved coins for this account on this browser. Completed levels, unlocks and shop currency stay unchanged."));
+        this.resetConfirmation=make("div",null,"devCoinResetConfirmation");this.resetConfirmation.hidden=true;this.resetConfirmation.className="dev-reset-warning";
+        this.resetWarning=make("p",null,"devCoinResetWarning");this.resetWarning.setAttribute("role","alert");
+        this.resetConfirmation.appendChild(this.resetWarning);
+        const cancelReset=()=>{
+            if(this.resetRequest)this.resetRequest.cancelled=true;
+            this.resetRequest=null;this.resetConfirmation.hidden=true;
+        };
+        this.cancelCoinReset=cancelReset;
+        for(const [scope,label,id] of [["current","Clear Current Level Coins","devClearCurrentCoins"],["all","Clear All Level Coins","devClearAllCoins"]]) {
+            resetGroup.appendChild(button(label,id,()=>{
+                if(!manager.available||!manager.enabled)return;
+                cancelReset();this.resetRequest=prepareCoinReset(scope);
+                this.resetWarning.textContent=`Permanently clear ${scope==="all"?"ALL saved collectible coins":`saved coins for Level ${manager.getLevel().config.id}`} for your current account on this browser? This cannot be undone. Completed levels, unlocks and shop currency will stay unchanged.`;
+                this.resetConfirmButton.disabled=false;this.resetConfirmation.hidden=false;
+                this.resetConfirmButton.focus();
+            }));
+        }
+        this.resetConfirmButton=button("Yes, Clear Coins","devConfirmCoinReset",async()=>{
+            const request=this.resetRequest;
+            if(!request||this.resetConfirmButton.disabled)return;
+            this.resetConfirmButton.disabled=true;
+            try {
+                const result=await resetCoins(request);
+                if(this.resetRequest!==request||request.cancelled)return;
+                this.notice.textContent=result.message;
+                changed();
+            } catch {
+                if(this.resetRequest===request&&!request.cancelled)this.notice.textContent="Coins could not be cleared. Try again.";
+            } finally {
+                if(this.resetRequest===request){cancelReset();document.getElementById("devClearCurrentCoins").focus();}
+            }
+        });
+        this.resetConfirmButton.setAttribute("aria-describedby","devCoinResetWarning");
+        this.resetConfirmation.appendChild(this.resetConfirmButton);
+        this.resetConfirmation.appendChild(button("Cancel","devCancelCoinReset",()=>{cancelReset();document.getElementById("devClearCurrentCoins").focus();}));
+        resetGroup.appendChild(this.resetConfirmation);this.tools.appendChild(resetGroup);
+        pause.subscribe(screen=>{if(screen!=="admin")cancelReset();});
         this.notice=make("p","Using flight, invincibility, speed, teleport or level bypass marks the entire attempt TEST RUN — PROGRESS NOT SAVED.","devStatus");
         this.notice.className="settings-note";this.notice.setAttribute("role","status");this.tools.appendChild(this.notice);
         this.tools.appendChild(button("Back to Developer Mode","adminBack",()=>pause.navigate("developer")));
@@ -65,6 +105,7 @@ export class DeveloperToolsPanel {
         this.speed.value=String(this.manager.speed);
     }
     refreshLocations() {
+        this.cancelCoinReset();
         const level=this.manager.getLevel();this.level.value=String(level.config.id);this.location.replaceChildren();
         for(const location of locationsFor(level.config)){const option=this.make("option",location.label);option.value=location.id;this.location.appendChild(option);}
         this.location.value="start";this.sync();
