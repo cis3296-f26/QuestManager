@@ -13,6 +13,9 @@ Apply these rules to every current and future level:
   traversal space and verify a normal jump cannot replace the intended air transfer.
 - Every special platform declares `connection: { from, to }` using platform IDs.
   Run the placement validator and real-input route/boarding tests after changes.
+- Foreground decorative trees and platform-support trees must not overlap. Check
+  full scaled canopy/branch bounds with at least 16px breathing room, not trunk
+  positions alone. Background silhouettes remain a separate depth layer.
 - Preserve stable coin IDs, completion-based saving and shared movement physics.
   Validate 30/60/120 FPS. Passing tests establishes possibilities, not human approval.
 

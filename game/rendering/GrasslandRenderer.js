@@ -1,3 +1,5 @@
+import { treeBounds } from "./SceneryGeometry.js";
+
 // Flat canvas scenery with gentle parallax. No physics or level state is changed.
 export class GrasslandRenderer {
     drawBackground(ctx, viewWidth, viewHeight, cameraX, groundY, theme = "grassland") {
@@ -86,7 +88,9 @@ export class GrasslandRenderer {
     drawDecorations(ctx, decorations, groundY, cameraX, viewWidth) {
         ctx.save();
         for (const decoration of decorations) {
-            if (decoration.x < cameraX - 180 || decoration.x > cameraX + viewWidth + 180) continue;
+            const bounds = treeBounds(decoration, groundY);
+            if (bounds ? bounds.x + bounds.width < cameraX || bounds.x > cameraX + viewWidth :
+                decoration.x < cameraX - 30 || decoration.x > cameraX + viewWidth + 30) continue;
             ctx.save();
             ctx.translate(decoration.x, groundY);
             if (decoration.type === "branch-tree") {
