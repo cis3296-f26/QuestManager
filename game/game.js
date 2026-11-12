@@ -1,3 +1,4 @@
+import { DesertRenderer, drawWind } from "./rendering/DesertRenderer.js";
 import { developmentBuild } from "./dev/buildConfig.js";
 import { CaveRenderer } from "./rendering/CaveRenderer.js";
 import { drawCaveMechanics } from "./rendering/CaveMechanicsRenderer.js";
@@ -45,6 +46,7 @@ let deathTimeLeft = 0;
 const avatar = new AvatarRenderer();
 const grassland = new GrasslandRenderer();
 const cave = new CaveRenderer();
+const desert = new DesertRenderer();
 
 let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
@@ -223,6 +225,9 @@ function playLevel(config, { developerBypass = false } = {}) {
     if (developerBypass) developer?.markAttempt();
     audio.setScene(config.audio?.music ?? "grassland", { gameplay: true });
     document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
+    document.getElementById("enemyInstructions").textContent = config.theme === "desert"
+        ? "Jump over scorpions: they cannot be stomped. Watch the ribbons before entering a wind gust."
+        : "Land on slimes to defeat them; mushrooms must still be avoided.";
     canvas.setAttribute("aria-label", `Level ${config.id}: ${config.name} platform game`);
     canvas.focus();
 }
@@ -336,7 +341,7 @@ function drawPlayer() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const scenery = level.config.theme === "cave" ? cave : grassland;
+    const scenery = level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
     scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme, level.config.openingLandscape ?? level.config.landscape);
 
     ctx.save();
@@ -361,6 +366,7 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
+    drawWind(ctx, level.wind, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawCaveMechanics(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawHazards(ctx, level.config.hazards ?? []);
     enemies.forEach((enemy) => drawEnemy(ctx, enemy, cameraX, canvas.width));

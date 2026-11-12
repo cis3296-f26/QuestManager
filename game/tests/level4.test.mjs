@@ -35,8 +35,8 @@ function play(route) {
     return {level,coins,visited,timedEntry};
 }
 
-test("Crystal Cave has five purposeful sections, three stable coins and no content beyond Level 4",()=>{
-    assert.deepEqual(levels.map(l=>l.id),[1,2,3,4]);
+test("Crystal Cave has five purposeful sections, three stable coins and no content beyond Level 5",()=>{
+    assert.deepEqual(levels.map(l=>l.id),[1,2,3,4,5]);
     assert.equal(level4.theme,"cave");assert.equal(level4.audio.music,"cave");
     assert.deepEqual(level4.stages.map(s=>s.id),["entrance","passages","falling-rocks","chamber","exit"]);
     assert.deepEqual(level4.coins.map(c=>c.id),[1,2,3].map(n=>`level-4-coin-${n}`));
@@ -122,7 +122,7 @@ test("Level 4 coins save only at completion, preserve older achievements across 
     assert.equal(JSON.stringify(open().data.levels),before);assert.equal(progress.getLevel(4).unlocked,true);
     progress.completeLevel(4,[level4.coins[0].id,level4.coins[1].id]);
     const reloaded=open();assert.equal(reloaded.getLevel(4).coinIds.length,2);assert.equal(reloaded.getLevel(5).unlocked,true);
-    assert.equal(levels.some(l=>l.id===5),false);
+    assert.equal(levels.some(l=>l.id===6),false);
     for(const config of levels.slice(0,3))assert.deepEqual(reloaded.getLevel(config.id).coinIds,[config.coins[0].id]);
     reloaded.completeLevel(4,[level4.coins[2].id]);reloaded.completeLevel(4,[]);
     assert.equal(open().getLevel(4).fullyCompleted,true);assert.deepEqual(open().totalCoins,{earned:6,possible:30});

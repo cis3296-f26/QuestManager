@@ -2,6 +2,9 @@
 // Used for authoring checks/culling only; scenery never enters physics collision.
 export function treeBounds(tree, groundY = 460) {
     groundY = tree.baseY ?? groundY;
+    if (tree.type === "palm") {
+        const scale=tree.scale??1;return {x:tree.x-75*scale,y:groundY-170*scale,width:150*scale,height:170*scale};
+    }
     if (tree.type === "trestle") return { x: tree.x - tree.reach - 5, y: tree.top - 5,
         width: (tree.reach + 5) * 2, height: groundY - tree.top + 5 };
     if (tree.type === "tree") {

@@ -63,7 +63,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const key = (code, extra = {}) => canvas.emit("keydown", { code, repeat: false, ...extra });
     let time = 0;
     const frame = (seconds = 1 / 60) => { time += seconds * 1000; a.audio.context?.advance(seconds); a.gameLoop(time); };
-    const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, puzzle: a.level.puzzle,
+    const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, puzzle: a.level.puzzle, wind: a.level.wind,
         coins: { time: a.coins.time, pending: [...a.coins.pending], saved: [...a.coins.saved], effects: a.coins.effects },
         reveal: [...a.level.exploration.reveal], notice: a.level.exploration.noticeTime, camera: a.camera });
 
@@ -182,7 +182,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.audio.scene, "grassland"); assert.ok(a.audio.music);
         console.log("PASS actual audio wiring: single jump, landing, pickup, stomp, death and victory; earned coins silent; replay music restored.");
     }
-    for (const id of [1, 2, 3, 4]) {
+    for (const id of [1, 2, 3, 4, 5]) {
         if (id > 1) { a.progress.completeLevel(id - 1, []); a.map.refresh(); a.map.openLevel(id); await turn(); }
         assert.equal(a.level.config.id, id);
         assert.equal(a.audio.scene, a.level.config.audio.music);
@@ -214,6 +214,11 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
                 Object.assign(a.level.puzzle.switches[0], { active: true, remainingTime: 2.5 });
                 Object.assign(a.level.puzzle.gates[0], { open: true, remainingTime: 2.5 });
             }
+            if (id === 5) {
+                a.level.player.reset({ x: 1800, feetY: 440 });
+                a.level.player.supportPlatform = a.level.platforms.find(p => p.id === "l5-lookout");
+                a.level.wind.time = 1.2; a.level.wind.velocity = 5;
+            }
             key("Escape"); assert.equal(a.pause.screen, "main");
             const before = snapshot();
             // Deliberately retain canvas focus here: the explicit pause gate must freeze independently of the DOM.
@@ -227,6 +232,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
             frame(100); assert.equal(snapshot(), before, "resume must not consume paused wall time");
             frame(1 / fps); assert.notEqual(snapshot(), before); assert.equal(a.coins.pending.size, 1);
             if (board) assert.ok(board.warningTime < .1);
+            if (id === 5) assert.ok(a.level.wind.time > 1.2 && a.level.wind.time < 1.24, "pause freezes an active desert gust");
             if (id === 4) assert.ok(a.level.puzzle.switches[0].remainingTime < 2.5 && a.level.puzzle.switches[0].remainingTime > 2.4, "only the resumed tick advances the vault countdown");
         }
         key("Escape"); click("pauseRestart");
@@ -246,25 +252,35 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         // Header navigation must use the same confirmation path.
         click("backToMap"); assert.equal(a.pause.screen, "map"); escapeDialog(); click("pauseResume");
     }
-    // Exercise actual Level 4 save, coming-soon Next and replay wiring. Teleports
-    // here set up the UI boundary; continuous route fixtures prove playability separately.
-    a.restartLevel(); canvas.focus(); frame();
-    a.coins.pending.add(a.level.config.coins[2].id);
-    const finisher = a.level.player;
-    finisher.x = a.level.flagX; finisher.y = a.level.config.finish.platform.y - finisher.height;
-    finisher.grounded = true; finisher.velocityY = 0; finisher.supportPlatform = a.level.config.finish.platform;
-    frame(); await turn();
-    assert.equal(element("levelCompleteDialog").open, true);
-    assert.equal(element("levelCompleteTitle").textContent, "Level 4 Complete!");
-    assert.deepEqual([...a.progress.getLevel(4).coinIds], [a.level.config.coins[2].id]);
-    assert.equal(a.progress.getLevel(5).unlocked, true);
-    assert.equal(element("nextLevel").disabled, true);
-    assert.match(element("nextLevel").textContent, /Coming soon/);
-    element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
-    assert.equal(a.level.complete, false); assert.equal(a.level.player.x, a.level.config.spawn.x);
-    assert.equal(a.audio.scene, "cave");
-    assert.ok(a.coins.saved.has(a.level.config.coins[2].id));
-    console.log("PASS Level 4 completion, saved coins, replay and unavailable Level 5 wiring.");
+    // These are UI boundary setups, not continuous gameplay proofs. Preserve
+    // the existing cave completion check and extend it through the desert.
+    for (const id of [4, 5]) {
+        a.map.openLevel(id); await turn(); a.restartLevel(); canvas.focus(); frame();
+        const finish = async () => {
+            const p = a.level.player;
+            p.x = a.level.flagX; p.y = a.level.config.finish.platform.y - p.height;
+            p.grounded = true; p.velocityY = 0; p.supportPlatform = a.level.config.finish.platform;
+            frame(); await turn();
+        };
+        a.coins.pending.add(a.level.config.coins[2].id); await finish();
+        assert.equal(element("levelCompleteDialog").open, true);
+        assert.equal(element("levelCompleteTitle").textContent, `Level ${id} Complete!`);
+        assert.equal(a.level.config.id, id, "completion does not automatically advance");
+        assert.deepEqual([...a.progress.getLevel(id).coinIds], [a.level.config.coins[2].id]);
+        assert.equal(a.progress.getLevel(id + 1).unlocked, true);
+        assert.equal(element("nextLevel").disabled, id === 5);
+        if (id === 5) assert.match(element("nextLevel").textContent, /Coming soon/);
+        element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
+        assert.equal(a.level.complete, false); assert.equal(a.level.player.x, a.level.config.spawn.x);
+        assert.equal(a.audio.scene, id === 4 ? "cave" : "desert");
+        assert.ok(a.coins.saved.has(a.level.config.coins[2].id));
+        if (id === 4) {
+            await finish(); click("nextLevel"); await turn();
+            assert.equal(a.level.config.id, 5); assert.equal(a.audio.scene, "desert");
+            assert.match(element("enemyInstructions").textContent, /scorpions/);
+        }
+    }
+    console.log("PASS cave-to-desert Next navigation, Level 5 save/replay and unavailable Level 6 wiring.");
     a.startDeath("Test transition"); canvas.focus(); key("Escape"); assert.equal(a.pause.paused, false);
     for (let i = 0; i < 50; i++) frame();
     assert.equal(a.deathTime, 0);

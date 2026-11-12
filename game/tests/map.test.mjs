@@ -25,16 +25,17 @@ function fixture(hash = "") {
     globalThis.document = { getElementById: (id) => elements[id], querySelectorAll: () => nodes, createElement: element };
     globalThis.window = { addEventListener: (key, callback) => windowListeners[key] = callback };
     globalThis.location = { hash };
-    let saved = [], completed = false, secondCompleted = false, thirdCompleted = false, plays = 0, returns = 0;
+    let saved = [], completed = false, secondCompleted = false, thirdCompleted = false, fourthCompleted = false, plays = 0, returns = 0;
     const map = new WorldMap({ levels,
-        getProgress: (id) => ({ unlocked: id === 1 || (id === 2 && completed) || (id === 3 && secondCompleted) || (id === 4 && thirdCompleted),
-            completed: id === 1 && completed || id === 2 && secondCompleted || id === 3 && thirdCompleted, coinIds: id === 1 ? saved : [], fullyCompleted: id === 1 && saved.length === 3 }),
+        getProgress: (id) => ({ unlocked: id === 1 || (id === 2 && completed) || (id === 3 && secondCompleted) || (id === 4 && thirdCompleted) || (id === 5 && fourthCompleted),
+            completed: id === 1 && completed || id === 2 && secondCompleted || id === 3 && thirdCompleted || id === 4 && fourthCompleted, coinIds: id === 1 ? saved : [], fullyCompleted: id === 1 && saved.length === 3 }),
         getTotal: () => ({ earned: saved.length, possible: 30 }),
         onPlay: () => plays++, onMap: () => returns++
     });
     return { map, elements, nodes,
         get plays() { return plays; }, get returns() { return returns; },
         save(ids) { saved = ids; completed = true; map.refresh(); },
+        completeFourth() { fourthCompleted = true; map.refresh(); },
         completeThird() { thirdCompleted = true; map.refresh(); },
         completeSecond() { secondCompleted = true; map.refresh(); },
         route(hash) { globalThis.location.hash = hash; windowListeners.hashchange(); },
@@ -141,5 +142,21 @@ test("completing Deep Forest unlocks Crystal Cave details and Next but Level 5 r
         assert.equal(f.map.playing,true);assert.equal(f.map.hasNext(),false);
         f.map.select(3);f.map.openNext();assert.equal(globalThis.location.hash,"#level-4");
         assert.ok(f.nodes.slice(4).every(n=>n.disabled));
+    } finally {f.restore();}
+});
+
+
+test("Crystal Cave completion unlocks Sunscorched Dunes with three indicators; unbuilt Level 6 stays unavailable",()=>{
+    const f=fixture();
+    try {
+        f.save([]);f.completeSecond();f.completeThird();f.route("#level-4");
+        assert.equal(f.map.hasNext(),false);assert.equal(f.nodes[4].disabled,true);
+        f.completeFourth();assert.equal(f.nodes[4].disabled,false);assert.equal(f.map.hasNext(),true);
+        assert.equal(globalThis.location.hash,"#level-4","no automatic advancement");
+        f.nodes[4].listeners.click();assert.match(f.elements.levelSelectionContent.children[0].textContent,/Sunscorched Dunes/);
+        assert.equal(f.elements.levelSelectionContent.children[2].children.length,3);
+        f.map.select(4);f.map.openNext();f.route("#level-5");assert.equal(f.map.playing,true);
+        assert.equal(f.map.hasNext(),false);f.route("#level-6");assert.equal(f.map.playing,false);
+        assert.ok(f.nodes.slice(5).every(n=>n.disabled));
     } finally {f.restore();}
 });

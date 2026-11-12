@@ -15,6 +15,7 @@ export function defineLevel({ stages, finishId, ...properties }) {
         hazards: flatten("hazards"), coins: flatten("coins"),
         stalactites: flatten("stalactites"), switches: flatten("switches"), gates: flatten("gates"),
         ...(flatten("barriers").length ? { barriers: flatten("barriers") } : {}),
+        ...(flatten("windZones").length ? { windZones: flatten("windZones") } : {}),
         sections: stages.map((stage) => ({ x: stage.start, title: stage.title, hint: stage.hint })),
         finish: { platform: finish, flagInset: 40 } };
 }

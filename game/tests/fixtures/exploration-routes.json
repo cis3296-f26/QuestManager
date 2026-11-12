@@ -1029,5 +1029,146 @@
     },
     "areaId": "l4-hidden-vault",
     "levelId": 4
+  },
+  {
+    "fps": 30,
+    "totalFrames": 57,
+    "jumpFrames": [
+      39
+    ],
+    "inputs": [],
+    "start": {
+      "x": 660,
+      "feetY": 400
+    },
+    "areaId": "l5-sandstone-alcove",
+    "levelId": 5
+  },
+  {
+    "fps": 60,
+    "totalFrames": 114,
+    "jumpFrames": [
+      78
+    ],
+    "inputs": [],
+    "start": {
+      "x": 660,
+      "feetY": 400
+    },
+    "areaId": "l5-sandstone-alcove",
+    "levelId": 5
+  },
+  {
+    "fps": 120,
+    "totalFrames": 229,
+    "jumpFrames": [
+      156
+    ],
+    "inputs": [],
+    "start": {
+      "x": 660,
+      "feetY": 400
+    },
+    "areaId": "l5-sandstone-alcove",
+    "levelId": 5
+  },
+  {
+    "fps": 30,
+    "totalFrames": 97,
+    "jumpFrames": [
+      0,
+      15,
+      33
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3420,
+      "feetY": 450
+    },
+    "areaId": "l5-oasis-overlook",
+    "levelId": 5
+  },
+  {
+    "fps": 60,
+    "totalFrames": 193,
+    "jumpFrames": [
+      0,
+      30,
+      66
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3420,
+      "feetY": 450
+    },
+    "areaId": "l5-oasis-overlook",
+    "levelId": 5
+  },
+  {
+    "fps": 120,
+    "totalFrames": 385,
+    "jumpFrames": [
+      0,
+      72,
+      144
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3420,
+      "feetY": 450
+    },
+    "areaId": "l5-oasis-overlook",
+    "levelId": 5
+  },
+  {
+    "fps": 30,
+    "totalFrames": 139,
+    "jumpFrames": [
+      6,
+      27,
+      60,
+      87
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4920,
+      "feetY": 400
+    },
+    "areaId": "l5-ridge-cache",
+    "levelId": 5
+  },
+  {
+    "fps": 60,
+    "totalFrames": 278,
+    "jumpFrames": [
+      6,
+      54,
+      120,
+      168
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4920,
+      "feetY": 400
+    },
+    "areaId": "l5-ridge-cache",
+    "levelId": 5
+  },
+  {
+    "fps": 120,
+    "totalFrames": 555,
+    "jumpFrames": [
+      12,
+      108,
+      240,
+      336
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4920,
+      "feetY": 400
+    },
+    "areaId": "l5-ridge-cache",
+    "levelId": 5
   }
 ]

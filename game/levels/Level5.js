@@ -1,0 +1,88 @@
+import { defineLevel, ground, ledge, creature } from "./design/defineLevel.js";
+import { level5Scenery } from "./Level5Scenery.js";
+const bank=(id,x,end,y)=>({...ground(id,x,end),y,height:540-y,terrain:true,appearance:"sandstone"});
+const shelf=(id,x,y,width,role,extra={})=>({...ledge(id,x,y,width,role,extra),appearance:"sandstone"});
+const scorpion=(id,x,min,max,feetY,purpose)=>({...creature(id,"scorpion",x,min,max,purpose,64,feetY),width:38,height:26,stompable:false});
+const wind=(id,x,width,direction,strength,period,offset,purpose)=>({id,x,y:190,width,height:200,
+    direction,strength,period,offset,warning:.9,duration:2.4,purpose});
+
+// 8,200 authored pixels: terrain descends into two sheltered hollows, then
+// climbs out across separated terraces. Dunes are cosmetic, never slope physics.
+export const level5=defineLevel({
+    id:5,name:"Sunscorched Dunes",theme:"desert",worldWidth:8200,spawn:{x:80,feetY:350},
+    mapSummary:"Desert · Wind-cut canyons, a hidden oasis and sandstone ruins",audio:{music:"desert"},
+    scenery:level5Scenery,finishId:"l5-flag",
+    explorationAreas:[
+        {id:"l5-sandstone-alcove",title:"The Sheltered Hollow",kind:"passage",
+            purpose:"Drop below the natural stone arch for easy gold, then jump out at the far lip.",
+            clue:"A pale opening beneath the arch reveals the low sandstone shelf.",
+            bounds:{x:780,y:420,width:280,height:80},entrance:{x:660,y:336,width:50,height:64},
+            exit:{x:1210,y:376,width:50,height:64},platformIds:["l5-alcove"],discoveryPlatforms:["l5-alcove"],coinId:"level-5-coin-1",
+            foreground:[{kind:"sandstone",x:800,y:424,width:160,height:58}]},
+        {id:"l5-oasis-overlook",title:"The Quiet Spring",kind:"elevated",
+            purpose:"Climb the sheltered rock arch to look across the oasis, collect gold and return to the east bank.",
+            clue:"A broken sandstone window and two spaced palms frame the upper ledge.",
+            bounds:{x:3930,y:205,width:190,height:104},entrance:{x:3420,y:386,width:50,height:64},
+            exit:{x:4350,y:376,width:50,height:64},platformIds:["l5-oasis-step","l5-oasis-arch","l5-oasis-window"],
+            discoveryPlatforms:["l5-oasis-window"],coinId:"level-5-coin-2",
+            foreground:[{kind:"sandstone",x:3960,y:220,width:110,height:72}]},
+        {id:"l5-ridge-cache",title:"The Windward Cache",kind:"challenge",
+            purpose:"Wait for calm on the departure ledge, cross two cracked shelves, collect gold and drop safely to the lower route.",
+            clue:"Wind ribbons and cracked sandstone lead to the isolated upper outcrop.",
+            bounds:{x:5830,y:205,width:160,height:104},entrance:{x:4920,y:336,width:50,height:64},
+            exit:{x:6150,y:396,width:50,height:64},platformIds:["l5-ridge-launch","l5-crack-west","l5-crack-east","l5-windward-cache"],
+            discoveryPlatforms:["l5-windward-cache"],coinId:"level-5-coin-3"}
+    ],
+    stages:[
+        {id:"arrival",start:0,end:1500,difficulty:"easy-medium",title:"The Desert Arrival",
+            hint:"Follow the ridge down. The stone arch shelters a low passage; scorpions must be jumped over.",
+            purpose:"A safe high cave exit descends to an arch/alcove choice before one clearly visible scorpion.",
+            requiredRoute:["l5-arrival","l5-shoulder","l5-arrival-arch","l5-arrival-east"],
+            optionalRoutes:[{purpose:"Drop into the sheltered low alcove, then climb its far lip.",coinId:"level-5-coin-1",platforms:["l5-alcove"]}],
+            platforms:[bank("l5-arrival",0,400,350),bank("l5-shoulder",520,760,400),bank("l5-alcove",760,1080,500),
+                shelf("l5-arrival-arch",760,365,380,"alcove-bypass"),bank("l5-arrival-east",1200,1500,440)],
+            enemies:[scorpion("l5-arrival-scorpion",1350,1280,1390,440,"An isolated introduction, after a clear landing and before the broad canyon lookout.")],
+            coins:[{id:"level-5-coin-1",x:920,y:470,difficulty:"easy"}]},
+        {id:"canyon",start:1500,end:3300,difficulty:"medium",title:"Wind-Cut Canyon",
+            hint:"Watch the ribbons: a warning comes before each gust. Wait on a broad bank when the wind faces you.",
+            purpose:"Introduce a gentle tailwind over a short canyon, then a headwind at a raised pillar, with a broad recovery bank.",
+            requiredRoute:["l5-lookout","l5-canyon-west","l5-canyon-pillar","l5-canyon-recovery"],optionalRoutes:[],
+            platforms:[bank("l5-lookout",1500,1880,440),bank("l5-canyon-west",2040,2280,440),
+                bank("l5-canyon-pillar",2450,2640,400),bank("l5-canyon-recovery",2790,3300,450)],
+            windZones:[wind("l5-first-tailwind",1740,400,1,60,5.8,0,"An introductory tailwind; the first gap remains possible during calm."),
+                wind("l5-canyon-headwind",2300,440,-1,75,6.4,1.3,"Observe from the west bank before climbing the exposed pillar.")],
+            enemies:[scorpion("l5-canyon-scorpion",3060,3000,3120,450,"A visible patrol well after the canyon landing, keeping the recovery area useful.")]},
+        {id:"oasis",start:3300,end:4900,difficulty:"medium",title:"The Hidden Oasis",
+            hint:"A quiet spring below, a sandstone window above. Explore the arch, then return to the eastern bank.",
+            purpose:"A wind-free, green recovery hollow with a low main route and an optional sandstone overlook.",
+            requiredRoute:["l5-oasis-west","l5-pool-bed","l5-oasis-east","l5-oasis-return"],
+            optionalRoutes:[{purpose:"Follow the rock arch above the spring to its sheltered window and medium coin.",coinId:"level-5-coin-2",platforms:["l5-oasis-step","l5-oasis-arch","l5-oasis-window"]}],
+            platforms:[bank("l5-oasis-west",3300,3620,450),bank("l5-pool-bed",3620,4110,500),
+                bank("l5-oasis-east",4230,4480,440),bank("l5-oasis-return",4600,4900,400),
+                shelf("l5-oasis-step",3480,355,180,"overlook-departure"),shelf("l5-oasis-arch",3710,285,180,"arch-route"),
+                shelf("l5-oasis-window",3930,285,190,"overlook-reward")],
+            coins:[{id:"level-5-coin-2",x:4050,y:255,difficulty:"medium"}]},
+        {id:"ridge",start:4900,end:6800,difficulty:"medium-hard",title:"Scorpion Ridge",
+            hint:"The lower canyon is direct. For upper gold, wait for calm before crossing the cracked sandstone.",
+            purpose:"Separate a lower patrol route from a harder upper wind/collapse route; reconnect on a safe bank before the last scorpion.",
+            requiredRoute:["l5-ridge-west","l5-scorpion-bank","l5-ridge-middle","l5-ridge-rejoin","l5-ridge-east"],
+            optionalRoutes:[{purpose:"Cross above the scorpion and real canyon on collapsing stone, then reach the windward cache.",coinId:"level-5-coin-3",platforms:["l5-ridge-launch","l5-crack-west","l5-crack-east","l5-windward-cache"]}],
+            platforms:[bank("l5-ridge-west",4900,5210,400),bank("l5-scorpion-bank",5290,5550,460),
+                bank("l5-ridge-middle",5700,5940,460),bank("l5-ridge-rejoin",6050,6290,460),bank("l5-ridge-east",6440,6800,400),
+                shelf("l5-ridge-launch",5120,305,120,"wind-observation"),
+                shelf("l5-crack-west",5350,305,100,"above-scorpion",{type:"collapsing",collapseDelay:1.2,connection:{from:"l5-ridge-launch",to:"l5-crack-east"}}),
+                shelf("l5-crack-east",5570,305,120,"canyon-collapse",{type:"collapsing",collapseDelay:1.2,connection:{from:"l5-crack-west",to:"l5-windward-cache"}}),
+                shelf("l5-windward-cache",5830,285,160,"wind-route-reward")],
+            enemies:[scorpion("l5-lower-scorpion",5410,5380,5430,460,"Guards the lower bank; the cracked upper route bypasses this patrol."),
+                scorpion("l5-ridge-scorpion",6540,6510,6630,400,"One final visible patrol after a separate recovery landing.")],
+            hazards:[{id:"l5-ridge-thorns",type:"spikes",x:5020,y:380,width:36,height:20}],
+            windZones:[wind("l5-ridge-wind",5240,580,-1,85,6.6,.7,"A visible headwind over the optional cracked route; the launch ledge is outside the gust.")],
+            coins:[{id:"level-5-coin-3",x:5930,y:255,difficulty:"hard"}]},
+        {id:"ruins",start:6800,end:8200,difficulty:"medium",title:"The Ruins Approach",
+            hint:"Climb the sandstone terraces. The final flag stands beyond the old pillars on a safe ridge.",
+            purpose:"Three familiar, readable terrace jumps lead out of the desert; no new hazard at the flag.",
+            requiredRoute:["l5-ruins-low","l5-ruins-middle","l5-ruins-high","l5-flag"],optionalRoutes:[],
+            platforms:[bank("l5-ruins-low",6800,7080,400),bank("l5-ruins-middle",7220,7460,350),
+                bank("l5-ruins-high",7600,7820,310),bank("l5-flag",7940,8200,350)]}
+    ]
+});

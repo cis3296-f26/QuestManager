@@ -25,7 +25,12 @@ export const MUSIC_TRACKS = Object.freeze({
         instruments: ["bell", "glass", "pad"],
         description: "Widely spaced crystal bells and glass harmonics, gentle stereo echoes and a low suspended pad; no outdoor walking beat.",
         chords: [[50,57,64],[46,53,60],[48,55,62],[45,52,59],[50,57,60],[43,50,57],[46,53,60],[45,52,59]],
-        melody: [[74,81],[77],[],[72,79],[77,86],[],[76,81],[73,74]] }
+        melody: [[74,81],[77],[],[72,79],[77,86],[],[76,81],[73,74]] },
+    desert: { title: "Ribbons over Sandstone", biome: "Sunscorched Dunes", bpm: 96, beatsPerBar: 4, bars: 24,
+        instruments: ["harp", "reed", "drum", "shaker", "bass"],
+        description: "Warm plucked answers, a playful reed refrain and a quiet syncopated hand-drum pulse; a restful oasis phrase between ridge themes.",
+        chords: [[45,52,57,60],[43,50,55,59],[41,48,53,57],[40,47,52,56],[45,52,57,60],[48,55,60,64],[43,50,55,59],[40,47,52,56]],
+        melody: [[76,72,74,69],[71,74,79],[77,76,72,69],[71,68,71],[76,81,79,76],[79,76,72],[74,71,67,71],[68,71,69]] }
 });
 
 // Notes use beats and MIDI pitches. Phrase B answers A, then A' returns with
@@ -66,6 +71,16 @@ export function arrangeMusic(key) {
             if (local !== 2 && local !== 6) melody.forEach((pitch,i)=>
                 add(bar, .25+i*.85, .9, pitch + (phrase === 1 ? 12 : 0), "reed", .026, -.18));
             if (phrase > 0 && local % 3 === 1) add(bar, 3.1, 2.5, chord.at(-1)+24, "bell", .012, .5);
+        } else if (key === "desert") {
+            add(bar,0,1.2,root-12,"bass",.014,-.15);
+            // The middle phrase opens up like the oasis; the final phrase brings
+            // back the ridge rhythm with plucked countermelody and a changed register.
+            for(const at of phrase===1?[0,2.75]:[0,1.5,2.75])add(bar,at,.32,38,"drum",.012,-.2);
+            for(const at of [.75,2.25,3.5])add(bar,at,.12,48,"shaker",.007,.35);
+            for(const [i,at] of [.5,1.75,3].entries())add(bar,at,.8,chord[(i+phrase)%chord.length]+12,"harp",.018,.35);
+            melody.forEach((pitch,i)=>add(bar,[.1,.85,2,2.85][i],phrase===1?.85:.55,
+                pitch+(phrase===1?-12:0),phrase===1?"harp":"reed",.025,-.2));
+            if(phrase===2&&local%2)add(bar,3.4,.5,chord[2]+24,"harp",.012,.45);
         } else if (key === "cave") {
             chord.forEach((pitch,i)=>add(bar, .1, 5.4, pitch-12, "pad", .006, (i-1)*.6));
             melody.forEach((pitch,i)=>add(bar, .4+i*1.7, 3.6, pitch+(phrase===1?-12:0), "bell", .024, i?.45:-.4));

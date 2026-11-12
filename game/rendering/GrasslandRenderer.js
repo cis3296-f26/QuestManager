@@ -169,6 +169,18 @@ export class GrasslandRenderer {
         for (const platform of platforms) {
             if (platform.x + platform.width < cameraX || platform.x > cameraX + viewWidth) continue;
             const { x, y, width, height } = platform;
+            if (platform.appearance === "sandstone") {
+                ctx.fillStyle="#bc9165";ctx.fillRect(x,y,width,height);
+                ctx.fillStyle="#966b4c";ctx.fillRect(x,y+height-4,width,4);
+                ctx.fillStyle="#f5d99a";ctx.fillRect(x,y,width,6);
+                ctx.fillStyle="#d7ae78";ctx.fillRect(x,y+6,width,4);
+                ctx.strokeStyle="#ab8059";ctx.lineWidth=2;
+                for(let row=28;row<height;row+=30){ctx.beginPath();ctx.moveTo(x+3,y+row);ctx.lineTo(x+width-3,y+row-3);ctx.stroke();}
+                ctx.fillStyle="#e7c18b";
+                for(let tile=Math.max(0,Math.floor((cameraX-x)/80));tile*80<Math.min(width,cameraX+viewWidth-x);tile++)
+                    if(tile*80+30<width)ctx.fillRect(x+tile*80+16,y+15,14,3);
+                continue;
+            }
             if (platform.appearance === "rock") {
                 ctx.fillStyle="#92869f";ctx.fillRect(x,y,width,height);
                 ctx.fillStyle="#615c73";ctx.fillRect(x,y+height-4,width,4);

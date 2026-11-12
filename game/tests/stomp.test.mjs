@@ -200,10 +200,10 @@ test("defeat is harmless immediately, freezes patrols, shrinks then disappears, 
     }
 });
 
-test("both levels configure slime stomps only, and level restarts/replays restore every enemy", () => {
+test("all levels configure slime stomps only, and level restarts/replays restore every enemy", () => {
     for (const config of levels) {
         assert.ok(config.enemies.every((enemy) => enemy.stompable === (["slime","cave-slime"].includes(enemy.appearance))));
-        for (const fps of [30, 60, 120]) {
+        for (const fps of config.enemies.some(e=>e.stompable) ? [30, 60, 120] : []) {
             const attempt = new LevelManager(config), slime = attempt.enemies.find((enemy) => enemy.stompable);
             const player = attempt.player;
             player.x = slime.x;

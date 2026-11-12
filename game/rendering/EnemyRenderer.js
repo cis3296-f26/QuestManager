@@ -18,6 +18,7 @@ export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
     ctx.clip();
 
     if (enemy.appearance === "mushroom") drawMushroom(ctx, enemy.walkTime);
+    else if(enemy.appearance==="scorpion")drawScorpion(ctx,enemy.walkTime);
     else if(enemy.appearance==="bat")drawBat(ctx,enemy.walkTime);
     else drawSlime(ctx, enemy.walkTime,enemy.appearance==="cave-slime");
     ctx.restore();
@@ -99,4 +100,23 @@ function drawBat(ctx,time) {
     ctx.fillStyle="#8f78a2";ctx.beginPath();ctx.ellipse(16,13,5,8,0,0,Math.PI*2);ctx.fill();
     ctx.beginPath();ctx.moveTo(11,9);ctx.lineTo(11,2);ctx.lineTo(15,6);ctx.lineTo(18,6);ctx.lineTo(21,2);ctx.lineTo(21,10);ctx.fill();
     ctx.fillStyle="#faf0e6";ctx.fillRect(13,10,2,3);ctx.fillRect(18,10,2,3);
+}
+
+// Muted orange body, dark outline and lifted tail distinguish dangerous scorpions
+// from green cacti. All limbs remain inside the existing normalized hitbox.
+function drawScorpion(ctx,time) {
+    const step=Math.sin(time*12)*1.5;
+    ctx.strokeStyle="#62432e";ctx.lineWidth=1.7;ctx.lineCap="round";
+    for(const side of [-1,1])for(let i=0;i<3;i++) {
+        const x=10+i*4;ctx.beginPath();ctx.moveTo(x,18);ctx.lineTo(x+side*4+(i%2?step:-step),23);ctx.stroke();
+    }
+    ctx.strokeStyle="#805235";ctx.lineWidth=4;
+    ctx.beginPath();ctx.moveTo(10,17);ctx.bezierCurveTo(-2,13,1,1,8,3);ctx.quadraticCurveTo(12,4,10,8);ctx.stroke();
+    ctx.fillStyle="#62432e";ctx.beginPath();ctx.moveTo(9,6);ctx.lineTo(14,9);ctx.lineTo(9,10);ctx.fill();
+    ctx.fillStyle="#c78650";ctx.strokeStyle="#62432e";ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.ellipse(16,17,9,5,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+    for(const y of [12,20]) {
+        ctx.beginPath();ctx.moveTo(21,17);ctx.lineTo(27,y);ctx.lineTo(30,y-2);ctx.moveTo(27,y);ctx.lineTo(31,y+2);ctx.stroke();
+    }
+    ctx.fillStyle="#faf0e6";ctx.fillRect(20,13,4,3);ctx.fillStyle="#403725";ctx.fillRect(22,13,2,2);
 }

@@ -115,7 +115,7 @@ test("every configured teleport has a safe static landing and invalid targets do
             assert.ok(!level.enemies.some(e=>overlap(p,{x:e.x,y:e.feetY-e.height,width:e.width,height:e.height})));
         }
         const before=JSON.stringify(p);assert.equal(dev.teleport("missing"),false);assert.equal(JSON.stringify(p),before);
-        assert.equal(dev.canLoad(4,levels),true);assert.equal(dev.canLoad(5,levels),false);assert.equal(dev.canLoad(99,levels),false);
+        assert.equal(dev.canLoad(4,levels),true);assert.equal(dev.canLoad(5,levels),true);assert.equal(dev.canLoad(6,levels),false);assert.equal(dev.canLoad(99,levels),false);
         assert.ok(safePosition(level,{x:850,feetY:460}));
     }
 });

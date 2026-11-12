@@ -52,8 +52,8 @@
                     </button>
                     <button type="button" class="map-node" data-level="5"
                         style="left:81.9378%;top:70.2550%"
-                        aria-label="Level 5: Desert Ruins, coming soon" disabled
-                        title="Desert Ruins — coming soon">
+                        aria-label="Level 5: Sunscorched Dunes, complete Level 4 to unlock" disabled
+                        title="Complete Level 4 to unlock">
                         <span>5</span><span class="map-lock" aria-hidden="true">🔒</span>
                     </button>
                     <button type="button" class="map-node" data-level="6"
@@ -113,7 +113,7 @@
             <p id="gameInstructions">
                 Move with A/D or the left/right arrows.
                 Jump with Space, W, or the up arrow. Press R to restart. Esc pauses or resumes. Reach the flag to finish!
-                Land on slimes to defeat them; mushrooms must still be avoided.
+                <span id="enemyInstructions">Land on slimes to defeat them; mushrooms must still be avoided.</span>
             </p>
             <p id="coinCounter" class="visually-hidden" role="status" aria-live="polite">Coins: 0/3</p>
             <canvas id="gameCanvas" width="960" height="540" tabindex="0"

@@ -4,6 +4,7 @@ import { Platform } from "../entities/Platform.js";
 import { Stalactite } from "../entities/Stalactite.js";
 import { GatePuzzle } from "./GatePuzzle.js";
 import { Exploration } from "./Exploration.js";
+import { Wind } from "../engine/Wind.js";
 
 export class LevelManager {
     constructor(config) {
@@ -16,6 +17,7 @@ export class LevelManager {
         this.platforms = config.platforms.map((platform) => platform.type ? new Platform(platform) : platform);
         this.enemies = config.enemies.map((enemy) => new Enemy(enemy, enemy.feetY ?? config.groundY));
         this.exploration = new Exploration(config.explorationAreas);
+        this.wind = new Wind(config.windZones);
         this.stalactites = (config.stalactites ?? []).map(c => new Stalactite(c));
         this.puzzle = new GatePuzzle(config.switches, config.gates,
             [...this.platforms.filter(p=>p.collision==="solid"), ...(config.barriers??[])]);
@@ -30,6 +32,7 @@ export class LevelManager {
         this.enemies.forEach((enemy) => enemy.reset());
         this.platforms.forEach((platform) => platform.reset?.());
         this.exploration.reset();
+        this.wind.reset();
         this.stalactites.forEach(s => s.reset());
         this.puzzle.reset();
         this.complete = false;

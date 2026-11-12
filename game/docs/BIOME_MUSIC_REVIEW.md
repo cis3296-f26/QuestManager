@@ -33,7 +33,7 @@ listening-room link, and its entry point does not import or mount the player whe
 the development flag is off. Cookies, URL parameters and account settings do not
 enable it. Do not change the tracked build flag to publish a preview.
 
-## The five arrangements
+## Arrangements (desert added with Level 5)
 
 | Scene | Track | Loop | Arrangement and intended atmosphere |
 | --- | --- | --- | --- |
@@ -42,6 +42,7 @@ enable it. Do not change the tracked build flag to publish a preview.
 | Forest | Leaves in Three | 51s · 84 BPM · 3/4 | Breathy flute, warm wooden mallets and answering harp. The three-beat lilt and lighter texture distinguish it from the grassland pulse. |
 | Deep Forest | Under the Old Boughs | 76s · 76 BPM · 4/4 | A lower reed voice reshapes the woodland motif into a minor/Dorian color. Slow pad tones, an uneven soft drum pattern and occasional bells add curiosity and tension. |
 | Crystal Cave | Light Inside the Stone | 85s · 68 BPM · 4/4 | Sparse, inharmonic crystal bells and glass tones, quiet cross-channel echoes and suspended low harmony. No outdoor bass/shaker walking rhythm. |
+| Sunscorched Dunes | Ribbons over Sandstone | 60s · 96 BPM · 4/4 | A distinct plucked/reed refrain, quiet syncopated drum pulse and a lighter harp answer. Added through the same registry; no new playback system. |
 
 These are intentionally synthesized interpretations of instruments, not claims of
 real acoustic performances. They share a soft adventure palette, while meter,
@@ -109,3 +110,5 @@ against the familiar jump/coin/hazard cues in actual gameplay.
 
 No level geometry, controls, enemy behavior, saves, Supabase integration or Level 5
 content was changed. The soundtrack remains a listening candidate until you approve it.
+
+Level 5 adds the sixth listening-room track. See [the desert guide](LEVEL5_PLAYTEST.md) for current 205-test and five-level route validation results; earlier counts above record the original music revision.
