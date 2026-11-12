@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>QuestManager · Soundtrack Listening Room</title>
+    <style>
+        * { box-sizing: border-box; }
+        [hidden] { display: none !important; }
+        body { margin: 0; padding: clamp(16px, 4vw, 48px); background: #d8e5d0; color: #403725; font: 17px/1.55 system-ui, sans-serif; }
+        main, #unavailable { max-width: 1000px; margin: auto; background: #faf0e6; border: 3px solid #67533b; border-radius: 20px; padding: clamp(20px, 4vw, 40px); }
+        h1 { color: #3d5f26; font-family: Georgia, serif; margin: 8px 0; }
+        h2 { font-size: 1.1rem; margin: 0; }
+        p { margin: .5em 0 1em; }
+        .eyebrow { color: #52713e; text-transform: uppercase; letter-spacing: .08em; font-size: .8rem; font-weight: bold; }
+        #tracks { display: grid; gap: 14px; margin: 24px 0; }
+        article { border: 1px solid #b4a38c; border-radius: 12px; padding: 18px; background: #f4e9d1; }
+        article.is-playing { border: 2px solid #537b39; padding: 17px; }
+        article p { margin-bottom: 10px; }
+        button, a { font: inherit; }
+        button { min-height: 44px; border: 2px solid #51452b; border-radius: 8px; background: #3d5f26; color: white; padding: 7px 18px; cursor: pointer; }
+        button:disabled { opacity: .5; cursor: default; }
+        button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid #b18c2d; outline-offset: 3px; }
+        a { color: #3d5f26; }
+        .transport { display: flex; flex-wrap: wrap; gap: 12px; margin: 15px 0; }
+        .volume { display: grid; grid-template-columns: auto minmax(80px, 1fr) 3ch; gap: 12px; align-items: center; margin: 14px 0; }
+        input[type="range"] { width: 100%; accent-color: #3d5f26; }
+        .note { font-size: .9rem; color: #66543f; }
+        #position { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body>
+    <p id="unavailable">This listening room is available only on the local developer server. <a href="../">Back to the game</a></p>
+    <main id="preview" hidden>
+        <span class="eyebrow">Local developer tool · Original QuestManager music</span>
+        <h1>Soundtrack Listening Room</h1>
+        <p>Compare five original arrangements. Listen through a full loop, then check the return to the opening phrase.</p>
+        <p class="note">These audition volumes are temporary. Your account settings and game progress are not changed. Pause the game before comparing tracks.</p>
+        <div class="volume"><label for="previewMaster">Master</label><input id="previewMaster" type="range" min="0" max="100" value="80"><output id="masterValue" for="previewMaster">80%</output></div>
+        <div class="volume"><label for="previewMusic">Music</label><input id="previewMusic" type="range" min="0" max="100" value="60"><output id="musicValue" for="previewMusic">60%</output></div>
+        <label><input id="previewMuted" type="checkbox"> Mute</label>
+        <div class="transport"><button id="previewPause" type="button" disabled>Pause</button><button id="previewRestart" type="button" disabled>Restart track</button><button id="previewStop" type="button" disabled>Stop</button></div>
+        <p id="previewStatus" role="status" aria-live="polite">Select a track to enable browser audio. No music plays automatically.</p>
+        <p id="position" aria-label="Track position">0:00</p>
+        <div id="tracks"></div>
+        <p class="note">Technical checks can find clipping and discontinuities, but only your listening can approve the melody, balance, repetition and loop feel.</p>
+        <a href="../">Return to Adventure</a>
+    </main>
+    <script type="module" src="./music-preview-entry.js"></script>
+</body>
+</html>

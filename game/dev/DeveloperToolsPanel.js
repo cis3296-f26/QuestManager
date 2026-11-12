@@ -20,6 +20,9 @@ export class DeveloperToolsPanel {
         this.enabled=toggle(this.access,"Enable Developer Tools","enableDeveloperTools",value=>manager.enable(value));
         this.admin=button("Admin Tools","openAdminTools",()=>{this.refreshLocations();pause.navigate("admin");});
         this.access.appendChild(this.admin);
+        const musicPreview=make("a","Compare biome music","devMusicPreview");
+        musicPreview.href="./dev/music-preview.html";musicPreview.target="_blank";musicPreview.rel="noopener";
+        musicPreview.className="dev-entry";this.access.appendChild(musicPreview);
         this.access.appendChild(button("Back to Settings","developerBack",()=>pause.navigate("settings")));
         this.tools=make("section",null,"adminToolsPanel");
         this.fly=toggle(this.tools,"Fly Mode","devFly",value=>manager.set("fly",value));

@@ -20,7 +20,8 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const element = (id) => document.getElementById(id);
     const ctx = new Proxy({ globalAlpha: 1, measureText: (text) => ({ width: text.length * 8 }) }, { get: (o, key) => o[key] ?? (() => {}) });
     Object.assign(element("gameCanvas"), { width: 960, height: 540, getContext: () => ctx });
-    const window = { addEventListener: (key, handler) => windowEvents.set(key, handler), localStorage: {
+    const window = { addEventListener: (key, handler) => windowEvents.set(key, handler),
+        removeEventListener(key,handler) { if(windowEvents.get(key)===handler)windowEvents.delete(key); }, localStorage: {
         getItem: (key) => disk.get(key) ?? null, setItem: (key, value) => disk.set(key, value)
     } };
     if (process.env.QUESTMANAGER_TEST_AUDIO === "1") window.AudioContext = require("./fakeAudioContext.cjs").FakeAudioContext;
@@ -28,7 +29,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     let account = "pause-A", authCallback;
     const supabase = { auth: { onAuthStateChange(fn) { authCallback = fn; return { data: { subscription: { unsubscribe() {} } } }; },
         async getSession() { return { data: { session: account ? { user: { id: account } } : null } }; } } };
-    const context = vm.createContext({ document, window, location, requestAnimationFrame() {}, console });
+    const context = vm.createContext({ document, window, location, requestAnimationFrame() {}, console, performance, setTimeout, clearTimeout });
     const client = new vm.SyntheticModule(["supabase"], function () { this.setExport("supabase", supabase); }, { context });
     await client.link(() => {}); await client.evaluate();
     const cache = new Map();
@@ -144,12 +145,14 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.progress.getLevel(1).completed, false);
         click("devConfirmCoinReset");await turn();assert.equal(a.progress.getLevel(1).completed, false);
         console.log("PASS development entry wiring: gated panels, pause, flight, locked bypass, safe teleport, sticky no-save completion, clean normal save and account reset.");
+        a.audio.dispose();
         return;
     }
     assert.equal(a.developer, null);
     assert.ok(!cache.has("game/dev/installDeveloperTools.js"), "production never loads developer implementation");
     if (process.env.QUESTMANAGER_TEST_AUDIO === "1") {
         await a.audio.unlock();
+        await a.audio.waitForMusic();
         const played = (name) => a.audio.context.sources.filter((source) => source.starts.length && source.buffer === a.audio.assets.effect(name)).length;
         a.restartLevel(); canvas.focus(); frame(); frame();
         const jumps = played("jump"); key("Space"); key("Space", { repeat: true }); key("KeyW");
@@ -278,4 +281,5 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     account = "pause-A"; authCallback("SIGNED_IN", { user: { id: account } });
     assert.equal(a.settings.values.masterVolume, 35); assert.equal(a.settings.values.muted, true);
     console.log("PASS actual game wiring: frame freeze/resume at 30/60/120 FPS, menu shortcuts, confirmations, map, focus, completion/death and account changes.");
+    a.audio.dispose(); // Terminate pending score work when this browser fixture closes.
 })().catch((error) => { console.error(error); process.exitCode = 1; });

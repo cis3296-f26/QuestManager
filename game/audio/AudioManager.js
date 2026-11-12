@@ -5,7 +5,7 @@ import { createSynthAssets } from "./SynthAssets.js";
 function disconnect(node) { try { node?.disconnect(); } catch { /* Device unavailable. */ } }
 function stop(source) { try { source?.stop(); } catch { /* Already ended. */ } disconnect(source); }
 
-// One context, one background source, bounded short effects. Failure never stops gameplay.
+// One context, one audible background track, bounded effects. Failure never stops gameplay.
 export class AudioManager {
     constructor(settings, { contextFactory = () => {
         const Context = globalThis.window?.AudioContext ?? globalThis.window?.webkitAudioContext;
@@ -15,6 +15,8 @@ export class AudioManager {
         this.contextFactory = contextFactory; this.assetsFactory = assetsFactory;
         this.now = now;
         this.effects = new Set(); this.lastEffects = new Map();
+        this.retiringMusic = new Set();
+        this.music = null;
         this.scene = null; this.gameplay = false; this.paused = false; this.active = true;
         this.transition = false; this.offset = 0; this.revision = 0; this.ready = false;
         this.unsubscribe = settings.subscribe(() => this.applyVolumes());
@@ -63,46 +65,90 @@ export class AudioManager {
     setScene(name, { gameplay = false, restart = false } = {}) {
         if (!restart && name === this.scene && gameplay === this.gameplay) return;
         this.revision++; this.pending = null;
-        this.stopEffects(); this.stopMusic(); this.lastEffects.clear();
+        this.stopEffects(); this.stopRetiringMusic();
+        // Keep the current music alive while a previously unheard score renders
+        // off-thread; the fade happens only when the replacement is ready.
+        if (!name || !this.ready || !this.assets.prepareMusic || this.assets.getMusic(name))
+            this.musicStartAt = this.stopMusic(false, { fade: .07 });
+        this.offset = 0;
+        this.lastEffects.clear();
         this.scene = name; this.gameplay = gameplay; this.transition = false;
         this.startMusic();
     }
     startMusic() {
-        if (!this.ready || this.music || !this.scene || this.paused || !this.active || this.transition || this.context.state !== "running") return;
-        let source;
+        if (!this.ready || !this.scene || this.paused || !this.active || this.transition || this.context.state !== "running" || this.music?.scene === this.scene) return;
+        let source, gain;
         try {
-            const buffer = this.assets.music(this.scene);
+            const buffer = this.assets.prepareMusic ? this.assets.getMusic(this.scene) : this.assets.music(this.scene);
+            if (!buffer && this.assets.prepareMusic) {
+                if (this.musicLoading?.scene === this.scene && this.musicLoading.revision === this.revision) return;
+                const request = { scene: this.scene, revision: this.revision };
+                this.musicLoading = request;
+                request.promise = this.assets.prepareMusic(this.scene).then(result => {
+                    if (this.musicLoading !== request) return false;
+                    this.musicLoading = null;
+                    if (this.disposed || request.revision !== this.revision) return false;
+                    if (!result) { this.stopMusic(); return false; }
+                    this.startMusic(); return true;
+                }).catch(() => { if (this.musicLoading === request) this.musicLoading = null; return false; });
+                return;
+            }
             if (!buffer) return;
+            if (this.music) this.musicStartAt = this.stopMusic(false, { fade: .07 });
             source = this.context.createBufferSource(); source.buffer = buffer; source.loop = true;
-            source.connect(this.musicGain);
-            const voice = { source, buffer, started: this.context.currentTime };
-            source.onended = () => { disconnect(source); if (this.music === voice) this.music = null; };
+            gain = this.context.createGain(); gain.connect(this.musicGain);
+            source.connect(gain);
+            const started = Math.max(this.context.currentTime, this.musicStartAt ?? 0);
+            gain.gain.setValueAtTime(0, started);
+            gain.gain.linearRampToValueAtTime(1, started + .15);
+            const voice = { source, buffer, gain, started, scene: this.scene };
+            source.onended = () => {
+                disconnect(source); disconnect(gain); this.retiringMusic.delete(voice);
+                if (this.music === voice) this.music = null;
+            };
             this.music = voice;
-            source.start(0, this.offset % buffer.duration);
+            source.start(started, this.offset % buffer.duration);
         } catch {
             this.music = null;
             stop(source);
+            disconnect(gain);
         }
     }
-    stopMusic(preserve = false) {
+    waitForMusic() { return this.musicLoading?.promise ?? Promise.resolve(Boolean(this.music)); }
+    stopRetiringMusic() {
+        for (const voice of this.retiringMusic) { stop(voice.source); disconnect(voice.gain); }
+        this.retiringMusic.clear();
+    }
+    stopMusic(preserve = false, { fade = 0 } = {}) {
+        let end = this.context?.currentTime ?? 0;
         const voice = this.music;
         if (voice) {
-            if (preserve) this.offset = (this.offset + Math.max(0, this.context.currentTime - voice.started)) % voice.buffer.duration;
+            if (preserve && voice.scene === this.scene) this.offset = (this.offset + Math.max(0, this.context.currentTime - voice.started)) % voice.buffer.duration;
             this.music = null;
-            stop(voice.source);
+            if (fade && this.context.currentTime >= voice.started) {
+                end += fade;
+                voice.gain.gain.cancelScheduledValues(this.context.currentTime);
+                // Normal scene changes occur after the initial 150ms fade-in.
+                const level = Math.min(1, Math.max(0, (this.context.currentTime - voice.started) / .15));
+                voice.gain.gain.setValueAtTime(level, this.context.currentTime);
+                voice.gain.gain.linearRampToValueAtTime(0, end);
+                this.retiringMusic.add(voice);
+                try { voice.source.stop(end); } catch { stop(voice.source); disconnect(voice.gain);this.retiringMusic.delete(voice); }
+            } else { stop(voice.source); disconnect(voice.gain); }
         }
         if (!preserve) this.offset = 0;
+        return end;
     }
     setPaused(paused) {
         if (paused === this.paused) return;
         this.paused = paused; this.pending = null;
-        if (paused) { this.stopMusic(true); this.stopEffects(); }
+        if (paused) { this.stopRetiringMusic(); this.stopMusic(true); this.stopEffects(); }
         else this.startMusic();
     }
     setActive(active) {
         if (active === this.active) return;
         this.active = active; this.pending = null;
-        if (!active) { this.stopMusic(true); this.stopEffects(); }
+        if (!active) { this.stopRetiringMusic(); this.stopMusic(true); this.stopEffects(); }
         else this.startMusic();
     }
     play(name, { cue = false } = {}) {
@@ -139,16 +185,16 @@ export class AudioManager {
     stopEffects() { this.stopEffect(); }
     die(reason) {
         if (this.transition) return;
-        this.transition = true; this.pending = null; this.stopEffects(); this.stopMusic();
+        this.transition = true; this.pending = null; this.stopEffects(); this.stopRetiringMusic(); this.stopMusic();
         this.play(["thorns", "stalactite"].includes(reason) ? "damage" : "death", { cue: true });
     }
     complete() {
         if (this.transition) return;
-        this.transition = true; this.pending = null; this.stopEffects(); this.stopMusic();
+        this.transition = true; this.pending = null; this.stopEffects(); this.stopRetiringMusic(); this.stopMusic();
         this.play("victory", { cue: true });
     }
     dispose() {
-        this.disposed = true; this.pending = null; this.stopEffects(); this.stopMusic();
+        this.disposed = true; this.pending = null; this.stopEffects(); this.stopRetiringMusic(); this.stopMusic();
         this.unsubscribe(); this.preferences.dispose(); this.assets?.clear();
         disconnect(this.musicGain); disconnect(this.effectsGain);
         this.inputTarget?.removeEventListener("pointerdown", this.gesture, true);

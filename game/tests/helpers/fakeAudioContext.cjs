@@ -3,11 +3,15 @@ class FakeAudioContext {
     async resume() { this.state = "running"; }
     async close() { this.state = "closed"; }
     createBuffer(channels, length, sampleRate) {
-        const samples = new Float32Array(length);
-        return { duration: length / sampleRate, length, sampleRate, getChannelData: () => samples };
+        const samples = Array.from({length:channels},()=>new Float32Array(length));
+        return { duration: length / sampleRate, length, sampleRate, numberOfChannels:channels, getChannelData: channel => samples[channel] };
     }
     createGain() {
-        const node = { gain: { value: 1, setValueAtTime(value) { this.value = value; } }, connect() {}, disconnect() { this.disconnected = true; } };
+        const node = { gain: { value: 1, events: [],
+            setValueAtTime(value,time) { this.value = value;this.events.push({type:"set",value,time}); },
+            linearRampToValueAtTime(value,time) { this.value=value;this.events.push({type:"ramp",value,time}); },
+            cancelScheduledValues(time) { this.events.push({type:"cancel",time}); }
+        }, connect() {}, disconnect() { this.disconnected = true; } };
         this.gains.push(node); return node;
     }
     createBufferSource() {

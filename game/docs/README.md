@@ -17,6 +17,7 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Feature testing
 
+- [Biome soundtrack and listening room](BIOME_MUSIC_REVIEW.md)
 - [Collectible coins](COIN_PLAYTEST.md)
 - [Enemy stomping](STOMP_PLAYTEST.md)
 - [Moving and collapsing platforms](PLATFORM_PLAYTEST.md)

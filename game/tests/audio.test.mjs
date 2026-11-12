@@ -93,7 +93,7 @@ test("unlock races never play stale effects or the previous scene, including a p
     const audio = new AudioManager(new GameSettings(), { contextFactory: () => context, assetsFactory: fakeAssets });
     audio.setScene("grassland", { gameplay: true }); const unlocking = audio.unlock(); audio.play("jump");
     audio.setScene("forest", { gameplay: true }); audio.setPaused(true); resolve(); await unlocking;
-    assert.equal(audio.effects.size, 0); assert.equal(audio.music, undefined);
+    assert.equal(audio.effects.size, 0); assert.equal(audio.music, null);
     audio.setPaused(false); assert.equal(audio.music.buffer.name, "forest");
 });
 
@@ -103,16 +103,23 @@ test("a first-gesture effect can play after successful unlock without starting m
     assert.equal(audio.effects.size, 1); assert.equal([...audio.effects][0].name, "jump"); assert.equal(activeMusic(context).length, 1);
 });
 
-test("original synthesized assets are cached, quiet, finite, distinct and click-free at loop seams", () => {
+test("original music is cached, quiet, finite, distinct and has continuous sample values at loop seams", () => {
     const assets = createSynthAssets(new FakeAudioContext());
     const durations = [];
     for (const key of ["map", "grassland", "forest", "deepForest", "cave"]) {
         const buffer = assets.music(key), samples = buffer.getChannelData(0);
-        assert.equal(assets.music(key), buffer); assert.ok(buffer.duration > 20 && buffer.duration < 27);
+        assert.equal(assets.music(key), buffer); assert.ok(buffer.duration >= 45 && buffer.duration <= 90);
+        assert.equal(buffer.numberOfChannels, 2);
         let peak = 0, energy = 0;
         for (const sample of samples) { assert.ok(Number.isFinite(sample)); peak = Math.max(peak, Math.abs(sample)); energy += sample * sample; }
         assert.ok(peak < .25); assert.ok(Math.sqrt(energy / samples.length) < .05);
         assert.ok(Math.abs(samples[0] - samples.at(-1)) < .002); durations.push(buffer.duration);
+        // A spaced melody may rest; sustained accompaniment must not leave
+        // accidental silent seconds, including the end of the loop.
+        for(let start=0;start+buffer.sampleRate<=samples.length;start+=buffer.sampleRate) {
+            let square=0;for(let i=start;i<start+buffer.sampleRate;i++)square+=samples[i]*samples[i];
+            assert.ok(Math.sqrt(square/buffer.sampleRate)>.0001,`${key}: unintended silent second`);
+        }
     }
     assert.equal(new Set(durations).size, 5);
     const peak = (buffer) => buffer.getChannelData(0).reduce((n, value) => Math.max(n, Math.abs(value)), 0);
