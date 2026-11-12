@@ -19,7 +19,7 @@ collection is not required. Click node 3 → inspect its details and three coin 
 → Play. Existing accounts that completed Level 2 already have access. No progress
 reset or database migration is needed. Direct `#level-3` links still respect locks.
 
-![Actual authored level geometry](docs/deep-forest-layout.svg)
+![Actual authored level geometry](deep-forest-layout.svg)
 
 Horizontal scale differs between sections in this diagram; gameplay uses the world
 coordinates below. S marks slimes, M marks mushrooms. Only real terrain is drawn.

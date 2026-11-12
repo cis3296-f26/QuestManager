@@ -13,7 +13,7 @@ This pass changes only Level 1's opening, x0–2040, plus opt-in rendering suppo
 - Rendered 12 representative views with the actual canvas renderers: Level 1 at camera x0/3820/14600; Level 2 at x0/2440/4650; Level 3 at x0/6020/10600; Level 4 at x0/6250/12100. Inspected those renders and the revised opening comparisons.
 - These images are **native canvas layout captures, not browser screenshots or playthroughs**. They use the existing fallback stick character because no user's authenticated shop loadout is available offline. Avatar code/design was not changed.
 
-![Existing levels: representative native canvas captures](docs/quality-review-before.png)
+![Existing levels: representative native canvas captures](quality-review-before.png)
 
 **Cannot verify here:** real browser input/latency, human jump timing, subjective movement rhythm, music/sound balance, browser text scaling, equipment loading under a real account, or whether the secrets feel rewarding to discover. Automated routes cannot establish those qualities. Static captures also do not demonstrate animation transitions or difficulty across an entire run.
 
@@ -41,7 +41,7 @@ Replace the opening's flat strips with a short descending landform, an oak-suppo
 
 The initial proposal placed the overlook at y320; visual review raised it another 10px to y310, leaving **12px of standing headroom** above the lower terrace. The final diagram reflects the implemented position.
 
-![Original and revised opening layout, same coordinate scales](docs/opening-quality-proposal.svg)
+![Original and revised opening layout, same coordinate scales](opening-quality-proposal.svg)
 
 | Beat | Revised coordinates | Gameplay purpose |
 | --- | --- | --- |
@@ -56,7 +56,7 @@ There is still one optional coin platform, one slime and two pits. The extra ter
 
 ## Visual changes and comparison
 
-![Before and revised Level 1 opening at matching camera coordinates](docs/opening-quality-comparison.png)
+![Before and revised Level 1 opening at matching camera coordinates](opening-quality-comparison.png)
 
 - The oak's branch reaches the overlook's underside and its roots meet the correct terrace. It is the focal point, not one of several competing foreground trees.
 - Decoration bases follow the actual terrace elevations. Pit takeoffs, landings and enemy silhouettes stay clear; later scenery positions remain identical.

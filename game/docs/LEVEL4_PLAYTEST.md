@@ -18,7 +18,7 @@ Click the canvas. A/D or Left/Right move; Space/W/Up jump; R restarts; Esc pause
 
 ## Course and intended routes
 
-See [the layout diagram](docs/crystal-cave-layout.svg). Coordinates are world pixels for finding encounters; no debugging controls are needed.
+See [the layout diagram](crystal-cave-layout.svg). Coordinates are world pixels for finding encounters; no debugging controls are needed.
 
 | Section | World x | Intended play |
 | --- | --- | --- |

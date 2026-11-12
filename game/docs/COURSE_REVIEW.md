@@ -8,7 +8,7 @@ or ended at a recovery block that the player did not need. The changes below rem
 24 elevated platforms and make remaining routes serve coins, avoidance or crossings.
 This is a reviewable gameplay revision, not a claim that the courses are finalized.
 
-![Before and after terrain comparison](docs/course-layout-review.svg)
+![Before and after terrain comparison](course-layout-review.svg)
 
 These are diagrams of actual geometry, not browser screenshots. They show three
 representative changes; the table below describes the wider pass.

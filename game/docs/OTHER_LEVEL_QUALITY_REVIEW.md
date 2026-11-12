@@ -6,7 +6,7 @@ This applies the approved Level 1 approach to the other existing levels: replace
 
 ## Scope and before/after plan
 
-![Same-scale entrance layouts](docs/other-quality-layouts.svg)
+![Same-scale entrance layouts](other-quality-layouts.svg)
 
 | Level | Original weakness | Revised entrance and rhythm |
 | --- | --- | --- |
@@ -14,7 +14,7 @@ This applies the approved Level 1 approach to the other existing levels: replace
 | 3 · Deep Forest | Repeated x220/y365 opening shelf and long flat floor, despite the later theme's strong branch routes. | Higher root terrace, visible optional bough across from it, a descending lower corridor, one short patrol and a clear return bank. |
 | 4 · Crystal Cave | Another x220/y365 coin shelf and flat ground, with mountain-like cave background triangles. | A lower crystal alcove beneath an upper stone crossing. Routes rejoin before a separate slime encounter and an overhead bat corridor. Background room arches and recessed masonry reinforce the cave setting. |
 
-![Entrance comparisons](docs/other-quality-openings.png)
+![Entrance comparisons](other-quality-openings.png)
 
 These are native canvas captures using the real renderers, not browser screenshots. No real user's shop/account data was loaded. The comparison views focus on layout/scenery; character appearance and animation code were not changed.
 
@@ -56,7 +56,7 @@ All later falling rocks, the 440px ferry chasm, cracked slab, blue plate/gate an
 
 ## Shared visual work and restrictions
 
-![Later routes: before and revised](docs/other-quality-routes.png)
+![Later routes: before and revised](other-quality-routes.png)
 
 Forest backgrounds use fixed authored groups with wider viewing windows, instead of uniform trunk spacing. The blue sky and soft green palette remain. Foreground trees and new supports pass the full silhouette/spacing validator; conflicting old decorations were removed. Decoration roots follow their actual terrace height.
 
