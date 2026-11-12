@@ -1,3 +1,5 @@
+> Historical design notes from an earlier pass. For the current three-level layouts and testing instructions, see [COURSE_REVIEW.md](COURSE_REVIEW.md).
+
 # Authored level design and validation
 
 Implemented for testing on `game-prototype`. Victoria's approval of gameplay,

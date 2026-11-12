@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1120" viewBox="0 0 1400 1120" role="img" aria-labelledby="title desc"><title id="title">QuestManager course review before and after</title><desc id="desc">Exact geometry diagrams of the Level 1 mushroom bypass, Level 2 collapsing bridge and Level 3 tree lift. Before is on the left, revised is on the right.</desc><g font-family="Arial, sans-serif">
+<rect x="0" y="0" width="1400" height="1120" fill="#faf0e6"/>
+<text x="30" y="36" font-size="27" fill="#35502b">QuestManager · Give each platform a reason</text>
+<text x="30" y="64" font-size="17" fill="#35502b">Actual terrain diagrams · before on the left, revised course on the right. S = slime; M = mushroom.</text>
+<text x="24" y="113" font-size="20" fill="#35502b">BEFORE · Level 1 · Mushroom bypass</text>
+<rect x="24" y="128" width="644" height="250" fill="#b9e1ef"/>
+<clipPath id="view00"><rect x="24" y="128" width="644" height="250"/></clipPath><g clip-path="url(#view00)">
+<rect x="-69.80000000000001" y="339.6" width="1078.7" height="36.800000000000004" fill="#a47f58"/>
+<rect x="-69.80000000000001" y="339.6" width="1078.7" height="4" fill="#638647"/>
+<rect x="70.9" y="295.9" width="147.4" height="11.040000000000001" fill="#a47f58"/>
+<rect x="70.9" y="295.9" width="147.4" height="4" fill="#638647"/>
+<rect x="238.4" y="263.70000000000005" width="147.4" height="11.040000000000001" fill="#a47f58"/>
+<rect x="238.4" y="263.70000000000005" width="147.4" height="4" fill="#638647"/>
+<rect x="439.40000000000003" y="295.9" width="107.2" height="11.040000000000001" fill="#a47f58"/>
+<rect x="439.40000000000003" y="295.9" width="107.2" height="4" fill="#638647"/>
+<circle cx="318.8" cy="331.6" r="9" fill="#bc6c53" stroke="#35502b"/>
+<text x="313.8" y="336.6" font-size="13" fill="#fff">M</text>
+<path d="M 258.5 346.6 H 393.84000000000003" stroke="#69875a" stroke-width="2" stroke-dasharray="4 3"/>
+</g>
+<text x="724" y="113" font-size="20" fill="#35502b">REVISED · Level 1 · Mushroom bypass</text>
+<rect x="724" y="128" width="644" height="250" fill="#b9e1ef"/>
+<clipPath id="view01"><rect x="724" y="128" width="644" height="250"/></clipPath><g clip-path="url(#view01)">
+<rect x="630.2" y="339.6" width="1078.7" height="36.800000000000004" fill="#a47f58"/>
+<rect x="630.2" y="339.6" width="1078.7" height="4" fill="#638647"/>
+<rect x="770.9" y="295.9" width="335" height="11.040000000000001" fill="#a47f58"/>
+<rect x="770.9" y="295.9" width="335" height="4" fill="#638647"/>
+<circle cx="1018.8" cy="331.6" r="9" fill="#bc6c53" stroke="#35502b"/>
+<text x="1013.8" y="336.6" font-size="13" fill="#fff">M</text>
+<path d="M 958.5 346.6 H 1093.8400000000001" stroke="#69875a" stroke-width="2" stroke-dasharray="4 3"/>
+</g>
+<text x="28" y="406" font-size="18" fill="#35502b">One broad bypass clears the patrol; the empty staircase and return step are gone.</text>
+<text x="24" y="451" font-size="20" fill="#35502b">BEFORE · Level 2 · Cracked bridge</text>
+<rect x="24" y="466" width="644" height="250" fill="#b9e1ef"/>
+<clipPath id="view10"><rect x="24" y="466" width="644" height="250"/></clipPath><g clip-path="url(#view10)">
+<rect x="-384.70000000000005" y="677.6" width="978.2" height="36.800000000000004" fill="#a47f58"/>
+<rect x="-384.70000000000005" y="677.6" width="978.2" height="4" fill="#638647"/>
+<rect x="17.3" y="585.6" width="120.60000000000001" height="11.040000000000001" fill="#a47f58"/>
+<rect x="17.3" y="585.6" width="120.60000000000001" height="4" fill="#638647"/>
+<rect x="164.70000000000002" y="604" width="107.2" height="11.040000000000001" fill="#a47f58"/>
+<rect x="164.70000000000002" y="604" width="107.2" height="4" fill="#638647"/>
+<rect x="312.1" y="633.9" width="107.2" height="11.040000000000001" fill="#cb9456"/>
+<rect x="312.1" y="633.9" width="107.2" height="4" fill="#eadcbf"/>
+<text x="360.1" y="645.9" font-size="18" fill="#513e2b">×</text>
+<rect x="472.90000000000003" y="620.1" width="100.5" height="11.040000000000001" fill="#a47f58"/>
+<rect x="472.90000000000003" y="620.1" width="100.5" height="4" fill="#638647"/>
+<text x="211.60000000000002" y="673.4" font-size="20" fill="#9b5943">▲▲</text>
+</g>
+<text x="724" y="451" font-size="20" fill="#35502b">REVISED · Level 2 · Cracked bridge</text>
+<rect x="724" y="466" width="644" height="250" fill="#b9e1ef"/>
+<clipPath id="view11"><rect x="724" y="466" width="644" height="250"/></clipPath><g clip-path="url(#view11)">
+<rect x="315.29999999999995" y="677.6" width="696.8000000000001" height="36.800000000000004" fill="#a47f58"/>
+<rect x="315.29999999999995" y="677.6" width="696.8000000000001" height="4" fill="#638647"/>
+<rect x="1119.3" y="677.6" width="174.20000000000002" height="36.800000000000004" fill="#a47f58"/>
+<rect x="1119.3" y="677.6" width="174.20000000000002" height="4" fill="#638647"/>
+<rect x="549.8" y="620.1" width="187.60000000000002" height="11.040000000000001" fill="#a47f58"/>
+<rect x="549.8" y="620.1" width="187.60000000000002" height="4" fill="#638647"/>
+<rect x="797.7" y="620.1" width="174.20000000000002" height="11.040000000000001" fill="#a47f58"/>
+<rect x="797.7" y="620.1" width="174.20000000000002" height="4" fill="#638647"/>
+<rect x="1012.1" y="633.9" width="107.2" height="11.040000000000001" fill="#cb9456"/>
+<rect x="1012.1" y="633.9" width="107.2" height="4" fill="#eadcbf"/>
+<text x="1060.1" y="645.9" font-size="18" fill="#513e2b">×</text>
+<rect x="1172.9" y="620.1" width="100.5" height="11.040000000000001" fill="#a47f58"/>
+<rect x="1172.9" y="620.1" width="100.5" height="4" fill="#638647"/>
+<text x="911.6" y="673.4" font-size="20" fill="#9b5943">▲▲</text>
+</g>
+<text x="28" y="744" font-size="18" fill="#35502b">The timer now matters: the bridge spans a real pit, with a visible exit ahead.</text>
+<text x="24" y="789" font-size="20" fill="#35502b">BEFORE · Level 3 · Tree lift</text>
+<rect x="24" y="804" width="644" height="250" fill="#b9e1ef"/>
+<clipPath id="view20"><rect x="24" y="804" width="644" height="250"/></clipPath><g clip-path="url(#view20)">
+<rect x="-364.6" y="1015.6" width="1058.6000000000001" height="36.800000000000004" fill="#a47f58"/>
+<rect x="-364.6" y="1015.6" width="1058.6000000000001" height="4" fill="#638647"/>
+<rect x="91" y="971.9" width="93.80000000000001" height="11.040000000000001" fill="#a47f58"/>
+<rect x="91" y="971.9" width="93.80000000000001" height="4" fill="#638647"/>
+<rect x="225" y="971.9" width="80.4" height="11.040000000000001" fill="#a47f58"/>
+<rect x="225" y="971.9" width="80.4" height="4" fill="#eadcbf"/>
+<text x="261" y="963.9" font-size="23" fill="#35502b">↕</text>
+<rect x="359" y="923.6" width="147.4" height="11.040000000000001" fill="#a47f58"/>
+<rect x="359" y="923.6" width="147.4" height="4" fill="#638647"/>
+<rect x="566.7" y="971.9" width="127.30000000000001" height="11.040000000000001" fill="#a47f58"/>
+<rect x="566.7" y="971.9" width="127.30000000000001" height="4" fill="#638647"/>
+<text x="426" y="1011.4" font-size="20" fill="#9b5943">▲▲</text>
+</g>
+<text x="724" y="789" font-size="20" fill="#35502b">REVISED · Level 3 · Tree lift</text>
+<rect x="724" y="804" width="644" height="250" fill="#b9e1ef"/>
+<clipPath id="view21"><rect x="724" y="804" width="644" height="250"/></clipPath><g clip-path="url(#view21)">
+<rect x="335.4" y="1015.6" width="683.4000000000001" height="36.800000000000004" fill="#a47f58"/>
+<rect x="335.4" y="1015.6" width="683.4000000000001" height="4" fill="#638647"/>
+<rect x="1233.2" y="1015.6" width="160.8" height="36.800000000000004" fill="#a47f58"/>
+<rect x="1233.2" y="1015.6" width="160.8" height="4" fill="#638647"/>
+<rect x="791" y="971.9" width="93.80000000000001" height="11.040000000000001" fill="#a47f58"/>
+<rect x="791" y="971.9" width="93.80000000000001" height="4" fill="#638647"/>
+<rect x="925" y="971.9" width="80.4" height="11.040000000000001" fill="#a47f58"/>
+<rect x="925" y="971.9" width="80.4" height="4" fill="#eadcbf"/>
+<text x="961" y="963.9" font-size="23" fill="#35502b">↕</text>
+<rect x="1059" y="923.6" width="147.4" height="11.040000000000001" fill="#a47f58"/>
+<rect x="1059" y="923.6" width="147.4" height="4" fill="#638647"/>
+<rect x="1266.7" y="971.9" width="127.30000000000001" height="11.040000000000001" fill="#a47f58"/>
+<rect x="1266.7" y="971.9" width="127.30000000000001" height="4" fill="#638647"/>
+<text x="1246.6" y="1011.4" font-size="20" fill="#9b5943">▲▲</text>
+</g>
+<text x="28" y="1082" font-size="18" fill="#35502b">The lift now reaches the branch spanning a ravine; it has a real traversal purpose.</text>
+<text x="28" y="1100" font-size="17" fill="#35502b">Coin IDs, controls, physics, shop avatars, audio and account progress remain unchanged.</text>
+</g></svg>

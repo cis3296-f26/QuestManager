@@ -1,7 +1,7 @@
 # Level 3: Deep Forest
 
 Implemented on `game-prototype`. Gameplay, difficulty, visuals and listening approval
-are pending your own browser playthrough. Levels 1 and 2 retain their exact layouts.
+are pending your own browser playthrough. See COURSE_REVIEW.md for the newer course-design pass across Levels 1–3.
 
 ## Open in VS Code
 
@@ -28,13 +28,14 @@ coordinates below. S marks slimes, M marks mushrooms. Only real terrain is drawn
 
 | Section | World x | Intended play |
 | --- | --- | --- |
-| Forest Entrance | 0–2400 | Safe spawn, simple branch practice, Coin 1 at 540 and one isolated slime. |
+| Forest Entrance | 0–2400 | Safe spawn, one short branch-and-coin detour, Coin 1 at 310 and one isolated slime. |
 | Branching Forest Paths | 2400–5400 | Follow lower terrain or climb 2700 → 2940 → 3200 to the Hidden Bough. Avoid its short mushroom patrol and collect Coin 2 at 3490. Drop back near 3820. Find the low Fern Passage at 4450 and reconnect near 4970. |
-| Moving Canopy | 5400–8500 | Wait on the wooden dock at 6220. Board the horizontal ferry at 6460–6660 and exit at 6880. Approach the tree lift from 7400, ride from y365 to y260, then jump to the high branch at 7800 above the thorn patch. Reconnect at 8110. |
-| Heart of the Forest | 8500–11800 | Time the mushroom bypass, then try the cracked bridge at 9630. The optional nest climb starts at 10600; cross the swaying bough at 11030 and cracked ledge at 11300 for Coin 3 at 11490. Both cracked bridges warn for 1.1 seconds. Reconnect to the clearing at 11800. |
+| Moving Canopy | 5400–8500 | Wait on the wooden dock at 6220. Board the horizontal ferry at 6460–6660 and exit at 6880. Approach the tree lift from 7400, ride from y365 to y260, then jump to the high branch at 7800 across the root ravine. Stay on the upper route past the far-bank thorns and reconnect at 8110. |
+| Heart of the Forest | 8500–11800 | Time the mushroom bypass, then cross the cracked bridge at 9750. The optional nest climb starts at 10600; cross the swaying bough at 11030 and cracked ledge at 11300 for Coin 3 at 11490. Both cracked bridges warn for 1.1 seconds. Reconnect to the clearing at 11800. |
 | Final Forest Clearing | 11800–14000 | Open scenery, recovery room and one familiar final gap. The flag is on safe solid ground, with no last-second enemy or thorn trap. |
 
-The lower route can finish with zero coins and without landing in a secret. The
+The main route can finish with zero coins and without landing in a secret. The lift
+and Heart of the Forest cracked bridge are now meaningful main-route crossings. The
 medium/hard coin routes reward exploration; all three coins fit one successful run.
 The 220px stream gap has a raised dock and ferry. Do not treat it as a flat-ground
 jump. The 200px gap after the lift has a raised takeoff ledge.
@@ -60,8 +61,8 @@ jump. The 200px gap after the lift has a raised takeoff ledge.
 
 ## Architecture and changes
 
-- `levels/Level3.js`: five authored sections, 43 platforms, six predictable patrols,
-  two thorn patches, three stable coin IDs, three optional discovery areas and flag.
+- `levels/Level3.js`: five authored sections, 38 platforms, six predictable patrols,
+  three thorn patches, three stable coin IDs, three optional discovery areas and flag.
 - `levels/Level3Scenery.js`: hand-placed trees, bushes and flowers, with large branch
   anchors under selected platforms. Trees build in density, then open at the finish.
 - `rendering/GrasslandRenderer.js`: opt-in Deep Forest backdrop, richer greens,

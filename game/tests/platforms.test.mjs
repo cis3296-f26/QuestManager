@@ -151,10 +151,11 @@ test("collapse delays are configurable and all temporary states reset", () => {
 });
 
 test("a collapsed board above safe terrain drops the player onto that terrain without a death effect", () => {
-    const level = new LevelManager(levels[1]);
-    const platform = level.platforms.find((entry) => entry.config?.id === "grove-crumble-4030");
+    // Isolated safe-floor case: live course bridges now span real pits.
+    const platform = collapsing();
+    const floor = { x: 0, y: 460, width: 1000, height: 80 };
     const player = stand(platform);
-    for (let i = 0; i < 150; i++) tick(player, level.platforms, 1 / 60);
+    for (let i = 0; i < 150; i++) tick(player, [platform, floor], 1 / 60);
     assert.equal(platform.state, "gone");
     assert.equal(player.grounded, true);
     assert.equal(player.y + player.height, 460);

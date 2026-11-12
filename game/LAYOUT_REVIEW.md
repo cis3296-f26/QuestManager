@@ -1,3 +1,5 @@
+> Historical design notes from an earlier pass. For the current three-level layouts and testing instructions, see [COURSE_REVIEW.md](COURSE_REVIEW.md).
+
 # Layout review — local changes based on game-prototype 12a52c1
 
 These changes are prepared locally and have not been committed or pushed.

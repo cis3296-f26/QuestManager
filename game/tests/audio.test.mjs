@@ -124,7 +124,11 @@ test("original synthesized assets are cached, quiet, finite, distinct and click-
 test("game event transitions trigger coins, landings, footsteps and platform cues once at every rate", () => {
     for (const fps of [30, 60, 120]) {
         const calls = [], audio = { play: (name) => calls.push(name), stopEffect() {} };
-        const events = new GameAudioEvents(audio), level = new LevelManager(levels[1]), coins = new CoinManager(level.config.coins);
+        // Keep event-count checks independent of the current course's pit placements.
+        const eventFixture = { ...levels[1], worldWidth: 1000, enemies: [], hazards: [], explorationAreas: [],
+            platforms: [{ id: "event-floor", x: 0, y: 460, width: 1000, height: 80 },
+                { id: "event-board", type: "collapsing", x: 100, y: 300, width: 120, height: 24, collapseDelay: 1 }] };
+        const events = new GameAudioEvents(audio), level = new LevelManager(eventFixture), coins = new CoinManager(level.config.coins);
         const board = level.platforms.find((p) => p.type === "collapsing");
         level.player.reset({ x: board.x + 20, feetY: board.y - 1 }); level.player.grounded = false; level.player.velocityY = 300;
         for (let frame = 0; frame < fps * 2; frame++) {
