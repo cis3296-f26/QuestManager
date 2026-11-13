@@ -18,6 +18,7 @@ export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
     ctx.clip();
 
     if (enemy.appearance === "mushroom") drawMushroom(ctx, enemy.walkTime);
+    else if(enemy.appearance==="guardian")drawGuardian(ctx,enemy.walkTime);
     else if(enemy.appearance==="scorpion")drawScorpion(ctx,enemy.walkTime);
     else if(enemy.appearance==="bat")drawBat(ctx,enemy.walkTime);
     else drawSlime(ctx, enemy.walkTime,enemy.appearance==="cave-slime");
@@ -119,4 +120,15 @@ function drawScorpion(ctx,time) {
         ctx.beginPath();ctx.moveTo(21,17);ctx.lineTo(27,y);ctx.lineTo(30,y-2);ctx.moveTo(27,y);ctx.lineTo(31,y+2);ctx.stroke();
     }
     ctx.fillStyle="#faf0e6";ctx.fillRect(20,13,4,3);ctx.fillStyle="#403725";ctx.fillRect(22,13,2,2);
+}
+
+// Stone beetle: cool dark shell and gold sun plate stay distinct from sandstone.
+function drawGuardian(ctx,time) {
+ const step=Math.sin(time*10)*2;
+ ctx.fillStyle="#554f45";ctx.fillRect(5+step,20,8,4);ctx.fillRect(21-step,20,8,4);
+ ctx.fillStyle="#817e6c";ctx.strokeStyle="#393d36";ctx.lineWidth=1.5;
+ ctx.beginPath();ctx.moveTo(2,19);ctx.lineTo(5,6);ctx.lineTo(13,2);ctx.lineTo(25,5);ctx.lineTo(30,18);ctx.lineTo(26,22);ctx.lineTo(7,22);ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.strokeStyle="#b8ad8f";ctx.beginPath();ctx.moveTo(12,3);ctx.lineTo(15,8);ctx.lineTo(10,14);ctx.stroke();
+ ctx.fillStyle="#ebc773";ctx.beginPath();ctx.arc(11,11,4,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#faf0d2";ctx.fillRect(20,9,4,5);ctx.fillRect(26,10,3,4);ctx.fillStyle="#393d36";ctx.fillRect(22,10,2,3);ctx.fillRect(27,11,2,2);
 }

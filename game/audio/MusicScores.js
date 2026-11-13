@@ -30,7 +30,12 @@ export const MUSIC_TRACKS = Object.freeze({
         instruments: ["harp", "reed", "drum", "shaker", "bass"],
         description: "Warm plucked answers, a playful reed refrain and a quiet syncopated hand-drum pulse; a restful oasis phrase between ridge themes.",
         chords: [[45,52,57,60],[43,50,55,59],[41,48,53,57],[40,47,52,56],[45,52,57,60],[48,55,60,64],[43,50,55,59],[40,47,52,56]],
-        melody: [[76,72,74,69],[71,74,79],[77,76,72,69],[71,68,71],[76,81,79,76],[79,76,72],[74,71,67,71],[68,71,69]] }
+        melody: [[76,72,74,69],[71,74,79],[77,76,72,69],[71,68,71],[76,81,79,76],[79,76,72],[74,71,67,71],[68,71,69]] },
+    temple: { title: "The Sun Beneath the Stone", biome: "The Lost Sun Temple", bpm: 88, beatsPerBar: 4, bars: 24,
+        instruments: ["reed", "harp", "drum", "pad", "bell"],
+        description: "A measured temple procession: low reeds, warm plucked replies and a five-stroke hand-drum figure, opening into a spacious buried-chamber phrase.",
+        chords: [[50,57,60,65],[48,55,60,64],[46,53,57,62],[45,52,57,61],[50,53,57,64],[43,50,55,62],[46,53,58,65],[45,52,57,61]],
+        melody: [[69,65,62,64],[67,64,60],[65,69,70,65],[64,61,64],[65,69,74,72],[67,62,65],[70,69,65,62],[64,61,62]] }
 });
 
 // Notes use beats and MIDI pitches. Phrase B answers A, then A' returns with
@@ -81,6 +86,14 @@ export function arrangeMusic(key) {
             melody.forEach((pitch,i)=>add(bar,[.1,.85,2,2.85][i],phrase===1?.85:.55,
                 pitch+(phrase===1?-12:0),phrase===1?"harp":"reed",.025,-.2));
             if(phrase===2&&local%2)add(bar,3.4,.5,chord[2]+24,"harp",.012,.45);
+        } else if (key === "temple") {
+            chord.slice(0,3).forEach((pitch,i)=>add(bar,.05,4.4,pitch-12,"pad",.005,(i-1)*.45));
+            for(const [i,at] of (phrase===1?[0,2.5]:[0,.75,1.75,2.5,3.25]).entries())
+                add(bar,at,.28,i%2?43:38,"drum",phrase===1?.008:.012,-.1);
+            for(const [i,at] of [.5,2,3.5].entries())add(bar,at,.8,chord[(i+phrase)%chord.length]+12,"harp",.015,.3);
+            if(phrase!==1||local%2===0)melody.forEach((pitch,i)=>add(bar,[.15,1,2.25,3][i],.7,
+                pitch+(phrase===2&&local>3?12:0),"reed",.024,-.25));
+            if(phrase>0&&local%2===1)add(bar,2.8,2.1,chord.at(-1)+12,"bell",.010,.45);
         } else if (key === "cave") {
             chord.forEach((pitch,i)=>add(bar, .1, 5.4, pitch-12, "pad", .006, (i-1)*.6));
             melody.forEach((pitch,i)=>add(bar, .4+i*1.7, 3.6, pitch+(phrase===1?-12:0), "bell", .024, i?.45:-.4));

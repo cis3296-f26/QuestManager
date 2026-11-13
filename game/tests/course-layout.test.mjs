@@ -9,8 +9,8 @@ import { jump } from "../engine/Physics.js";
 
 const id = p => p.id ?? p.config?.id;
 
-test("opening detours each contain one broad ledge and the easy coin directly above it", () => {
-    for (const config of levels) {
+test("Levels 1–5 opening detours each contain one broad ledge and the easy coin directly above it", () => {
+    for (const config of levels.filter(l=>l.id<=5)) {
         const detour = config.stages[0].optionalRoutes[0];
         assert.equal(detour.platforms.length, 1, "no empty opening staircase");
         const ledge = config.platforms.find(p => p.id === detour.platforms[0]), coin = config.coins[0];

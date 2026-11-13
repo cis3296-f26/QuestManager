@@ -13,7 +13,7 @@ export function validateCaveMechanics(config) {
     }
     for(const gate of gates) {
         if(!box(gate))errors.push(`Invalid gate: ${gate.id}.`);
-        if(gate.exitSide!==undefined&&gate.exitSide!=="left")errors.push(`Invalid gate exit side: ${gate.id}.`);
+        if(gate.exitSide!==undefined&&!["left","right"].includes(gate.exitSide))errors.push(`Invalid gate exit side: ${gate.id}.`);
         if(!switches.some(s=>s.gateIds?.includes(gate.id)))errors.push(`Gate ${gate.id} has no connected switch.`);
     }
     for(const s of switches) {

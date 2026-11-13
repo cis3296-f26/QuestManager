@@ -13,7 +13,7 @@ import { drawExplorationFoliage, drawDiscoveryNotice } from "../rendering/Explor
 const witnesses = JSON.parse(readFileSync(new URL("./fixtures/exploration-routes.json", import.meta.url)));
 
 test("exploration routes have valid hints, real entrance/exit terrain and stable coin IDs", () => {
-    assert.deepEqual(levels.map((level) => level.explorationAreas.length), [2, 3, 3, 2, 5]);
+    assert.deepEqual(levels.map((level) => level.explorationAreas.length), [2, 3, 3, 2, 5, 5]);
     for (const config of levels) {
         assert.deepEqual(validateExploration(config), []);
         assert.deepEqual(config.coins.map((coin) => coin.id), [1, 2, 3].map((n) => `level-${config.id}-coin-${n}`));

@@ -1,11 +1,12 @@
 // Render current state only; warning shake never moves the collision rectangles.
 export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={}) {
+    const temple=level.config.theme==="temple";
     // Sealed alcoves are visibly stone, unlike blue-edged jump-through runways.
     for(const wall of level.config.barriers??[]) {
         if(wall.x+wall.width<cameraX||wall.x>cameraX+width)continue;
-        ctx.fillStyle="#91869f";ctx.fillRect(wall.x,wall.y,wall.width,wall.height);
-        ctx.strokeStyle="#d0c7d7";ctx.lineWidth=2;ctx.strokeRect(wall.x,wall.y,wall.width,wall.height);
-        ctx.fillStyle="#b4a7c2";
+        ctx.fillStyle=temple?"#9c8662":"#91869f";ctx.fillRect(wall.x,wall.y,wall.width,wall.height);
+        ctx.strokeStyle=temple?"#d6bd8a":"#d0c7d7";ctx.lineWidth=2;ctx.strokeRect(wall.x,wall.y,wall.width,wall.height);
+        ctx.fillStyle=temple?"#b8a17a":"#b4a7c2";
         for(let y=wall.y+8;y<wall.y+wall.height;y+=28)
             ctx.fillRect(wall.x+5,y,Math.min(12,wall.width-10),3);
     }
@@ -43,11 +44,11 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
         if(s.x+s.width<cameraX||s.x>cameraX+width)continue;
         ctx.fillStyle="#586275";ctx.fillRect(s.x,s.y+8,s.width,s.height-8);
         const pressed=s.active?(reduceMotion?1:Math.min(1,s.activationTime/.18)):0;
-        ctx.fillStyle=s.active?"#b1eee2":"#75bed2";
+        ctx.fillStyle=s.active?"#b1eee2":temple?"#dcb867":"#75bed2";
         ctx.fillRect(s.x+3,s.y+2+pressed*5,s.width-6,8-pressed*5);
         ctx.fillStyle="#f2ecd1";ctx.font="bold 11px Arial";ctx.textAlign="center";
         ctx.fillText(s.active?(s.openDuration?`${s.remainingTime.toFixed(1)}s`:"OPEN"):
-            s.openDuration?`${s.openDuration}s SWITCH`:"BLUE SEAL",s.x+s.width/2,s.y-5);
+            s.openDuration?`${s.openDuration}s SWITCH`:(s.label??"BLUE SEAL"),s.x+s.width/2,s.y-5);
         if(s.openDuration) {
             ctx.fillStyle="#b1eee2";ctx.fillText(s.active?"← RUN BACK":s.mode==="stomp"?"STOMP TO OPEN":"STEP TO OPEN",s.x+s.width/2,s.y-23);
         }
@@ -56,11 +57,11 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
     for(const s of level.puzzle.switches)for(const id of s.routePlatformIds??[]) {
         const p=level.platforms.find(p=>p.id===id);
         if(!p||p.x+p.width<cameraX||p.x>cameraX+width)continue;
-        ctx.fillStyle="#75bed2";ctx.fillRect(p.x+3,p.y,p.width-6,4);
+        ctx.fillStyle=temple?"#dcb867":"#75bed2";ctx.fillRect(p.x+3,p.y,p.width-6,4);
     }
     for(const g of level.puzzle.gates) {
         if(g.x+g.width<cameraX||g.x>cameraX+width)continue;
-        ctx.save();ctx.strokeStyle=g.open?"#9be0d5":"#81c5db";ctx.lineWidth=3;
+        ctx.save();ctx.strokeStyle=g.open?"#9be0d5":temple?"#dcb867":"#81c5db";ctx.lineWidth=3;
         const progress=g.open?(reduceMotion?1:Math.min(1,g.openTime/.35)):0;
         if(g.open) {
             ctx.globalAlpha*=.45;ctx.strokeRect(g.x,g.y,g.width,g.height);ctx.globalAlpha/=.45;
@@ -69,7 +70,7 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
             ctx.beginPath();ctx.rect(g.x-2,g.y-2,g.width+4,g.height+4);ctx.clip();
             ctx.translate(0,-progress*g.height);
             ctx.globalAlpha*=1-progress;
-            ctx.fillStyle="#414b64";ctx.fillRect(g.x,g.y,g.width,g.height);ctx.strokeRect(g.x,g.y,g.width,g.height);
+            ctx.fillStyle=temple?"#685c47":"#414b64";ctx.fillRect(g.x,g.y,g.width,g.height);ctx.strokeRect(g.x,g.y,g.width,g.height);
             for(let y=g.y+15;y<g.y+g.height-5;y+=28){ctx.beginPath();ctx.moveTo(g.x+6,y);ctx.lineTo(g.x+g.width/2,y-7);
                 ctx.lineTo(g.x+g.width-6,y);ctx.lineTo(g.x+g.width/2,y+7);ctx.closePath();ctx.stroke();}
         }

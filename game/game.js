@@ -1,3 +1,5 @@
+import { TempleRenderer } from "./rendering/TempleRenderer.js";
+import { drawSunPulses } from "./rendering/SunPulseRenderer.js";
 import { DesertRenderer, drawWind } from "./rendering/DesertRenderer.js";
 import { developmentBuild } from "./dev/buildConfig.js";
 import { CaveRenderer } from "./rendering/CaveRenderer.js";
@@ -47,6 +49,7 @@ const avatar = new AvatarRenderer();
 const grassland = new GrasslandRenderer();
 const cave = new CaveRenderer();
 const desert = new DesertRenderer();
+const temple = new TempleRenderer();
 
 let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
@@ -225,7 +228,9 @@ function playLevel(config, { developerBypass = false } = {}) {
     if (developerBypass) developer?.markAttempt();
     audio.setScene(config.audio?.music ?? "grassland", { gameplay: true });
     document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
-    document.getElementById("enemyInstructions").textContent = config.theme === "desert"
+    document.getElementById("enemyInstructions").textContent = config.theme === "temple"
+        ? "Stomp stone guardians; avoid scorpions. Watch CHARGING warnings and cross sun beams while dark."
+        : config.theme === "desert"
         ? "Jump over scorpions: they cannot be stomped. Watch the ribbons before entering a wind gust."
         : "Land on slimes to defeat them; mushrooms must still be avoided.";
     canvas.setAttribute("aria-label", `Level ${config.id}: ${config.name} platform game`);
@@ -314,7 +319,7 @@ function update(dt) {
     const direction = Number(right) - Number(left);
     const result = developer ? developer.step(direction, keys, dt) : stepLevel(level, direction, dt);
     if (result.death) {
-        const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: "A falling rock caught you! Restarting…" };
+        const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: "A falling rock caught you! Restarting…", "sun-pulse": "A sun pulse caught you! Cross while the beam is dark. Restarting…" };
         startDeath(message[result.death], result.death);
         return;
     }
@@ -341,13 +346,14 @@ function drawPlayer() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const scenery = level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
+    const scenery = level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
     scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme, level.config.openingLandscape ?? level.config.landscape);
 
     ctx.save();
     ctx.translate(-cameraX, 0);
     scenery.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
     grassland.drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
+    if (level.config.theme === "temple") temple.drawMasonry(ctx, platforms, cameraX, canvas.width);
     drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawExplorationFoliage(ctx, level.exploration, cameraX, canvas.width);
 
@@ -366,6 +372,7 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
+    drawSunPulses(ctx, level.sunPulses, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawWind(ctx, level.wind, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawCaveMechanics(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawHazards(ctx, level.config.hazards ?? []);

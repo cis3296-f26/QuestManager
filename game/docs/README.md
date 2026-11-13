@@ -6,6 +6,8 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Current reviews and level guides
 
+- [Level 6: The Lost Sun Temple design, previews and playtest](LEVEL6_PLAYTEST.md)
+
 - [Level 5: Sunscorched Dunes design, previews and playtest](LEVEL5_PLAYTEST.md)
 
 - [Timed cave vault and falling spikes](TIMED_CAVE_PLAYTEST.md)

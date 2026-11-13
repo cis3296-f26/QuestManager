@@ -8,6 +8,8 @@ export function drawDebug(ctx,level,coins,cameraX) {
     level.enemies.filter(e=>e.active).forEach(e=>rect({x:e.x,y:e.feetY-e.height,width:e.width,height:e.height},"#ff759a"));
     (level.config.hazards??[]).forEach(h=>rect(h,"#ff6b61"));
     level.stalactites.forEach(r=>{if(r.state!=="spent")rect(r,"#ff6b61");ctx.setLineDash([4,3]);rect(r.config.trigger,"#bcb1ff");ctx.setLineDash([]);});
+    for(const trap of level.sunPulses){rect(trap.config,trap.state==="active"?"#ff6b61":trap.state==="charging"?"#ffe573":"#b5c8c3");ctx.fillStyle="#fff4c5";ctx.font="11px Arial";ctx.fillText(`${trap.config.id} · ${trap.state} ${trap.phase.remaining.toFixed(1)}s`,trap.config.x+28,trap.config.y+15);}
+    level.puzzle.barriers.forEach(b=>rect(b,"#cfbda6"));
     for(const zone of level.wind.zones){ctx.setLineDash([6,4]);rect(zone,"#dfc475");ctx.setLineDash([]);}
     level.puzzle.switches.forEach(s=>rect(s,"#76e0d3"));
     level.puzzle.gates.forEach(g=>{ctx.setLineDash(g.open?[3,3]:[]);rect(g,"#76e0d3");ctx.setLineDash([]);});

@@ -15,7 +15,7 @@ import { GrasslandRenderer } from "../rendering/GrasslandRenderer.js";
 const platformId = (p) => p?.id ?? p?.config?.id;
 
 test("Deep Forest has five intentional sections, distinct coins and only existing enemy/platform behaviors", () => {
-    assert.deepEqual(levels.map(l => l.id), [1, 2, 3, 4, 5]);
+    assert.deepEqual(levels.map(l => l.id), [1, 2, 3, 4, 5, 6]);
     assert.equal(level3.stages.length, 5); assert.equal(level3.theme, "deep-forest");
     assert.equal(level3.audio.music, "deepForest");
     assert.deepEqual(level3.coins.map(c => c.id), [1, 2, 3].map(n => `level-3-coin-${n}`));

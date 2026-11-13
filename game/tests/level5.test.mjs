@@ -22,8 +22,8 @@ const hash=x=>createHash("sha256").update(JSON.stringify(x)).digest("hex");
 const routes=suffix=>JSON.parse(readFileSync(new URL(`./fixtures/level5-${suffix}.json`,import.meta.url)));
 const id=p=>p?.id??p?.config?.id;
 
-test("Sunscorched Dunes has five distinct terrain sections and stable three-coin IDs, without filler length or Level 6",()=>{
-    assert.deepEqual(levels.map(l=>l.id),[1,2,3,4,5]);assert.equal(level5.name,"Sunscorched Dunes");
+test("Sunscorched Dunes has five distinct terrain sections and stable three-coin IDs, without filler length",()=>{
+    assert.deepEqual(levels.map(l=>l.id),[1,2,3,4,5,6]);assert.equal(level5.name,"Sunscorched Dunes");
     assert.deepEqual(level5.stages.map(s=>s.id),["arrival","canyon","oasis","ridge","ruins"]);
     assert.ok(level5.worldWidth>=20000&&level5.worldWidth<=24000);
     assert.ok(levels.slice(0,4).every(l=>l.worldWidth<level5.worldWidth));assert.deepEqual(validateLevel(level5).errors,[]);
@@ -85,7 +85,7 @@ test("cracked ridge shelves warn, fail over danger and reset along with gust clo
     }
 });
 
-test("Level 5 saves union only completed attempts, preserve Levels 1–4, isolate users and unlock unbuilt Level 6",()=>{
+test("Level 5 saves union only completed attempts, preserve Levels 1–4, isolate users and unlock Level 6",()=>{
     const disk=new Map(),storage={getItem:k=>disk.get(k),setItem:(k,v)=>disk.set(k,v)};
     const load=()=>{const p=new LevelProgressManager(new LocalProgressStore(storage));levels.forEach(l=>p.registerLevel(l));p.setUser("desert-A");return p;};
     const p=load();for(const level of levels.slice(0,4))p.completeLevel(level.id,level.coins.map(c=>c.id));
@@ -94,7 +94,7 @@ test("Level 5 saves union only completed attempts, preserve Levels 1–4, isolat
     assert.equal(JSON.stringify(load().data.levels),earlier);
     p.completeLevel(5,level5.coins.map(c=>c.id),{developerAssisted:true});assert.equal(load().getLevel(5).completed,false);
     p.completeLevel(5,[level5.coins[0].id]);const fresh=load();
-    assert.equal(fresh.getLevel(6).unlocked,true);assert.equal(levels.some(l=>l.id===6),false);
+    assert.equal(fresh.getLevel(6).unlocked,true);assert.equal(levels.some(l=>l.id===7),false);
     fresh.completeLevel(5,[level5.coins[1].id,level5.coins[2].id]);fresh.completeLevel(5,[]);
     assert.equal(load().getLevel(5).fullyCompleted,true);assert.deepEqual(load().totalCoins,{earned:15,possible:30});
     for(const config of levels.slice(0,4))assert.deepEqual(load().getLevel(config.id).coinIds,config.coins.map(c=>c.id));

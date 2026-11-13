@@ -35,8 +35,10 @@ export function stepLevel(level, direction, dt, { invincible = false, flight = n
     // never depend on hazard ordering or short-circuit an active timer.
     let fallingRock = false;
     for (const rock of level.stalactites) fallingRock = rock.update(dt, player, previous, platforms) || fallingRock;
+    let sunPulse = false;
+    for (const trap of level.sunPulses) sunPulse = trap.update(dt, player, previous) || sunPulse;
     const death = invincible || flight ? null : contact.deadly ? "enemy" : player.y >= movement.viewHeight ? "fall" :
-        touchesHazard(player, config.hazards ?? []) ? "thorns" : fallingRock ? "stalactite" : null;
+        touchesHazard(player, config.hazards ?? []) ? "thorns" : fallingRock ? "stalactite" : sunPulse ? "sun-pulse" : null;
     const discovered = death ? [] : level.exploration.update(player, dt);
     return { death, stomped: contact.stomped, discovered };
 }

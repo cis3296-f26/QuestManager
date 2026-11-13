@@ -22,9 +22,9 @@ test("current-level reset persists empty coins while keeping completion, unlocks
     const fresh=open();assert.deepEqual(fresh.getLevel(2).coinIds,[]);
     assert.equal(fresh.getLevel(2).completed,true);assert.equal(fresh.getLevel(2).fullyCompleted,false);
     assert.equal(fresh.getLevel(3).unlocked,true);assert.equal(fresh.getLevel(5).unlocked,true);
-    for(const id of [1,3,4,5])assert.equal(fresh.getLevel(id).coinIds.length,3);
+    for(const id of [1,3,4,5,6])assert.equal(fresh.getLevel(id).coinIds.length,3);
     assert.equal(disk.get(other.store.key("B")),otherRecord);
-    assert.deepEqual(fresh.totalCoins,{earned:12,possible:30});
+    assert.deepEqual(fresh.totalCoins,{earned:15,possible:30});
     fresh.completeLevel(2,[levels[1].coins[2].id]);assert.deepEqual(open().getLevel(2).coinIds,[levels[1].coins[2].id]);
 });
 
@@ -32,8 +32,8 @@ test("all-level reset clears only coins, never creates completion records or tou
     const {progress,open,disk}=fixture();disk.set("shop-balance","123");disk.set("preferences","unchanged");
     progress.clearCoinProgress();const fresh=open();
     assert.deepEqual(fresh.totalCoins,{earned:0,possible:30});
-    for(const id of [1,2,3,4,5]){assert.equal(fresh.getLevel(id).completed,true);assert.deepEqual(fresh.getLevel(id).coinIds,[]);}
-    assert.equal(fresh.getLevel(6).completed,false);assert.equal(fresh.getLevel(5).unlocked,true);assert.equal(fresh.getLevel(6).unlocked,true);assert.equal(fresh.getLevel(7).unlocked,false);
+    for(const id of [1,2,3,4,5,6]){assert.equal(fresh.getLevel(id).completed,true);assert.deepEqual(fresh.getLevel(id).coinIds,[]);}
+    assert.equal(fresh.getLevel(7).completed,false);assert.equal(fresh.getLevel(5).unlocked,true);assert.equal(fresh.getLevel(6).unlocked,true);assert.equal(fresh.getLevel(7).unlocked,true);
     assert.equal(disk.get("shop-balance"),"123");assert.equal(disk.get("preferences"),"unchanged");
 });
 

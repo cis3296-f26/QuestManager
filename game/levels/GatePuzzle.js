@@ -46,10 +46,12 @@ export class GatePuzzle {
         for (const gate of ignoreWalls ? [] : [...this.barriers, ...this.gates.filter(g => !g.open)]) {
             const hit = sweepAABB(previous, bounds(player), gate, gate);
             if (!hit) continue;
-            // Entry stays timed. A closed gate can always be left from its
+            // A closed gate can always be left from its configured
             // protected side, so collecting the coin can never trap the player.
-            const leaving = gate.exitSide === "left" && hit.normalX < 0 &&
-                previous.x + player.width <= gate.x + 1e-7 && player.x > previous.x;
+            const leaving = (gate.exitSide === "left" && hit.normalX < 0 &&
+                previous.x + player.width <= gate.x + 1e-7 && player.x > previous.x) ||
+                (gate.exitSide === "right" && hit.normalX > 0 &&
+                previous.x >= gate.x + gate.width - 1e-7 && player.x < previous.x);
             if (leaving) { gate.open = true; gate.openTime = 0; continue; }
             if (!hit.normalX && !hit.normalY) {
                 // Corners have no single normal; embedded debug/restored starts
