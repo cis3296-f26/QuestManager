@@ -1038,7 +1038,7 @@
     ],
     "inputs": [],
     "start": {
-      "x": 660,
+      "x": 2460,
       "feetY": 400
     },
     "areaId": "l5-sandstone-alcove",
@@ -1052,7 +1052,7 @@
     ],
     "inputs": [],
     "start": {
-      "x": 660,
+      "x": 2460,
       "feetY": 400
     },
     "areaId": "l5-sandstone-alcove",
@@ -1066,7 +1066,7 @@
     ],
     "inputs": [],
     "start": {
-      "x": 660,
+      "x": 2460,
       "feetY": 400
     },
     "areaId": "l5-sandstone-alcove",
@@ -1082,7 +1082,7 @@
     ],
     "inputs": [],
     "start": {
-      "x": 3420,
+      "x": 10720,
       "feetY": 450
     },
     "areaId": "l5-oasis-overlook",
@@ -1098,7 +1098,7 @@
     ],
     "inputs": [],
     "start": {
-      "x": 3420,
+      "x": 10720,
       "feetY": 450
     },
     "areaId": "l5-oasis-overlook",
@@ -1114,7 +1114,7 @@
     ],
     "inputs": [],
     "start": {
-      "x": 3420,
+      "x": 10720,
       "feetY": 450
     },
     "areaId": "l5-oasis-overlook",
@@ -1131,7 +1131,7 @@
     ],
     "inputs": [],
     "start": {
-      "x": 4920,
+      "x": 14920,
       "feetY": 400
     },
     "areaId": "l5-ridge-cache",
@@ -1141,14 +1141,14 @@
     "fps": 60,
     "totalFrames": 278,
     "jumpFrames": [
-      6,
+      12,
       54,
       120,
       168
     ],
     "inputs": [],
     "start": {
-      "x": 4920,
+      "x": 14920,
       "feetY": 400
     },
     "areaId": "l5-ridge-cache",
@@ -1165,10 +1165,143 @@
     ],
     "inputs": [],
     "start": {
-      "x": 4920,
+      "x": 14920,
       "feetY": 400
     },
     "areaId": "l5-ridge-cache",
+    "levelId": 5
+  },
+  {
+    "fps": 30,
+    "totalFrames": 85,
+    "jumpFrames": [
+      66
+    ],
+    "inputs": [],
+    "start": {
+      "x": 5670,
+      "feetY": 450
+    },
+    "areaId": "l5-canyon-shelter",
+    "levelId": 5
+  },
+  {
+    "fps": 60,
+    "totalFrames": 171,
+    "jumpFrames": [
+      132
+    ],
+    "inputs": [],
+    "start": {
+      "x": 5670,
+      "feetY": 450
+    },
+    "areaId": "l5-canyon-shelter",
+    "levelId": 5
+  },
+  {
+    "fps": 120,
+    "totalFrames": 341,
+    "jumpFrames": [
+      264
+    ],
+    "inputs": [],
+    "start": {
+      "x": 5670,
+      "feetY": 450
+    },
+    "areaId": "l5-canyon-shelter",
+    "levelId": 5
+  },
+  {
+    "fps": 30,
+    "totalFrames": 83,
+    "jumpFrames": [
+      0,
+      33,
+      54
+    ],
+    "inputs": [
+      {
+        "from": 24,
+        "to": 27,
+        "direction": 0
+      },
+      {
+        "from": 27,
+        "to": 30,
+        "direction": 0
+      },
+      {
+        "from": 30,
+        "to": 33,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 9910,
+      "feetY": 420
+    },
+    "areaId": "l5-palm-crown-route",
+    "levelId": 5
+  },
+  {
+    "fps": 60,
+    "totalFrames": 166,
+    "jumpFrames": [
+      0,
+      66,
+      108
+    ],
+    "inputs": [
+      {
+        "from": 48,
+        "to": 54,
+        "direction": 0
+      },
+      {
+        "from": 54,
+        "to": 60,
+        "direction": 0
+      },
+      {
+        "from": 60,
+        "to": 66,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 9910,
+      "feetY": 420
+    },
+    "areaId": "l5-palm-crown-route",
+    "levelId": 5
+  },
+  {
+    "fps": 120,
+    "totalFrames": 319,
+    "jumpFrames": [
+      0,
+      120,
+      204
+    ],
+    "inputs": [
+      {
+        "from": 96,
+        "to": 108,
+        "direction": 0
+      },
+      {
+        "from": 108,
+        "to": 120,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 9910,
+      "feetY": 420
+    },
+    "areaId": "l5-palm-crown-route",
     "levelId": 5
   }
 ]

@@ -78,14 +78,14 @@ test("wind has a meaningful ridge-jump consequence, with a safe calm alternative
         // Local takeoff probe: identical normal input from the second cracked
         // slab. The headwind misses the upper reward but reaches the lower bank.
         const l=new LevelManager(level5),p=l.player,board=l.platforms.find(p=>p.config?.id==="l5-crack-east");
-        p.reset({x:5630,feetY:305});p.supportPlatform=board;l.wind.time=time;jump(p,650);
+        p.reset({x:board.x+60,feetY:board.y});p.supportPlatform=board;l.wind.time=time;jump(p,650);
         for(let i=0;i<fps*2&&!p.grounded;i++)assert.equal(stepLevel(l,1,1/fps).death,null);
         assert.equal(p.supportPlatform?.id,expected);
     }
 });
 
 test("authored observation pads let the player wait through full gust cycles without drifting off",()=>{
-    for(const fps of [30,60,120])for(const [x,feetY,id] of [[2220,440,"l5-canyon-west"],[5180,305,"l5-ridge-launch"]]) {
+    for(const fps of [30,60,120])for(const [x,feetY,id] of [[4720,440,"l5-canyon-west"],[15180,305,"l5-ridge-launch"]]) {
         const l=new LevelManager(level5),p=l.player;p.reset({x,feetY});p.supportPlatform=l.platforms.find(p=>p.id===id);
         for(let i=0;i<fps*14;i++)assert.equal(stepLevel(l,0,1/fps).death,null);
         assert.equal(p.x,x);assert.equal(p.y+p.height,feetY);assert.equal(p.supportPlatform.id,id);

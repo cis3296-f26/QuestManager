@@ -1,224 +1,216 @@
-# Level 5: Sunscorched Dunes
+# Level 5: Sunscorched Dunes — expanded adventure
 
-Implemented on `game-prototype`, pending your personal gameplay/visual/audio approval.
-No Level 6, database, authentication or coin-storage changes. Nothing is pushed or
-merged for this task without permission.
+This 22,000px revision supersedes the original 8,200px course. It stays on
+`game-prototype`, pending your gameplay, visual, difficulty and pacing approval.
+No changes to Levels 1–4, player physics, music, account storage or Supabase.
+Exactly three achievement coins retain their original IDs and saving rules.
+Nothing is pushed or merged for this revision without permission.
 
-## Design and route plan
+## Journey plan
 
-The course is **8,200px** instead of another 16,000–18,000px repetition. Its terrain
-uses seven heights (y285–500 on routes, y310–500 on banks), descending into sheltered
-hollows before climbing toward the ruins. Every collider is rectangular. Dunes,
-arches, pillars and apparent slopes are cosmetic; there is no new slope physics.
+![Scaled terrain, routes, winds, coins and patrols](level5-layout.svg)
 
-The existing 280px/s run, 650 jump and 1800 gravity yield about 108–115px jump rise
-and 200px same-height travel across tested frame rates. Wind changes horizontal
-travel, not jump strength or gravity. Camera and character customization are shared.
+The five major areas contain **18 named encounter beats**, not five copies of a
+platform staircase. Terrain spans y285–500 using the existing rectangular landing
+surfaces; dunes and apparent slopes remain background art. The shared 280 run,
+650 jump and 1800 gravity are unchanged (roughly 108–115px rise and 200px normal
+same-height travel at tested frame rates).
 
-![Exact scaled level layout](level5-layout.svg)
+| Area | Range | Encounter beats and purpose |
+| --- | --- | --- |
+| Desert Arrival | 0–4000 | **Cave Exit Ridges:** descend from a high cave mouth through a dry wash, then climb across separated banks. One isolated patrol teaches the scorpion silhouette. **Sheltered Arch:** choose the main arch or low Coin 1 alcove, then meet a second patrol on a broad bank. **Outer Rim:** gentle elevation changes lead into the first wind lesson. |
+| Wind-Cut Canyon | 4000–9000 | **Learning the Gusts:** gentle tailwind, headwind pillar and recovery bank. **Rim or Shade:** exposed upper ledge or a genuinely wind-free lower passage. **Great Chasm:** board a stone ferry across a 460px gap; observe from safe banks and ride across. **Exit Fin:** a separate patrol and stronger tailwind-assisted terrain after recovery. |
+| Hidden Oasis | 9000–13200 | **Reed Pond:** descend into the first pool district. **Palm Crown:** choose the lower ford or ride a lift to a true elevated overlook. **Quiet Spring:** follow the sandstone window route for Coin 2 above the central water. **Eastern Ford:** a third pool, separated palms and a calm climb out. No enemies or gusts here. |
+| Scorpion Ridge | 13200–18200 | **Patrol and Shear:** separate a wash patrol, stronger headwind jump and thorn dell. **Windward Cache:** the optional upper cracked route rewards Coin 3; the lower route remains independent. **Broken Span:** two mandatory collapsing slabs cross a real 440px opening. **Eastern Watch:** recover on a clear bank before a separate approach jump and final patrol. |
+| Ruins Approach | 18200–22000 | **Fallen Bridge:** broken masonry and one familiar tailwind crossing. **Outer Court:** wind-free terrain and increasingly visible arches. **Flag Ridge:** a familiar, safe final climb, without a surprise enemy at the flag. |
 
-| Section | Coordinates | Main route and reason for its terrain | Optional/recovery design |
+The longest uninterrupted flat terrain strip is **640px**. Larger ranges above
+include multiple distinct jumps, route choices, patrols or movers. Quiet banks
+remain intentionally useful for observation and recovery rather than stretching
+the length with empty terrain. The source's `beats` data records section coverage.
+
+## Coins and optional routes
+
+| Achievement | Stable ID | New location | Intended route |
 | --- | --- | --- | --- |
-| Desert Arrival | 0–1500 | High cave-exit terrace y350, separated shoulder y400, natural arch and east bank y440. The first gap occurs before the first enemy. | Drop beneath the arch into a real low alcove at y500 for Coin 1; jump out at the far lip. The upper arch bypasses it. An isolated scorpion comes after clear landing space. |
-| Wind-Cut Canyon | 1500–3300 | Broad lookout, a 160px tailwind introduction, a raised sandstone pillar, then a lower recovery bank. Gaps range 150–170px. | Tailwind ends early enough to leave a wind-free observation pad on the west bank. Wait near x2220 for the headwind to settle. The next scorpion is well after the landing. |
-| Hidden Oasis | 3300–4900 | A low sheltered basin, decorative pool and eastern terraces. No wind or enemies. | Three upper rock ledges form a sandstone arch/window overlooking the water; Coin 2 rewards that route. Palms are widely spaced. Both routes rejoin the east bank. |
-| Scorpion Ridge | 4900–6800 | Lower banks provide a direct route past a short, predictable scorpion patrol. A thorn patch announces the optional upper departure. | Wait outside the wind on x5120–5240/y305. Two collapsing slabs cross a patrol and a real pit, leading to Coin 3. Dropping after the reward rejoins at x6050/y460, too low to bypass the reward from underneath. A separate safe landing precedes the last scorpion. |
-| Ruins Approach | 6800–8200 | Separated sandstone terraces climb y400 → 350 → 310, then descend to the y350 flag bank. | Familiar jumps, no new hazards, a clearly visible final arch and safe flag. Ruined pillars suggest Level 6 without implementing it. |
+| Easy | `level-5-coin-1` | x2720/y470 | Descend below the arrival arch into the Sheltered Hollow; jump out at the far lip. |
+| Medium | `level-5-coin-2` | x11350/y255 | Explore the central oasis's upper sandstone arch/window, then rejoin the eastern bank. |
+| Hard | `level-5-coin-3` | x15930/y255 | Read the headwind, use the optional cracked upper route, then drop to the safe lower return bank. |
 
-## Collectibles and exploration
+All prior permanent coin credit follows the IDs, so relocation does not erase saves.
+New coins still bank only at the finish; death or abandonment discards pending
+pickups. Earned coins stay faded and cannot duplicate rewards. Shop currency and
+account isolation are unchanged.
 
-| Coin | Stable ID | Position | How to reach it |
+There are **five** separately validated optional areas:
+
+- Sheltered Hollow: entrance x2460/y400 → lower alcove → return x3010/y440.
+- Windless Passage: entrance x5670/y450 → shaded floor x5880–6330/y500 → return x6490/y450.
+  The upper wind ends at y390, above this lower route. Choosing shade avoids that
+  exposure but does not bypass the later ferry.
+- Palm Crown: entrance x9910/y420 → vertical lift → perch x10320–10520/y285 → return x10630/y450.
+- Quiet Spring: entrance x10720/y450 → sandstone steps/window → return x11650/y440.
+- Windward Cache: entrance x14920/y400 → optional cracked route → return x16150/y460.
+
+All return to stable, safe terrain. Extra exploration areas do not award extra coins.
+
+## Movers, bridges and wind solutions
+
+| Encounter | Geometry / timing | Why it belongs here |
+| --- | --- | --- |
+| Canyon ferry | x7180/y365, width150, horizontal travel220, speed65, endpoint pause0.45s | The real gap is x7100–7560 (460px). A normal jump cannot replace the ferry. Broad departure/arrival banks allow observation. The light breeze affects airborne boarding/exits, with its bottom above grounded riders' heads. |
+| Palm lift | x10055/y420, width100, rises135 to y285, speed55, pause0.4s | Its destination is genuinely higher than a normal jump can reach from the departure bank. It does not duplicate the low ford's function. The movement shaft stays clear of terrain. |
+| Optional ridge slabs | x15350 and15570/y305, delay1.2s | One crosses above the lower scorpion; the next crosses a real pit. They lead to the difficult coin rather than duplicating a safe upper staircase. |
+| Required broken span | x17080 and17300/y400, delay1.4s | Both stand over the real x17000–17440 opening. Their warning gives room for a late first jump, and a clear recovery bank follows. The next scorpion patrol was moved beyond that recovery, onto the separate eastern approach. |
+
+| Wind zone | Range | Direction/strength | Purpose |
 | --- | --- | --- | --- |
-| Easy | `level-5-coin-1` | x920/y470 | Descend into the Sheltered Hollow beneath the arrival arch. |
-| Medium | `level-5-coin-2` | x4050/y255 | Climb the three oasis rock ledges, enter the sandstone window, then return to the east bank. |
-| Hard | `level-5-coin-3` | x5930/y255 | Use the upper ridge's cracked slabs, controlling takeoff timing against the headwind. Drop to the lower rejoining bank afterward. |
+| First tailwind | 4240–4640 | Right / 60 | Gentle introductory crossing; a wind-free pad follows. |
+| Canyon headwind | 4800–5240 | Left / 75 | Wait and read the pillar crossing. |
+| Exposed rim | 5890–6330 | Left / 80 | An upper wind route with a sheltered lower alternative. |
+| Ferry breeze | 7080–7570 | Right / 50 | Airborne boarding/exit assistance; height110 leaves grounded riders unaffected. |
+| Exit fin | 8260–8790 | Right / 90 | A stronger tailwind jump after a clear waiting bank. |
+| Ridge shear | 13960–14470 | Left / 95 | A harder headwind climb, separated from the preceding patrol. |
+| Windward cache | 15240–15820 | Left / 85 | Timing and takeoff control on the optional cracked route. |
+| Ruin breeze | 18970–19460 | Right / 65 | A familiar final application before the quiet outer court. |
 
-All three detours have declared entrances, discovery surfaces and safe exits.
-The alcove is an actual lower passage, the oasis route overlooks a distinct pool,
-and the ridge route bypasses a patrol rather than merely hiding a shelf with a bush.
-New collectibles still bank **only at the flag**. Death/map abandonment discard them;
-already earned coins remain faded. These achievements never affect shop currency.
+All use the already implemented warning/gust/calm clock, gradual force and reset.
+Pause freezes that clock. Existing directional ribbons, state/countdown text, sand
+streaks and Reduce Motion behavior are preserved. Safe waiting positions include
+x4720/y440 and x15180/y305. No new movement ability or hazard system was introduced.
 
-## Wind and scorpions
+## Rendered views
 
-`engine/Wind.js` owns only attempt-local gust time and horizontal drift. A zone
-configures its rectangle, direction (+1/-1), strength, and optionally a predictable
-period/warning/duration/offset. Omit the period for constant wind. The maximum
-configured drift is bounded at 120px/s; this course uses 60–85px/s. Ground drag
-reduces the force to 20%. A short exponential response builds force gradually;
-small bounded force steps make the clock/acceleration consistent across rates.
+These previews use the actual terrain/scenery/enemy rendering code and fallback
+avatar. They were visually inspected, but are **not browser screenshots** or
+proof of human playtesting/customized equipment appearance.
 
-`stepLevel` applies that displacement before the existing gravity/landing and swept
-wall/gate collision paths. Fly Mode ignores wind; pause stops the gameplay clock;
-restart clears gust time and drift. There is no separate collision engine.
+![Arrival ridges](level5-arrival.png)
+![Upper wind rim and sheltered lower passage](level5-canyon.png)
+![Great Chasm ferry](level5-ferry.png)
+![Palm overlook and lift](level5-palm-crown.png)
+![Central oasis](level5-oasis.png)
+![Optional windward cache](level5-ridge.png)
+![Required broken span](level5-broken-span.png)
+![Final ruins and flag](level5-ruins.png)
 
-| Zone | Bounds (x) | Direction/strength | Period | Purpose |
-| --- | --- | --- | --- | --- |
-| First tailwind | 1740–2140 | Right / 60 | 5.8s | Gentle first crossing, with clear observation space afterward. |
-| Canyon headwind | 2300–2740 | Left / 75 | 6.4s | Read the ribbons before jumping to the raised pillar. |
-| Ridge wind | 5240–5820 | Left / 85 | 6.6s | Narrow the optional upper jumps' margin while keeping the lower path independent. |
+The background now has enough explicitly authored mesa/cloud landmarks for the
+entire journey. Palm canopy spacing is validated; the scenery builds from sparse
+ridges through three pool districts to increasingly frequent ruin columns.
 
-Each periodic zone has a 0.9s warning, 2.4s gust, short force ramps and a calm
-interval. Arrows, ribbon movement, sand streaks, phase text and a countdown identify
-what is happening. Reduce Motion keeps direction/state text and static indicators.
-Observation positions x2220/y440 and x5180/y305 remain still through full gust cycles.
+## Automated validation and performance
 
-The scorpion is a new appearance in the existing Enemy class: four small orange
-patrols, at x1350, 3060, 5410 and 6540 initially. It is **not stompable**. Side,
-underside and top contact are lethal. No chasing, poison, projectiles or new AI.
+Executed for this expanded revision: **210 tests pass**, with no skips. All five
+levels pass structural, route and exploration validation at **30/60/120 FPS**.
+Commands:
 
-## Music and presentation
+```sh
+npm test
+npm run validate:levels
+```
 
-The desert uses `audio.music: "desert"`: **Ribbons over Sandstone**, an original
-24-bar, 60-second, 96 BPM score. Plucked answers, a playful reed melody and quiet
-syncopated percussion distinguish it from grasslands. Its middle phrase drops the
-reed for a lower, more open harp answer. It uses existing synth voices and the same
-volume, asynchronous preparation, pause and scene-transition behavior. The listening
-room automatically includes it as its sixth track. Earlier arrangements and all
-existing effect samples retain their baseline hashes.
+The suite preserves earlier levels' baseline hashes, earlier soundtracks, account
+progress, audio, pause, developer tools and shared physics tests. Revised route
+fixtures use ordinary left/right/jump/wait inputs, retaining every live enemy,
+wind zone, gap, thorn and platform timer. No flight, invincibility, teleportation
+or hazard removal is used to make successful continuous traces pass.
 
-Native canvas previews below use actual game renderers and the fallback avatar.
-They are **not browser screenshots** or proof of actual account equipment rendering.
+- Full spawn → all three coins → flag and spawn → zero coins → flag traces at
+  30/60/120 FPS. Main traces avoid all five optional discoveries and the optional
+  coin slabs, while still crossing the required ferry and broken span.
+- Fifteen separate entrance → discovery/reward → safe return witnesses at those rates.
+- Ferry and lift boarding/ride/exit at three arrival phases per rate; ferry riders
+  remain supported through reversal. A negative control proves the dock jump alone
+  cannot cross the chasm.
+- A late first warning jump crosses the required broken span at each rate. Resets
+  restore every mover, slab, patrol and gust clock.
+- The wind tests retain their identical-input calm/headwind comparison on the
+  relocated coin route. Safe observation spots stay still through full cycles.
+- A pacing check verifies eighteen contiguous encounter beats, gradual area
+  boundaries, spread-out coin locations and no flat terrain strip over 700px.
 
-![Arrival](level5-arrival.png)
-![Canyon](level5-canyon.png)
-![Oasis](level5-oasis.png)
-![Ridge](level5-ridge.png)
-![Ruins](level5-ruins.png)
+A local diagnostic run of the complete coin-free traces took 21.2ms, 20.1ms and
+28.6ms of CPU time for 2,542 / 5,088 / 10,177 simulated ticks respectively
+(30 / 60 / 120 FPS traces). A separate native-canvas sweep of 240 views across the
+course measured 0.525ms mean and 1.068ms 95th-percentile rendering time. These
+include real level entities/materials, but use a fallback avatar and native canvas.
+They are not portable browser performance thresholds or a performance promise.
 
-## Executed automated checks
+Frame-rate route success is not a browser frame-time measurement. Local CPU/native
+renderer measurements, when reported, are diagnostic throughput only; they do not
+establish browser FPS or responsiveness on your machine.
 
-- `npm test`: **205 passing tests**, no skipped tests.
-- `npm run validate:levels`: all five levels pass structural checks, local jump
-  graphs, all-coin routes, coin-free routes and local exploration witnesses at
-  **30, 60 and 120 FPS**.
-- Six new full spawn-to-flag input traces retain all enemies, thorns, gusts and
-  collapse timers. Three all-coin traces visit all three detours and both cracked
-  slabs; three main-route traces avoid the detours and cracked slabs entirely.
-- Nine local secret traces establish entrance → reward → safe return. Those are
-  separate from the full-course proofs, with no flight, invincibility or teleportation
-  during either continuous route.
-- Targeted tests cover constant/periodic force integration, countersteering, moving
-  platform compatibility, solid-wall blocking, safe observation, warning/collapse/reset,
-  scorpion collisions and patrol bounds, lower-route coin-shortcut prevention,
-  persistence, account isolation and developer no-save rules.
-- The same optional ridge takeoff lands on the upper reward during calm, but on
-  the safe lower bank during a headwind. This gives wind a demonstrated gameplay
-  consequence rather than only a decorative effect.
-- The actual game-entry harness, with DOM/auth/audio boundaries mocked, verifies
-  active gust freeze/resume, menus, saves, replay, Cave → Desert Next navigation,
-  desert music selection, map abandonment and unavailable Level 6 behavior.
-- Baselines preserve all four earlier level configs and earlier five arrangements;
-  the original route/saving/customization/developer regression suite remains active.
+## First-play duration and approval
 
-Optimized input traces finish this compact level in about **29 seconds**, with
-or without coins. This establishes feasibility, not a promise of human playtime.
-Exploration, waiting, mistakes and first-time learning still need your assessment.
+The requested first-successful-playthrough target is **5–8 minutes**. At 280px/s,
+22,000px has a theoretical straight-line minimum of about 79 seconds before stops,
+route choices, backtracking and mistakes. Optimized traces are reported separately;
+the new all-coin traces take **85.6–85.8 seconds**, and coin-free traces take
+**84.7–84.8 seconds**. They are **not** a claim that the human pacing target was achieved. There are no
+artificial countdown waits, walking-speed reductions or empty padding to force it.
+Your first-play observations are required to judge the target and difficulty.
+
+Chromium launch was attempted and failed with `socket() failed: Operation not
+permitted`. Native renders were inspected, and normal-input gameplay was simulated,
+but no actual browser playthrough or listening session is claimed here. The long
+no-checkpoint attempt and restart difficulty especially need your feedback.
 
 ## Test in VS Code
 
-1. After these changes are published with permission, pull `game-prototype` into
-   your existing checkout. Keep your current browser origin (hostname and port):
-   progress is account-specific **and origin-specific**.
-2. Start your existing local server, or from the repository root run
-   `python game/scripts/serve-development.py`. Open `http://127.0.0.1:8000/game/`
-   (use your existing origin instead if your saves live on another host/port).
-3. Sign in normally. Complete Crystal Cave, then choose Next Level or select
-   **5: Sunscorched Dunes** on the map. Existing completed Cave accounts can select it
-   immediately. Completing Desert unlocks 6 in progress data, but 6 stays unplayable.
-4. With Developer Mode off, play once without detours. Look for fair takeoffs,
-   visible landing space, warning readability, safe waiting and a calm final flag.
-5. Replay for the three coins. On the ridge, compare an early gust jump with waiting
-   for calm on the departure ledge. Do not wait on a cracked slab.
-6. Pause during a gust and a collapse warning; check that both resume from the same
-   state. Die, press R and replay; check gusts, enemies and slabs reset.
-7. Collect a new coin then die or leave: it should not bank. Finish with it, refresh,
-   and replay: it should remain credited/faded. Check another account stays separate.
-8. After Level 5 completion, Next Level must say Coming soon and not load Level 6.
-   Replay and World Map should work normally. Check music pause, mute and sliders.
-9. For listening comparisons or locked-level inspection only, restart the server
-   with `python game/scripts/serve-development.py --dev-tools`. Open
-   `/game/dev/music-preview.html` to audition the desert track.
+1. After this revision is pushed with permission, pull `game-prototype`. Keep the
+   same browser hostname/port used for your saves; changing origin uses separate
+   storage without deleting the old account's achievements.
+2. Start your existing server, or run
+   `python game/scripts/serve-development.py` from the repository root. Open
+   `http://127.0.0.1:8000/game/` (or your existing origin).
+3. Select Sunscorched Dunes after completing Crystal Cave. For acceptance tests,
+   leave Developer Mode off. Check arrival difficulty, safe waiting, directions,
+   the shaded alternative, ferry boarding and a calm oasis break.
+4. Finish once without detours, then replay for all three coins. Compare the
+   windward route during a headwind and calm. Judge the long ridge's recovery
+   spacing and whether the ruin approach feels satisfying rather than repetitive.
+5. Pause during a gust, ferry/lift ride and collapse warning. Retry after death,
+   press R and replay; all temporary state must reset. New coins must save only
+   after the flag. Previously earned coins, other levels and other accounts must
+   retain their correct progress.
+6. Record your approximate time from first launch to first success, and the duration
+   of the successful attempt itself. Note any dull stretch, blind landing, awkward
+   boarding, repeated-feeling jump or overly punishing restart.
 
-## Developer inspection destinations
+For inspection only, run
+`python game/scripts/serve-development.py --dev-tools`, then Pause → Settings →
+Developer Mode → Admin Tools → Level 5. Teleport/flight marks the attempt assisted
+and prevents legitimate progress saves. Return through the normal map with tools
+off for an eligible run. The existing music preview remains available at
+`/game/dev/music-preview.html`; the desert score is unchanged.
 
-Pause → Settings → Developer Mode → Enable Developer Tools → Admin Tools → choose
-Level 5. Destination names below are already generated from level configuration;
-no new developer screen is required. Teleport/flight/locked-level testing marks the
-attempt TEST RUN and prevents legitimate coin/progression saves. Use ordinary
-unassisted play for acceptance and saving tests.
-
-| Destination | Nearby world position | Inspect |
+| Inspection destination | Approximate location | What to check |
 | --- | --- | --- |
-| Level Start | x96/y350 | Cave exit, descending terrace, clearly visible first gap. |
-| Secret Entrance: The Sheltered Hollow | x685/y400 | Low alcove below the arch and safe far-lip exit. |
-| Secret Entrance: The Quiet Spring | x3445/y450 | Pool, spaced palms and the sandstone window route. |
-| Final Challenge: Scorpion Ridge | near x4932/y400 | Thorns, upper departure and separate lower patrol. |
-| Secret Entrance: The Windward Cache | x4945/y400 | Wait on the upper departure before committing to the cracked route. |
-| Coin 3 | near x5930/y285 | Upper reward and lower rejoining bank; no shortcut from underneath. |
-| Finish Flag | near x8110/y350 | Ruin arch, safe finish and completion buttons. |
+| Level Start | x96/y350 | New introductory ridges before the old arch. |
+| Secret Entrance: The Sheltered Hollow | x2485/y400 | Coin 1 and its low route/return. |
+| Secret Entrance: The Windless Passage | x5695/y450 | Upper exposed rim versus lower protected passage. |
+| Canyon ferry (fly nearby, then turn flight off) | x7060/y365 | Waiting, boarding, riding, reversing and far-bank exit. |
+| Secret Entrance: The Palm Crown | x9935/y420 | Lift shaft and real high destination. |
+| Secret Entrance: The Quiet Spring | x10745/y450 | Central oasis/window and Coin 2. |
+| Final Challenge: Scorpion Ridge | near x13232/y400 | New patrol/shear sequence before the old coin route. |
+| Secret Entrance: The Windward Cache | x14945/y400 | Coin 3 route, wind timing and lower return. |
+| Required broken span (fly nearby, then turn flight off) | x16920/y400 | Warnings, late jumps, real pits and safe recovery. |
+| Finish Flag | near x21910/y350 | Final ruins, flag, replay/map and unavailable Level 6. |
 
-For the canyon, fly to the bank around x2220/y440, turn flight off to place safely,
-and inspect the ribbons before testing ordinary jumps. This remains an assisted
-run; restart from a normally unlocked map level with tools off for a legitimate save.
+## Files changed in this expansion
 
-## Limits and approval
-
-Chromium cannot launch in this execution environment. The five native renders were
-visually inspected; automated route proofs use real movement inputs and physics,
-but are **not human/browser playtesting**. Audio was validated mechanically, not
-listened to here. Your approval of feel, difficulty, camera readability, actual
-customized character appearance, soundtrack and first-play pacing is still required.
-The water is cosmetic and wind is horizontal only. Level 6 is not implemented.
-
-## Added and modified files
-
-| File | Responsibility |
-| --- | --- |
-| `game/audio/MusicScores.js` | Original desert composition using existing synth voices and playback. |
-| `game/dev/DebugRenderer.js` | Display wind rectangles with existing hitbox tools. |
-| `game/dev/music-preview.html` | Update listening-room copy for six registered scores. |
-| `game/docs/BIOME_MUSIC_REVIEW.md` | Design, manual testing, locations, evidence and guide navigation. |
-| `game/docs/LEVEL5_PLAYTEST.md` | Design, manual testing, locations, evidence and guide navigation. |
-| `game/docs/README.md` | Design, manual testing, locations, evidence and guide navigation. |
-| `game/docs/level5-arrival.png` | Actual-renderer preview or exact scaled layout diagram. |
-| `game/docs/level5-canyon.png` | Actual-renderer preview or exact scaled layout diagram. |
-| `game/docs/level5-layout.svg` | Actual-renderer preview or exact scaled layout diagram. |
-| `game/docs/level5-oasis.png` | Actual-renderer preview or exact scaled layout diagram. |
-| `game/docs/level5-ridge.png` | Actual-renderer preview or exact scaled layout diagram. |
-| `game/docs/level5-ruins.png` | Actual-renderer preview or exact scaled layout diagram. |
-| `game/engine/Wind.js` | Reusable gust clock, gradual horizontal force, reset and config validation. |
-| `game/engine/stepLevel.js` | Apply wind before existing landing/wall collision; flight bypasses force. |
-| `game/game.js` | Select desert renderer, draw wind and show accurate scorpion instructions. |
-| `game/index.html` | Update map node 5 name/unlock label and instruction span. |
-| `game/levels/Level5.js` | Five authored sections, terrain, scorpions, gust zones, detours and stable coins. |
-| `game/levels/Level5Scenery.js` | Hand-positioned desert landmarks and spaced palms. |
-| `game/levels/LevelManager.js` | Own and reset attempt-local wind state. |
-| `game/levels/design/defineLevel.js` | Flatten optional per-section wind zones. |
-| `game/levels/design/validateExploration.js` | Accept the sandstone window presentation kind. |
-| `game/levels/design/validateLevel.js` | Validate wind definitions and global IDs. |
-| `game/levels/levels.js` | Register Level 5 for map, progression and developer tools. |
-| `game/rendering/DesertRenderer.js` | Desert background, landmarks, pool and visible wind states. |
-| `game/rendering/EnemyRenderer.js` | Simple animated scorpion appearance. |
-| `game/rendering/ExplorationRenderer.js` | Rock-window exploration veil, rather than forest foliage. |
-| `game/rendering/GrasslandRenderer.js` | Opt-in sandstone terrain material; earlier materials unchanged. |
-| `game/rendering/PlatformRenderer.js` | Sandstone collapse material and warnings. |
-| `game/rendering/SceneryGeometry.js` | Include palm crown bounds in existing spacing validation. |
-| `game/tests/audio.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/biome-music.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/coin-reset.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/developer.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/exploration.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/fixtures/exploration-routes.json` | New desert route/baseline fixture or appended Level 5 exploration witnesses; earlier witnesses retained. |
-| `game/tests/fixtures/level5-main-routes.json` | New desert route/baseline fixture or appended Level 5 exploration witnesses; earlier witnesses retained. |
-| `game/tests/fixtures/level5-routes.json` | New desert route/baseline fixture or appended Level 5 exploration witnesses; earlier witnesses retained. |
-| `game/tests/fixtures/pre-desert-baseline.json` | New desert route/baseline fixture or appended Level 5 exploration witnesses; earlier witnesses retained. |
-| `game/tests/helpers/pauseGameHarness.cjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/level3.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/level4.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/level5.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/map.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/other-level-quality.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/platform-purpose.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/stomp.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
-| `game/tests/wind.test.mjs` | Wind/desert tests or registry-aware extension of existing regression/UI/audio checks. |
+- `levels/Level5.js`: 22,000px layout, eighteen beat descriptions, two extra optional
+  areas, eight patrols, varied winds and deliberately connected movers/bridges.
+- `levels/Level5Scenery.js`: spaced landmarks, three pool districts and ruin transitions.
+- `rendering/DesertRenderer.js`: accept the course's extended authored background landmarks.
+- `tests/level5-expansion.test.mjs`: pacing, ferry/lift phases, necessary ferry
+  crossing, late bridge escape and reset tests.
+- `tests/level5.test.mjs`, `tests/wind.test.mjs`: revised coordinates and stronger
+  route/discovery requirements for the expanded course.
+- `tests/fixtures/level5-routes.json`, `level5-main-routes.json`,
+  `exploration-routes.json`: revised real-input witnesses; earlier levels retained.
+- `tests/exploration.test.mjs`, `platform-purpose.test.mjs`,
+  `helpers/pauseGameHarness.cjs`: five optional areas, added interactive-platform
+  counts and actual active-gust pause setup at the relocated canyon.
+- `docs/LEVEL5_PLAYTEST.md`, `level5-layout.svg`, `level5-*.png`: revised plan,
+  testing guide, diagram and representative renderer previews.

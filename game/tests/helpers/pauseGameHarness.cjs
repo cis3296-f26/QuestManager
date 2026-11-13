@@ -215,7 +215,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
                 Object.assign(a.level.puzzle.gates[0], { open: true, remainingTime: 2.5 });
             }
             if (id === 5) {
-                a.level.player.reset({ x: 1800, feetY: 440 });
+                a.level.player.reset({ x: a.level.platforms.find(p => p.id === "l5-lookout").x + 260, feetY: 440 });
                 a.level.player.supportPlatform = a.level.platforms.find(p => p.id === "l5-lookout");
                 a.level.wind.time = 1.2; a.level.wind.velocity = 5;
             }

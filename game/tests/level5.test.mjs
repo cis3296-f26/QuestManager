@@ -25,10 +25,11 @@ const id=p=>p?.id??p?.config?.id;
 test("Sunscorched Dunes has five distinct terrain sections and stable three-coin IDs, without filler length or Level 6",()=>{
     assert.deepEqual(levels.map(l=>l.id),[1,2,3,4,5]);assert.equal(level5.name,"Sunscorched Dunes");
     assert.deepEqual(level5.stages.map(s=>s.id),["arrival","canyon","oasis","ridge","ruins"]);
-    assert.ok(level5.worldWidth<10000);assert.deepEqual(validateLevel(level5).errors,[]);
+    assert.ok(level5.worldWidth>=20000&&level5.worldWidth<=24000);
+    assert.ok(levels.slice(0,4).every(l=>l.worldWidth<level5.worldWidth));assert.deepEqual(validateLevel(level5).errors,[]);
     assert.ok(new Set(level5.platforms.filter(p=>p.terrain).map(p=>p.y)).size>=6);
     assert.deepEqual(level5.coins.map(c=>c.id),[1,2,3].map(n=>`level-5-coin-${n}`));
-    assert.equal(level5.windZones.length,3);assert.equal(level5.platforms.filter(p=>p.type==="collapsing").length,2);
+    assert.equal(level5.windZones.length,8);assert.equal(level5.platforms.filter(p=>p.type==="collapsing").length,4);
     assert.equal(level5.switches.length,0);assert.equal(level5.gates.length,0);
     assert.equal(level5.stages[2].windZones,undefined);assert.equal(level5.stages[2].enemies,undefined);
     for(const area of level5.explorationAreas)assert.ok(!level5.hazards.some(h=>
@@ -41,16 +42,17 @@ test("full normal-input routes visit all three detours and both cracked platform
     for(const suffix of ["routes","main-routes"])for(const route of routes(suffix)) {
         const all=suffix==="routes",r=simulateRoute(level5,route,{collection:all?"all":"none",mainRoute:!all});
         assert.equal(r.success,true,`${route.fps}/${suffix}: ${JSON.stringify(r)}`);
-        assert.equal(r.coinIds.length,all?3:0);assert.equal(r.discovered.length,all?3:0);
+        assert.equal(r.coinIds.length,all?3:0);if(all)assert.ok(r.discovered.length>=3);else assert.equal(r.discovered.length,0);
         for(const name of ["l5-alcove","l5-oasis-window","l5-crack-west","l5-crack-east","l5-windward-cache"])
             assert.equal(r.visited.includes(name),all,`${route.fps}: purposeful route through ${name}`);
-        if(all)assert.equal(r.exited.length,3);
+        for(const name of ["l5-canyon-ferry","l5-bridge-crack-a","l5-bridge-crack-b"])assert.ok(r.visited.includes(name));
+        if(all)for(const area of ["l5-sandstone-alcove","l5-oasis-overlook","l5-ridge-cache"]){assert.ok(r.discovered.includes(area));assert.ok(r.exited.includes(area));}
         else {assert.ok(r.visited.includes("l5-arrival-arch"));assert.ok(r.visited.includes("l5-scorpion-bank"));}
     }
 });
 
 test("lower terrain cannot jump through the floor to take the hard coin or board its upper ledge",()=>{
-    for(const fps of [30,60,120])for(const x of [5700,5800,5890,6050,6100])for(const direction of [-1,0,1]) {
+    for(const fps of [30,60,120])for(const x of [15700,15800,15890,16050,16100])for(const direction of [-1,0,1]) {
         const l=new LevelManager({...level5,spawn:{x,feetY:460}}),p=l.player,c=new CoinManager(level5.coins);
         stepLevel(l,0,1/fps);jump(p,650);
         for(let f=0;f<fps&&!p.grounded;f++) {const r=stepLevel(l,direction,1/fps);if(r.death)break;c.update(p,1/fps);}
@@ -102,8 +104,8 @@ test("Level 5 saves union only completed attempts, preserve Levels 1–4, isolat
 test("desert art uses its own readable palette without changing terrain, enemy or wind state",()=>{
     const colors=[],ctx=new Proxy({globalAlpha:1},{set(o,k,v){if(k==="fillStyle")colors.push(v);o[k]=v;return true;},get:(o,k)=>o[k]??(()=>{})});
     const l=new LevelManager(level5),before=JSON.stringify(l),desert=new DesertRenderer(),terrain=new GrasslandRenderer();
-    for(const camera of [0,1700,3300,5000,7200]) {
-        desert.drawBackground(ctx,960,540,camera,460);desert.drawDecorations(ctx,level5.scenery,460,camera,960);
+    for(const camera of [0,4200,10600,15000,20600]) {
+        desert.drawBackground(ctx,960,540,camera,460,level5.theme,level5.landscape);desert.drawDecorations(ctx,level5.scenery,460,camera,960);
         terrain.drawPlatforms(ctx,l.platforms.filter(p=>!p.type),camera,960);drawInteractivePlatforms(ctx,l.platforms,camera,960);
         drawExplorationFoliage(ctx,l.exploration,camera,960);drawWind(ctx,l.wind,camera,960,{reduceMotion:true});
         l.enemies.forEach(e=>drawEnemy(ctx,e,camera,960));

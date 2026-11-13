@@ -3,15 +3,15 @@ import { GrasslandRenderer } from "./GrasslandRenderer.js";
 // Canvas-only desert materials and landmarks. All visible slopes/dunes are behind
 // the rectangular gameplay surfaces; the pool is decorative water below its bank.
 export class DesertRenderer extends GrasslandRenderer {
-    drawBackground(ctx,width,height,cameraX,groundY) {
+    drawBackground(ctx,width,height,cameraX,groundY,theme,landscape) {
         ctx.save();ctx.fillStyle="#b9deeb";ctx.fillRect(0,0,width,height);
         ctx.fillStyle="#fff0be";ctx.beginPath();ctx.arc(width-120,118,28,0,Math.PI*2);ctx.fill();
-        for(const [x,y] of [[210,145],[810,180],[1390,130],[2080,165]]) {
+        for(const [x,y] of landscape?.desertClouds??[[210,145],[810,180],[1390,130],[2080,165]]) {
             const screen=x-cameraX*.12;if(screen>-70&&screen<width+70){ctx.save();ctx.globalAlpha=.8;this.drawCloud(ctx,screen,y);ctx.restore();}
         }
         // Distant mesas, then broad dunes: different scales/colors establish depth.
         ctx.fillStyle="#d3af91";
-        for(const [x,y,w] of [[-200,290,400],[460,255,260],[1020,310,350],[1650,270,330],[2350,300,400]]) {
+        for(const [x,y,w] of landscape?.desertMesas??[[-200,290,400],[460,255,260],[1020,310,350],[1650,270,330],[2350,300,400]]) {
             const at=x-cameraX*.16;
             ctx.beginPath();ctx.moveTo(at,height);ctx.lineTo(at+35,y+60);ctx.lineTo(at+90,y);
             ctx.lineTo(at+w-80,y);ctx.lineTo(at+w,y+100);ctx.lineTo(at+w+70,height);ctx.closePath();ctx.fill();

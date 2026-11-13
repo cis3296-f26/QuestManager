@@ -111,4 +111,4 @@ against the familiar jump/coin/hazard cues in actual gameplay.
 No level geometry, controls, enemy behavior, saves, Supabase integration or Level 5
 content was changed. The soundtrack remains a listening candidate until you approve it.
 
-Level 5 adds the sixth listening-room track. See [the desert guide](LEVEL5_PLAYTEST.md) for current 205-test and five-level route validation results; earlier counts above record the original music revision.
+Level 5 adds the sixth listening-room track. See [the desert guide](LEVEL5_PLAYTEST.md) for current regression and five-level route validation results; earlier counts above record the original music revision.
