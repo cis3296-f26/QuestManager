@@ -1808,5 +1808,827 @@
     },
     "areaId": "l6-sun-crown",
     "levelId": 6
+  },
+  {
+    "fps": 30,
+    "totalFrames": 104,
+    "jumpFrames": [
+      3,
+      81
+    ],
+    "inputs": [
+      {
+        "from": 0,
+        "to": 3,
+        "direction": -1
+      },
+      {
+        "from": 3,
+        "to": 6,
+        "direction": -1
+      },
+      {
+        "from": 6,
+        "to": 9,
+        "direction": -1
+      },
+      {
+        "from": 9,
+        "to": 12,
+        "direction": -1
+      },
+      {
+        "from": 12,
+        "to": 15,
+        "direction": -1
+      },
+      {
+        "from": 15,
+        "to": 18,
+        "direction": -1
+      },
+      {
+        "from": 18,
+        "to": 21,
+        "direction": 0
+      },
+      {
+        "from": 24,
+        "to": 27,
+        "direction": -1
+      },
+      {
+        "from": 27,
+        "to": 30,
+        "direction": -1
+      },
+      {
+        "from": 30,
+        "to": 33,
+        "direction": -1
+      },
+      {
+        "from": 33,
+        "to": 36,
+        "direction": -1
+      },
+      {
+        "from": 36,
+        "to": 39,
+        "direction": -1
+      },
+      {
+        "from": 42,
+        "to": 45,
+        "direction": -1
+      }
+    ],
+    "start": {
+      "x": 3600,
+      "feetY": 420
+    },
+    "areaId": "l7-frozen-hollow",
+    "levelId": 7
+  },
+  {
+    "fps": 60,
+    "totalFrames": 201,
+    "jumpFrames": [
+      0,
+      156
+    ],
+    "inputs": [
+      {
+        "from": 0,
+        "to": 6,
+        "direction": -1
+      },
+      {
+        "from": 6,
+        "to": 12,
+        "direction": -1
+      },
+      {
+        "from": 12,
+        "to": 18,
+        "direction": -1
+      },
+      {
+        "from": 18,
+        "to": 24,
+        "direction": -1
+      },
+      {
+        "from": 24,
+        "to": 30,
+        "direction": -1
+      },
+      {
+        "from": 30,
+        "to": 36,
+        "direction": -1
+      },
+      {
+        "from": 42,
+        "to": 48,
+        "direction": -1
+      },
+      {
+        "from": 48,
+        "to": 54,
+        "direction": -1
+      },
+      {
+        "from": 54,
+        "to": 60,
+        "direction": -1
+      },
+      {
+        "from": 60,
+        "to": 66,
+        "direction": -1
+      },
+      {
+        "from": 66,
+        "to": 72,
+        "direction": -1
+      },
+      {
+        "from": 72,
+        "to": 78,
+        "direction": -1
+      },
+      {
+        "from": 78,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 84,
+        "to": 90,
+        "direction": 0
+      },
+      {
+        "from": 90,
+        "to": 96,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 3600,
+      "feetY": 420
+    },
+    "areaId": "l7-frozen-hollow",
+    "levelId": 7
+  },
+  {
+    "fps": 120,
+    "totalFrames": 414,
+    "jumpFrames": [
+      0,
+      324
+    ],
+    "inputs": [
+      {
+        "from": 0,
+        "to": 12,
+        "direction": -1
+      },
+      {
+        "from": 12,
+        "to": 24,
+        "direction": -1
+      },
+      {
+        "from": 24,
+        "to": 36,
+        "direction": -1
+      },
+      {
+        "from": 36,
+        "to": 48,
+        "direction": -1
+      },
+      {
+        "from": 48,
+        "to": 60,
+        "direction": -1
+      },
+      {
+        "from": 60,
+        "to": 72,
+        "direction": -1
+      },
+      {
+        "from": 84,
+        "to": 96,
+        "direction": -1
+      },
+      {
+        "from": 96,
+        "to": 108,
+        "direction": -1
+      },
+      {
+        "from": 108,
+        "to": 120,
+        "direction": -1
+      },
+      {
+        "from": 120,
+        "to": 132,
+        "direction": -1
+      },
+      {
+        "from": 132,
+        "to": 144,
+        "direction": -1
+      },
+      {
+        "from": 144,
+        "to": 156,
+        "direction": -1
+      },
+      {
+        "from": 156,
+        "to": 168,
+        "direction": -1
+      },
+      {
+        "from": 252,
+        "to": 264,
+        "direction": -1
+      },
+      {
+        "from": 276,
+        "to": 288,
+        "direction": 0
+      },
+      {
+        "from": 300,
+        "to": 312,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 3600,
+      "feetY": 420
+    },
+    "areaId": "l7-frozen-hollow",
+    "levelId": 7
+  },
+  {
+    "fps": 30,
+    "totalFrames": 96,
+    "jumpFrames": [
+      0,
+      15,
+      36,
+      63
+    ],
+    "inputs": [],
+    "start": {
+      "x": 5120,
+      "feetY": 420
+    },
+    "areaId": "l7-snowline-ridge",
+    "levelId": 7
+  },
+  {
+    "fps": 60,
+    "totalFrames": 191,
+    "jumpFrames": [
+      0,
+      30,
+      72,
+      132
+    ],
+    "inputs": [],
+    "start": {
+      "x": 5120,
+      "feetY": 420
+    },
+    "areaId": "l7-snowline-ridge",
+    "levelId": 7
+  },
+  {
+    "fps": 120,
+    "totalFrames": 393,
+    "jumpFrames": [
+      0,
+      72,
+      156,
+      276
+    ],
+    "inputs": [
+      {
+        "from": 252,
+        "to": 264,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 5120,
+      "feetY": 420
+    },
+    "areaId": "l7-snowline-ridge",
+    "levelId": 7
+  },
+  {
+    "fps": 30,
+    "totalFrames": 177,
+    "jumpFrames": [
+      18,
+      33,
+      51,
+      75,
+      153
+    ],
+    "inputs": [
+      {
+        "from": 72,
+        "to": 75,
+        "direction": 0
+      },
+      {
+        "from": 108,
+        "to": 111,
+        "direction": 0
+      },
+      {
+        "from": 111,
+        "to": 114,
+        "direction": 0
+      },
+      {
+        "from": 114,
+        "to": 117,
+        "direction": 0
+      },
+      {
+        "from": 117,
+        "to": 120,
+        "direction": 0
+      },
+      {
+        "from": 120,
+        "to": 123,
+        "direction": 0
+      },
+      {
+        "from": 123,
+        "to": 126,
+        "direction": 0
+      },
+      {
+        "from": 126,
+        "to": 129,
+        "direction": 0
+      },
+      {
+        "from": 129,
+        "to": 132,
+        "direction": 0
+      },
+      {
+        "from": 132,
+        "to": 135,
+        "direction": 0
+      },
+      {
+        "from": 135,
+        "to": 138,
+        "direction": 0
+      },
+      {
+        "from": 138,
+        "to": 141,
+        "direction": 0
+      },
+      {
+        "from": 141,
+        "to": 144,
+        "direction": 0
+      },
+      {
+        "from": 144,
+        "to": 147,
+        "direction": 0
+      },
+      {
+        "from": 147,
+        "to": 150,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 11140,
+      "feetY": 450
+    },
+    "areaId": "l7-glacier-chamber",
+    "levelId": 7
+  },
+  {
+    "fps": 60,
+    "totalFrames": 352,
+    "jumpFrames": [
+      24,
+      54,
+      96,
+      138,
+      306
+    ],
+    "inputs": [
+      {
+        "from": 180,
+        "to": 186,
+        "direction": 0
+      },
+      {
+        "from": 216,
+        "to": 222,
+        "direction": 0
+      },
+      {
+        "from": 222,
+        "to": 228,
+        "direction": 0
+      },
+      {
+        "from": 228,
+        "to": 234,
+        "direction": 0
+      },
+      {
+        "from": 234,
+        "to": 240,
+        "direction": 0
+      },
+      {
+        "from": 240,
+        "to": 246,
+        "direction": 0
+      },
+      {
+        "from": 246,
+        "to": 252,
+        "direction": 0
+      },
+      {
+        "from": 252,
+        "to": 258,
+        "direction": 0
+      },
+      {
+        "from": 258,
+        "to": 264,
+        "direction": 0
+      },
+      {
+        "from": 264,
+        "to": 270,
+        "direction": 0
+      },
+      {
+        "from": 270,
+        "to": 276,
+        "direction": 0
+      },
+      {
+        "from": 276,
+        "to": 282,
+        "direction": 0
+      },
+      {
+        "from": 282,
+        "to": 288,
+        "direction": 0
+      },
+      {
+        "from": 288,
+        "to": 294,
+        "direction": 0
+      },
+      {
+        "from": 294,
+        "to": 300,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 11140,
+      "feetY": 450
+    },
+    "areaId": "l7-glacier-chamber",
+    "levelId": 7
+  },
+  {
+    "fps": 120,
+    "totalFrames": 706,
+    "jumpFrames": [
+      0,
+      72,
+      168,
+      240,
+      336
+    ],
+    "inputs": [
+      {
+        "from": 420,
+        "to": 432,
+        "direction": 0
+      },
+      {
+        "from": 432,
+        "to": 444,
+        "direction": 0
+      },
+      {
+        "from": 444,
+        "to": 456,
+        "direction": 0
+      },
+      {
+        "from": 456,
+        "to": 468,
+        "direction": 0
+      },
+      {
+        "from": 468,
+        "to": 480,
+        "direction": 0
+      },
+      {
+        "from": 480,
+        "to": 492,
+        "direction": 0
+      },
+      {
+        "from": 492,
+        "to": 504,
+        "direction": 0
+      },
+      {
+        "from": 504,
+        "to": 516,
+        "direction": 0
+      },
+      {
+        "from": 516,
+        "to": 528,
+        "direction": 0
+      },
+      {
+        "from": 528,
+        "to": 540,
+        "direction": 0
+      },
+      {
+        "from": 540,
+        "to": 552,
+        "direction": 0
+      },
+      {
+        "from": 552,
+        "to": 564,
+        "direction": 0
+      },
+      {
+        "from": 564,
+        "to": 576,
+        "direction": 0
+      },
+      {
+        "from": 576,
+        "to": 588,
+        "direction": 0
+      },
+      {
+        "from": 588,
+        "to": 600,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 11140,
+      "feetY": 450
+    },
+    "areaId": "l7-glacier-chamber",
+    "levelId": 7
+  },
+  {
+    "fps": 30,
+    "totalFrames": 132,
+    "jumpFrames": [
+      0,
+      18,
+      84
+    ],
+    "inputs": [
+      {
+        "from": 33,
+        "to": 36,
+        "direction": 0
+      },
+      {
+        "from": 39,
+        "to": 42,
+        "direction": 0
+      },
+      {
+        "from": 42,
+        "to": 45,
+        "direction": 0
+      },
+      {
+        "from": 45,
+        "to": 48,
+        "direction": -1
+      },
+      {
+        "from": 48,
+        "to": 51,
+        "direction": 0
+      },
+      {
+        "from": 51,
+        "to": 54,
+        "direction": -1
+      },
+      {
+        "from": 54,
+        "to": 57,
+        "direction": 0
+      },
+      {
+        "from": 57,
+        "to": 60,
+        "direction": 0
+      },
+      {
+        "from": 63,
+        "to": 66,
+        "direction": -1
+      },
+      {
+        "from": 66,
+        "to": 69,
+        "direction": -1
+      },
+      {
+        "from": 72,
+        "to": 75,
+        "direction": -1
+      }
+    ],
+    "start": {
+      "x": 16530,
+      "feetY": 400
+    },
+    "areaId": "l7-blizzard-ridge",
+    "levelId": 7
+  },
+  {
+    "fps": 60,
+    "totalFrames": 264,
+    "jumpFrames": [
+      0,
+      30,
+      168
+    ],
+    "inputs": [
+      {
+        "from": 66,
+        "to": 72,
+        "direction": 0
+      },
+      {
+        "from": 78,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 84,
+        "to": 90,
+        "direction": 0
+      },
+      {
+        "from": 90,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 102,
+        "direction": -1
+      },
+      {
+        "from": 102,
+        "to": 108,
+        "direction": -1
+      },
+      {
+        "from": 108,
+        "to": 114,
+        "direction": 0
+      },
+      {
+        "from": 120,
+        "to": 126,
+        "direction": -1
+      },
+      {
+        "from": 132,
+        "to": 138,
+        "direction": -1
+      },
+      {
+        "from": 138,
+        "to": 144,
+        "direction": -1
+      },
+      {
+        "from": 144,
+        "to": 150,
+        "direction": 0
+      },
+      {
+        "from": 150,
+        "to": 156,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 16530,
+      "feetY": 400
+    },
+    "areaId": "l7-blizzard-ridge",
+    "levelId": 7
+  },
+  {
+    "fps": 120,
+    "totalFrames": 517,
+    "jumpFrames": [
+      72,
+      324
+    ],
+    "inputs": [
+      {
+        "from": 144,
+        "to": 156,
+        "direction": -1
+      },
+      {
+        "from": 156,
+        "to": 168,
+        "direction": -1
+      },
+      {
+        "from": 168,
+        "to": 180,
+        "direction": -1
+      },
+      {
+        "from": 192,
+        "to": 204,
+        "direction": -1
+      },
+      {
+        "from": 204,
+        "to": 216,
+        "direction": -1
+      },
+      {
+        "from": 216,
+        "to": 228,
+        "direction": 0
+      },
+      {
+        "from": 240,
+        "to": 252,
+        "direction": -1
+      },
+      {
+        "from": 252,
+        "to": 264,
+        "direction": 0
+      },
+      {
+        "from": 264,
+        "to": 276,
+        "direction": 0
+      },
+      {
+        "from": 276,
+        "to": 288,
+        "direction": -1
+      }
+    ],
+    "start": {
+      "x": 16530,
+      "feetY": 400
+    },
+    "areaId": "l7-blizzard-ridge",
+    "levelId": 7
   }
 ]

@@ -18,6 +18,8 @@ export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
     ctx.clip();
 
     if (enemy.appearance === "mushroom") drawMushroom(ctx, enemy.walkTime);
+    else if(enemy.appearance==="frost-slime")drawSlime(ctx,enemy.walkTime,false,true);
+    else if(enemy.appearance==="snow-owl")drawOwl(ctx,enemy.walkTime);
     else if(enemy.appearance==="guardian")drawGuardian(ctx,enemy.walkTime);
     else if(enemy.appearance==="scorpion")drawScorpion(ctx,enemy.walkTime);
     else if(enemy.appearance==="bat")drawBat(ctx,enemy.walkTime);
@@ -25,9 +27,9 @@ export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
     ctx.restore();
 }
 
-function drawSlime(ctx, time, cave=false) {
+function drawSlime(ctx, time, cave=false, frost=false) {
     const wobble = Math.sin(time * 9);
-    ctx.fillStyle = cave?"#8c8dc4":"#6e944f";
+    ctx.fillStyle = frost?"#66afb8":cave?"#8c8dc4":"#6e944f";
     ctx.strokeStyle = "#403725";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -39,7 +41,7 @@ function drawSlime(ctx, time, cave=false) {
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = cave?"#a2ddd5":"#a5ba71";
+    ctx.fillStyle = frost?"#d2f2f3":cave?"#a2ddd5":"#a5ba71";
     ctx.beginPath();
     ctx.ellipse(10, 9 + wobble, 4, 2, -0.4, 0, Math.PI * 2);
     ctx.fill();
@@ -131,4 +133,15 @@ function drawGuardian(ctx,time) {
  ctx.strokeStyle="#b8ad8f";ctx.beginPath();ctx.moveTo(12,3);ctx.lineTo(15,8);ctx.lineTo(10,14);ctx.stroke();
  ctx.fillStyle="#ebc773";ctx.beginPath();ctx.arc(11,11,4,0,Math.PI*2);ctx.fill();
  ctx.fillStyle="#faf0d2";ctx.fillRect(20,9,4,5);ctx.fillRect(26,10,3,4);ctx.fillStyle="#393d36";ctx.fillRect(22,10,2,3);ctx.fillRect(27,11,2,2);
+}
+
+// Pale, rounded owl wings and a dark facial disk distinguish it from cave bats.
+function drawOwl(ctx,time){
+ const flap=Math.sin(time*10)*3;
+ ctx.fillStyle="#dcebed";ctx.strokeStyle="#51717e";ctx.lineWidth=1.5;
+ for(const side of[-1,1]){ctx.beginPath();ctx.moveTo(16,12);ctx.quadraticCurveTo(16+side*12,3+flap,16+side*15,15+flap);ctx.lineTo(16+side*5,19);ctx.closePath();ctx.fill();ctx.stroke();}
+ ctx.beginPath();ctx.ellipse(16,13,9,10,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+ ctx.fillStyle="#91aeb9";ctx.beginPath();ctx.ellipse(16,11,7,5,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#f7faf1";ctx.beginPath();ctx.arc(12,10,3,0,Math.PI*2);ctx.arc(20,10,3,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#354e5b";ctx.fillRect(12,9,2,3);ctx.fillRect(19,9,2,3);ctx.fillStyle="#c79b5b";ctx.beginPath();ctx.moveTo(14,14);ctx.lineTo(18,14);ctx.lineTo(16,17);ctx.fill();
 }

@@ -43,7 +43,7 @@ test('Lost Sun Temple is 23500px with five regions, eighteen connected beats and
  let run=null,max=0;for(const p of level6.platforms.filter(p=>p.terrain).sort((a,b)=>a.x-b.x)){
   if(run&&run.end===p.x&&run.y===p.y)run.end=p.x+p.width;else run={start:p.x,end:p.x+p.width,y:p.y};max=Math.max(max,run.end-run.start);
  }assert.ok(max<=700,`longest unbroken terrace: ${max}`);
- assert.equal(levels.some(l=>l.id===7),false);
+ assert.equal(levels.some(l=>l.id===8),false);
 });
 
 test('continuous full-input traces finish with all coins or zero coins at 30/60/120 FPS',()=>{
@@ -142,13 +142,13 @@ test('active sun damage follows the shared death path; assisted modes ignore dam
  }
 });
 
-test('sixth-level completion unions coins, unlocks unavailable seven and preserves older accounts/achievements',()=>{
+test('sixth-level completion unions coins, unlocks seven and preserves older accounts/achievements',()=>{
  const disk=new Map(),storage={getItem:k=>disk.get(k),setItem:(k,v)=>disk.set(k,v)};
  const open=(user='A')=>{const p=new LevelProgressManager(new LocalProgressStore(storage));levels.forEach(l=>p.registerLevel(l));p.setUser(user);return p;};
  const p=open();for(const l of levels.slice(0,5))p.completeLevel(l.id,l.coins.map(c=>c.id));const earlier=levels.slice(0,5).map(l=>p.getLevel(l.id));
  const c=new CoinManager(level6.coins),ids=level6.coins.map(c=>c.id);c.pending.add(ids[0]);assert.equal(open().getLevel(6).coinIds.length,0);c.discard();assert.equal(open().getLevel(6).coinIds.length,0);
  p.completeLevel(6,ids.slice(0,2));assert.deepEqual(open().getLevel(6).coinIds,ids.slice(0,2));p.completeLevel(6,[ids[2]]);p.completeLevel(6,[]);
- assert.equal(open().getLevel(6).fullyCompleted,true);assert.equal(open().getLevel(7).unlocked,true);assert.equal(levels.some(l=>l.id===7),false);
+ assert.equal(open().getLevel(6).fullyCompleted,true);assert.equal(open().getLevel(7).unlocked,true);assert.equal(levels.some(l=>l.id===8),false);
  assert.deepEqual(levels.slice(0,5).map(l=>open().getLevel(l.id)),earlier);assert.deepEqual(open('B').getLevel(6).coinIds,[]);
  const clean=open("C"),before=JSON.stringify([...disk]);clean.completeLevel(6,ids,{developerAssisted:true});assert.equal(JSON.stringify([...disk]),before);assert.equal(clean.getLevel(6).completed,false);
 });

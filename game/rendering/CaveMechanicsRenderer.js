@@ -13,6 +13,7 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
     for(const rock of level.stalactites) {
         if(rock.x+rock.width<cameraX||rock.x>cameraX+width)continue;
         const {x,y,width:w,height:h,state}=rock;
+        const ice=rock.config.appearance==="icicle";
         ctx.save();
         if(state==="spent") {
             if(rock.impactTime>0) {
@@ -23,10 +24,10 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
         }
         const warning=state==="warning";
         const shake=warning&&!reduceMotion?Math.sin(rock.warningTime*45)*2:0;
-        ctx.translate(x+shake,y);ctx.fillStyle=warning?"#c0b2c9":"#968ca8";
-        ctx.strokeStyle="#e1d4e5";ctx.lineWidth=1.5;
+        ctx.translate(x+shake,y);ctx.fillStyle=ice?(warning?"#e1f7fa":"#87c5dd"):warning?"#c0b2c9":"#968ca8";
+        ctx.strokeStyle=ice?"#356d8b":"#e1d4e5";ctx.lineWidth=1.5;
         ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(w,0);ctx.lineTo(w/2,h);ctx.closePath();ctx.fill();ctx.stroke();
-        ctx.fillStyle="#86e2da";ctx.beginPath();ctx.moveTo(w*.36,h*.7);ctx.lineTo(w*.64,h*.7);
+        ctx.fillStyle=ice?"#e4faff":"#86e2da";ctx.beginPath();ctx.moveTo(w*.36,h*.7);ctx.lineTo(w*.64,h*.7);
         ctx.lineTo(w/2,h);ctx.closePath();ctx.fill();
         if(warning) {
             ctx.fillStyle="#faedca";ctx.font="bold 16px Arial";ctx.textAlign="center";

@@ -1,3 +1,4 @@
+import { drawFrozenSurface } from "./FrozenTerrain.js";
 // Cosmetic warning shake never moves the collision surface or the player's feet.
 export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { reduceMotion = false } = {}) {
     for (const platform of platforms) {
@@ -11,7 +12,10 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
         ctx.translate(platform.x + width / 2 + shake, platform.y + progress * progress * 85);
         if (falling) { ctx.rotate(progress * 0.12); ctx.globalAlpha *= 1 - progress; }
         ctx.translate(-width / 2, 0);
+        const frozen=["ice","snow"].includes(config.appearance);
+        if(frozen)drawFrozenSurface(ctx,{x:0,y:0,width,height,appearance:config.appearance,type:platform.type});
         const stone=config.appearance==="rock",sand=config.appearance==="sandstone";
+        if(!frozen){
         ctx.fillStyle = sand?"#bc9165":stone?"#92869f":"#aa8055";
         ctx.strokeStyle = "#51452b";
         ctx.lineWidth = 2;
@@ -26,6 +30,7 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
         for (let x = 28; !sand && x < width - 4; x += 28) {
             ctx.beginPath(); ctx.moveTo(x, 5); ctx.lineTo(x, height - 2); ctx.stroke();
         }
+        }
         if (platform.type === "moving") {
             // Simple cream arrows distinguish ferries and lifts from static terrain.
             ctx.strokeStyle = "#faedca";
@@ -37,7 +42,7 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
             ctx.moveTo(5, -4); ctx.lineTo(9, 0); ctx.lineTo(5, 4); ctx.stroke();
             ctx.restore();
         } else if (platform.state !== "stable") {
-            ctx.strokeStyle = "#51452b";
+            ctx.strokeStyle = frozen ? "#356c87" : "#51452b";
             ctx.lineWidth = 2;
             for (const x of [width * 0.28, width * 0.7]) {
                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x - 4, height * 0.35);

@@ -4,7 +4,8 @@ export function drawDebug(ctx,level,coins,cameraX) {
     ctx.save();ctx.translate(-cameraX,0);ctx.lineWidth=1.5;ctx.setLineDash([]);
     const rect=(box,color)=>{ctx.strokeStyle=color;ctx.strokeRect(box.x,box.y,box.width,box.height);};
     rect(level.player,"#ffffff");
-    level.platforms.filter(p=>p.solid!==false).forEach(p=>rect(p,p.type==="moving"?"#63e8ff":p.type==="collapsing"?"#ffae54":"#9bea82"));
+    if(level.config.theme==="frozen"){ctx.fillStyle="#e1f8ff";ctx.font="10px Arial";ctx.fillText(`vx ${level.player.velocityX.toFixed(1)} · ${level.player.iceAirborne?"ice momentum":"normal"}`,level.player.x,level.player.y-6);}
+    level.platforms.filter(p=>p.solid!==false).forEach(p=>rect(p,p.type==="moving"?"#63e8ff":p.type==="collapsing"?"#ffae54":(p.surface??p.config?.surface)?.type==="ice"?"#9bdfff":"#9bea82"));
     level.enemies.filter(e=>e.active).forEach(e=>rect({x:e.x,y:e.feetY-e.height,width:e.width,height:e.height},"#ff759a"));
     (level.config.hazards??[]).forEach(h=>rect(h,"#ff6b61"));
     level.stalactites.forEach(r=>{if(r.state!=="spent")rect(r,"#ff6b61");ctx.setLineDash([4,3]);rect(r.config.trigger,"#bcb1ff");ctx.setLineDash([]);});

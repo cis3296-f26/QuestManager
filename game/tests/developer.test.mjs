@@ -64,8 +64,10 @@ test("turning flight off exits embedded terrain safely and restores normal physi
         assert.ok(!level.platforms.some(platform=>overlap(p,platform)));
         assert.equal(p.grounded,true);assert.ok(p.supportPlatform&&!p.supportPlatform.type);
         jump(p,650);const y=p.y;dev.step(0,new Set(),1/fps);assert.ok(p.y<y);assert.notEqual(p.velocityY,0);
-        const thorn=config.hazards[0];p.x=thorn.x;p.y=thorn.y;p.grounded=false;p.supportPlatform=null;
-        assert.equal(dev.step(0,new Set(),1/fps).death,"thorns");assert.equal(level.developerAssisted,true);
+        const thorn=config.hazards[0];
+        if(thorn){p.x=thorn.x;p.y=thorn.y;p.grounded=false;p.supportPlatform=null;assert.equal(dev.step(0,new Set(),1/fps).death,"thorns");}
+        else{const enemy=level.enemies[0];p.reset({x:enemy.x,feetY:enemy.feetY});assert.equal(dev.step(0,new Set(),1/fps).death,"enemy");}
+        assert.equal(level.developerAssisted,true);
     }
 });
 
@@ -115,7 +117,7 @@ test("every configured teleport has a safe static landing and invalid targets do
             assert.ok(!level.enemies.some(e=>overlap(p,{x:e.x,y:e.feetY-e.height,width:e.width,height:e.height})));
         }
         const before=JSON.stringify(p);assert.equal(dev.teleport("missing"),false);assert.equal(JSON.stringify(p),before);
-        assert.equal(dev.canLoad(4,levels),true);assert.equal(dev.canLoad(5,levels),true);assert.equal(dev.canLoad(6,levels),true);assert.equal(dev.canLoad(7,levels),false);assert.equal(dev.canLoad(99,levels),false);
+        assert.equal(dev.canLoad(4,levels),true);assert.equal(dev.canLoad(5,levels),true);assert.equal(dev.canLoad(6,levels),true);assert.equal(dev.canLoad(7,levels),true);assert.equal(dev.canLoad(8,levels),false);assert.equal(dev.canLoad(99,levels),false);
         assert.ok(safePosition(level,{x:850,feetY:460}));
     }
 });

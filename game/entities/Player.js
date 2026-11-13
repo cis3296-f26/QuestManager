@@ -13,6 +13,8 @@ export class Player {
         this.x = spawn.x;
         this.y = spawn.feetY - this.height;
         this.velocityY = 0;
+        this.velocityX = 0;
+        this.iceAirborne = false;
         this.grounded = true;
         this.supportPlatform = null;
         this.facing = 1;
@@ -32,4 +34,5 @@ export class Player {
         }
     }
 }
+
 

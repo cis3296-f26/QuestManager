@@ -1,3 +1,4 @@
+import { FrozenRenderer } from "./rendering/FrozenRenderer.js";
 import { TempleRenderer } from "./rendering/TempleRenderer.js";
 import { drawSunPulses } from "./rendering/SunPulseRenderer.js";
 import { DesertRenderer, drawWind } from "./rendering/DesertRenderer.js";
@@ -50,6 +51,7 @@ const grassland = new GrasslandRenderer();
 const cave = new CaveRenderer();
 const desert = new DesertRenderer();
 const temple = new TempleRenderer();
+const frozen = new FrozenRenderer();
 
 let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
@@ -228,7 +230,9 @@ function playLevel(config, { developerBypass = false } = {}) {
     if (developerBypass) developer?.markAttempt();
     audio.setScene(config.audio?.music ?? "grassland", { gameplay: true });
     document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
-    document.getElementById("enemyInstructions").textContent = config.theme === "temple"
+    document.getElementById("enemyInstructions").textContent = config.theme === "frozen"
+        ? "Blue ice slides; snow stops normally. Stomp frost slimes, avoid owls and watch icicle warnings."
+        : config.theme === "temple"
         ? "Stomp stone guardians; avoid scorpions. Watch CHARGING warnings and cross sun beams while dark."
         : config.theme === "desert"
         ? "Jump over scorpions: they cannot be stomped. Watch the ribbons before entering a wind gust."
@@ -319,7 +323,7 @@ function update(dt) {
     const direction = Number(right) - Number(left);
     const result = developer ? developer.step(direction, keys, dt) : stepLevel(level, direction, dt);
     if (result.death) {
-        const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: "A falling rock caught you! Restarting…", "sun-pulse": "A sun pulse caught you! Cross while the beam is dark. Restarting…" };
+        const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: level.config.theme === "frozen" ? "A falling icicle caught you! Wait for the warning, then cross. Restarting…" : "A falling rock caught you! Restarting…", "sun-pulse": "A sun pulse caught you! Cross while the beam is dark. Restarting…" };
         startDeath(message[result.death], result.death);
         return;
     }
@@ -346,13 +350,14 @@ function drawPlayer() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const scenery = level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
+    const scenery = level.config.theme === "frozen" ? frozen : level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
     scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme, level.config.openingLandscape ?? level.config.landscape);
 
+    if (level.config.theme === "frozen") frozen.drawAtmosphere(ctx, level.wind.time, cameraX, { reduceMotion: settings.values.reduceMotion });
     ctx.save();
     ctx.translate(-cameraX, 0);
     scenery.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
-    grassland.drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
+    (level.config.theme === "frozen" ? frozen : grassland).drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
     if (level.config.theme === "temple") temple.drawMasonry(ctx, platforms, cameraX, canvas.width);
     drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawExplorationFoliage(ctx, level.exploration, cameraX, canvas.width);

@@ -35,7 +35,13 @@ export const MUSIC_TRACKS = Object.freeze({
         instruments: ["reed", "harp", "drum", "pad", "bell"],
         description: "A measured temple procession: low reeds, warm plucked replies and a five-stroke hand-drum figure, opening into a spacious buried-chamber phrase.",
         chords: [[50,57,60,65],[48,55,60,64],[46,53,57,62],[45,52,57,61],[50,53,57,64],[43,50,55,62],[46,53,58,65],[45,52,57,61]],
-        melody: [[69,65,62,64],[67,64,60],[65,69,70,65],[64,61,64],[65,69,74,72],[67,62,65],[70,69,65,62],[64,61,62]] }
+        melody: [[69,65,62,64],[67,64,60],[65,69,70,65],[64,61,64],[65,69,74,72],[67,62,65],[70,69,65,62],[64,61,62]] },
+    frozen: { title: "Footprints Beneath the Northern Lights", biome: "Frozen Peaks", bpm: 92, beatsPerBar: 4, bars: 24,
+        instruments: ["bell", "flute", "keys", "pad", "shaker"],
+        description: "A bright winter melody, airy flute answers, soft piano steps and a gentle snow pulse; open and adventurous rather than cavernous.",
+        chords: [[50,57,62,66],[55,62,67,71],[52,59,64,67],[45,52,57,61],[50,57,62,66],[47,54,59,62],[55,62,67,71],[45,52,57,61]],
+        melody: [[81,86,85,78],[79,83,81],[78,81,86],[76,78,74],[81,88,86,83],[79,81,83],[78,76,74,78],[76,73,74]] }
+
 });
 
 // Notes use beats and MIDI pitches. Phrase B answers A, then A' returns with
@@ -86,6 +92,14 @@ export function arrangeMusic(key) {
             melody.forEach((pitch,i)=>add(bar,[.1,.85,2,2.85][i],phrase===1?.85:.55,
                 pitch+(phrase===1?-12:0),phrase===1?"harp":"reed",.025,-.2));
             if(phrase===2&&local%2)add(bar,3.4,.5,chord[2]+24,"harp",.012,.45);
+        } else if (key === "frozen") {
+            chord.slice(0,3).forEach((pitch,i)=>add(bar,.05,4.3,pitch,"pad",.004,(i-1)*.5));
+            for(const [i,at] of [0,1.5,2.75].entries())add(bar,at,.9,chord[i]+(i?12:0),"keys",.014,.2);
+            for(const at of [.75,2.5])add(bar,at,.12,48,"shaker",.006,-.35);
+            melody.forEach((pitch,i)=>add(bar,[.1,1.1,2,3.1][i],phrase===1?1:.75,
+                pitch+(phrase===1?-12:0),phrase===1?"flute":"bell",phrase===1?.024:.020,-.2));
+            if(phrase!==1&&local%2)add(bar,2.9,1.1,chord[2]+24,"flute",.014,.4);
+            if(phrase===2&&local%2===0)add(bar,3.45,.45,chord[1]+24,"keys",.010,.45);
         } else if (key === "temple") {
             chord.slice(0,3).forEach((pitch,i)=>add(bar,.05,4.4,pitch-12,"pad",.005,(i-1)*.45));
             for(const [i,at] of (phrase===1?[0,2.5]:[0,.75,1.75,2.5,3.25]).entries())

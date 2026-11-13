@@ -18,7 +18,7 @@ export function stepLevel(level, direction, dt, { invincible = false, flight = n
         player.y = Math.max(movement.hudBottom + 2, Math.min(movement.viewHeight - player.height - 2,
             player.y + flight.vertical / magnitude * flight.speed * dt));
         player.trackMovement(previousX);
-        player.velocityY = 0; player.grounded = false; player.supportPlatform = null;
+        player.velocityY = 0; player.velocityX = 0; player.iceAirborne = false; player.grounded = false; player.supportPlatform = null;
     } else {
         moveHorizontally(player, direction, movement.speed, config.worldWidth, dt);
         if (windDisplacement) {
@@ -27,7 +27,9 @@ export function stepLevel(level, direction, dt, { invincible = false, flight = n
         }
         applyGravity(player, movement.gravity, platforms, dt, { previousX });
     }
+    const proposedX = player.x;
     level.puzzle.update(player, previous, dt, { ignoreWalls: Boolean(flight) });
+    if (player.x !== proposedX) player.velocityX = 0;
     enemies.forEach((enemy) => enemy.update(dt));
     const contact = flight ? { deadly: false, stomped: [] } :
         resolveEnemyInteractions(player, previous, enemies, { dt, gravity: movement.gravity, platforms, ignoreDamage: invincible });

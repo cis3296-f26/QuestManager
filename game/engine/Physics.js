@@ -1,13 +1,17 @@
+import { surfaceDisplacement, isIce } from "./SurfaceMovement.js";
 import { findLandingSurface } from "./Collision.js";
 
 export function moveHorizontally(player, direction, speed, worldWidth, dt) {
     const previousX = player.x;
-    player.x += direction * speed * dt;
-    player.x = Math.max(0, Math.min(worldWidth - player.width, player.x));
+    player.x += surfaceDisplacement(player, direction, speed, dt);
+    const clamped = Math.max(0, Math.min(worldWidth - player.width, player.x));
+    if (clamped !== player.x) player.velocityX = 0;
+    player.x = clamped;
     player.trackMovement(previousX);
 }
 
 export function jump(player, strength) {
+    if (player.grounded) player.iceAirborne = isIce(player.supportPlatform);
     player.velocityY = -strength;
     player.grounded = false;
     player.supportPlatform = null;
@@ -63,5 +67,6 @@ export function applyGravity(player, gravity, platforms, dt, { previousX = playe
         if (player.grounded) platform.onLand?.();
     }
 }
+
 
 

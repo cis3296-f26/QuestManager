@@ -12,7 +12,7 @@ import {stepLevel} from "../engine/stepLevel.js";
 import {simulateRoute} from "../levels/design/simulateRoute.js";
 
 test("every special platform declares and obeys its level's route connection",()=>{
-    assert.equal(levels.flatMap(l=>l.platforms).filter(p=>p.type).length,23);
+    assert.equal(levels.flatMap(l=>l.platforms).filter(p=>p.type).length,28);
     for(const config of levels)assert.deepEqual(validatePlatformPurpose(config),[]);
 });
 
