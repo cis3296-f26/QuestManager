@@ -17,7 +17,9 @@ export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
     ctx.rect(0, 0, 32, 24);
     ctx.clip();
 
-    if (enemy.appearance === "mushroom") drawMushroom(ctx, enemy.walkTime);
+    if(enemy.appearance==="mountain-goat")drawGoat(ctx,enemy.walkTime);
+    else if(enemy.appearance==="mountain-eagle")drawEagle(ctx,enemy.walkTime);
+    else if (enemy.appearance === "mushroom") drawMushroom(ctx, enemy.walkTime);
     else if(enemy.appearance==="frost-slime")drawSlime(ctx,enemy.walkTime,false,true);
     else if(enemy.appearance==="snow-owl")drawOwl(ctx,enemy.walkTime);
     else if(enemy.appearance==="guardian")drawGuardian(ctx,enemy.walkTime);
@@ -144,4 +146,22 @@ function drawOwl(ctx,time){
  ctx.fillStyle="#91aeb9";ctx.beginPath();ctx.ellipse(16,11,7,5,0,0,Math.PI*2);ctx.fill();
  ctx.fillStyle="#f7faf1";ctx.beginPath();ctx.arc(12,10,3,0,Math.PI*2);ctx.arc(20,10,3,0,Math.PI*2);ctx.fill();
  ctx.fillStyle="#354e5b";ctx.fillRect(12,9,2,3);ctx.fillRect(19,9,2,3);ctx.fillStyle="#c79b5b";ctx.beginPath();ctx.moveTo(14,14);ctx.lineTo(18,14);ctx.lineTo(16,17);ctx.fill();
+}
+
+// Four-legged silhouette and curved horns; all art stays within normalized bounds.
+function drawGoat(ctx,time){
+ const stride=Math.sin(time*11)*2;
+ ctx.strokeStyle="#514b42";ctx.lineWidth=3;
+ for(const [x,phase]of[[6,1],[12,-1],[20,-1],[25,1]]){ctx.beginPath();ctx.moveTo(x,15);ctx.lineTo(x+stride*phase,23);ctx.stroke();}
+ ctx.fillStyle="#a79d87";ctx.beginPath();ctx.ellipse(14,13,12,7,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#b9b09b";ctx.beginPath();ctx.ellipse(26,10,5,6,0,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle="#655c4d";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(25,5);ctx.quadraticCurveTo(18,-1,20,5);ctx.moveTo(28,5);ctx.quadraticCurveTo(24,0,26,2);ctx.stroke();
+ ctx.fillStyle="#faf0d6";ctx.fillRect(26,8,4,4);ctx.fillStyle="#333e3f";ctx.fillRect(28,9,2,2);
+}
+function drawEagle(ctx,time){
+ const flap=Math.sin(time*9)*4;
+ ctx.fillStyle="#78614e";ctx.strokeStyle="#473f3e";ctx.lineWidth=1.4;
+ for(const side of[-1,1]){ctx.beginPath();ctx.moveTo(16,12);ctx.lineTo(16+side*15,3+flap);ctx.lineTo(16+side*13,14+flap);ctx.lineTo(16+side*7,18);ctx.closePath();ctx.fill();ctx.stroke();}
+ ctx.fillStyle="#605347";ctx.beginPath();ctx.ellipse(17,15,6,7,.3,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#e6d6ae";ctx.beginPath();ctx.ellipse(21,9,5,4,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#c39b52";ctx.beginPath();ctx.moveTo(24,9);ctx.lineTo(30,12);ctx.lineTo(24,13);ctx.fill();ctx.fillStyle="#403c37";ctx.fillRect(22,8,2,2);
 }

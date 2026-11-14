@@ -23,7 +23,7 @@ const routes=suffix=>JSON.parse(readFileSync(new URL(`./fixtures/level5-${suffix
 const id=p=>p?.id??p?.config?.id;
 
 test("Sunscorched Dunes has five distinct terrain sections and stable three-coin IDs, without filler length",()=>{
-    assert.deepEqual(levels.map(l=>l.id),[1,2,3,4,5,6,7]);assert.equal(level5.name,"Sunscorched Dunes");
+    assert.deepEqual(levels.map(l=>l.id),[1,2,3,4,5,6,7,8]);assert.equal(level5.name,"Sunscorched Dunes");
     assert.deepEqual(level5.stages.map(s=>s.id),["arrival","canyon","oasis","ridge","ruins"]);
     assert.ok(level5.worldWidth>=20000&&level5.worldWidth<=24000);
     assert.ok(levels.slice(0,4).every(l=>l.worldWidth<level5.worldWidth));assert.deepEqual(validateLevel(level5).errors,[]);
@@ -94,7 +94,7 @@ test("Level 5 saves union only completed attempts, preserve Levels 1–4, isolat
     assert.equal(JSON.stringify(load().data.levels),earlier);
     p.completeLevel(5,level5.coins.map(c=>c.id),{developerAssisted:true});assert.equal(load().getLevel(5).completed,false);
     p.completeLevel(5,[level5.coins[0].id]);const fresh=load();
-    assert.equal(fresh.getLevel(6).unlocked,true);assert.equal(levels.some(l=>l.id===8),false);
+    assert.equal(fresh.getLevel(6).unlocked,true);assert.equal(levels.some(l=>l.id===9),false);
     fresh.completeLevel(5,[level5.coins[1].id,level5.coins[2].id]);fresh.completeLevel(5,[]);
     assert.equal(load().getLevel(5).fullyCompleted,true);assert.deepEqual(load().totalCoins,{earned:15,possible:30});
     for(const config of levels.slice(0,4))assert.deepEqual(load().getLevel(config.id).coinIds,config.coins.map(c=>c.id));

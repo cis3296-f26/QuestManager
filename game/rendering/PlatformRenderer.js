@@ -1,3 +1,4 @@
+import { drawMountainSurface, drawBridgeDeck } from "./MountainRenderer.js";
 import { drawFrozenSurface } from "./FrozenTerrain.js";
 // Cosmetic warning shake never moves the collision surface or the player's feet.
 export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { reduceMotion = false } = {}) {
@@ -15,7 +16,10 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
         const frozen=["ice","snow"].includes(config.appearance);
         if(frozen)drawFrozenSurface(ctx,{x:0,y:0,width,height,appearance:config.appearance,type:platform.type});
         const stone=config.appearance==="rock",sand=config.appearance==="sandstone";
-        if(!frozen){
+        const mountain=config.appearance==="mountain", bridge=config.appearance==="rope-bridge";
+        if(mountain)drawMountainSurface(ctx,{x:0,y:0,width,height});
+        if(bridge)drawBridgeDeck(ctx,{x:0,y:0,width,height});
+        if(!frozen&&!mountain&&!bridge){
         ctx.fillStyle = sand?"#bc9165":stone?"#92869f":"#aa8055";
         ctx.strokeStyle = "#51452b";
         ctx.lineWidth = 2;
@@ -41,7 +45,7 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
             ctx.moveTo(-5, -4); ctx.lineTo(-9, 0); ctx.lineTo(-5, 4);
             ctx.moveTo(5, -4); ctx.lineTo(9, 0); ctx.lineTo(5, 4); ctx.stroke();
             ctx.restore();
-        } else if (platform.state !== "stable") {
+        } else if (platform.state !== "stable" || bridge) {
             ctx.strokeStyle = frozen ? "#356c87" : "#51452b";
             ctx.lineWidth = 2;
             for (const x of [width * 0.28, width * 0.7]) {

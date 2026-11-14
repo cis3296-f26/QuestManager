@@ -42,6 +42,11 @@ export const MUSIC_TRACKS = Object.freeze({
         chords: [[50,57,62,66],[55,62,67,71],[52,59,64,67],[45,52,57,61],[50,57,62,66],[47,54,59,62],[55,62,67,71],[45,52,57,61]],
         melody: [[81,86,85,78],[79,83,81],[78,81,86],[76,78,74],[81,88,86,83],[79,81,83],[78,76,74,78],[76,73,74]] }
 
+    ,mountain: { title: "The Skyward Trail", biome: "Mountain Cliffs", bpm: 108, beatsPerBar: 4, bars: 24,
+        instruments: ["reed", "harp", "pad", "drum", "bass"],
+        description: "An ascending warm reed refrain, broad open harmonies and a quiet marching drum; a spacious middle phrase before the summit return.",
+        chords: [[48,55,60,64],[43,50,55,59],[45,52,57,60],[41,48,53,57],[48,55,60,67],[50,57,62,65],[41,48,53,60],[43,50,55,62]],
+        melody: [[72,76,79,84],[83,79,74],[76,81,79,76],[77,81,84],[79,84,88,86],[86,81,77],[81,79,77,76],[74,79,84]] }
 });
 
 // Notes use beats and MIDI pitches. Phrase B answers A, then A' returns with
@@ -92,6 +97,13 @@ export function arrangeMusic(key) {
             melody.forEach((pitch,i)=>add(bar,[.1,.85,2,2.85][i],phrase===1?.85:.55,
                 pitch+(phrase===1?-12:0),phrase===1?"harp":"reed",.025,-.2));
             if(phrase===2&&local%2)add(bar,3.4,.5,chord[2]+24,"harp",.012,.45);
+        } else if (key === "mountain") {
+            chord.slice(0,3).forEach((pitch,i)=>add(bar,.05,4.2,pitch,"pad",.004,(i-1)*.5));
+            add(bar,0,1.3,root-12,"bass",.015,-.15);
+            for(const at of phrase===1?[0,2.5]:[0,1.5,2,3.5])add(bar,at,.25,38,"drum",.012,-.1);
+            for(const [i,at]of[.5,1.75,3].entries())add(bar,at,.8,chord[(i+phrase)%chord.length]+12,"harp",.016,.35);
+            melody.forEach((pitch,i)=>add(bar,[.1,1,2.2,3.1][i],phrase===1?1:.7,pitch+(phrase===1?-12:0),"reed",.025,-.2));
+            if(phrase===2&&local%2)add(bar,3.3,.6,chord[2]+24,"harp",.012,.45);
         } else if (key === "frozen") {
             chord.slice(0,3).forEach((pitch,i)=>add(bar,.05,4.3,pitch,"pad",.004,(i-1)*.5));
             for(const [i,at] of [0,1.5,2.75].entries())add(bar,at,.9,chord[i]+(i?12:0),"keys",.014,.2);

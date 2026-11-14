@@ -2630,5 +2630,503 @@
     },
     "areaId": "l7-blizzard-ridge",
     "levelId": 7
+  },
+  {
+    "fps": 30,
+    "totalFrames": 85,
+    "jumpFrames": [
+      36,
+      66
+    ],
+    "interactFrames": [],
+    "inputs": [
+      {
+        "from": 36,
+        "to": 39,
+        "direction": -1
+      },
+      {
+        "from": 39,
+        "to": 42,
+        "direction": -1
+      },
+      {
+        "from": 42,
+        "to": 45,
+        "direction": -1
+      },
+      {
+        "from": 45,
+        "to": 48,
+        "direction": -1
+      },
+      {
+        "from": 48,
+        "to": 51,
+        "direction": -1
+      },
+      {
+        "from": 51,
+        "to": 54,
+        "direction": -1
+      },
+      {
+        "from": 54,
+        "to": 57,
+        "direction": -1
+      },
+      {
+        "from": 72,
+        "to": 75,
+        "direction": -1
+      },
+      {
+        "from": 75,
+        "to": 78,
+        "direction": -1
+      }
+    ],
+    "climbInputs": [],
+    "areaId": "l8-shelter",
+    "start": {
+      "x": 2410,
+      "feetY": 450
+    },
+    "levelId": 8
+  },
+  {
+    "fps": 60,
+    "totalFrames": 168,
+    "jumpFrames": [
+      72,
+      132
+    ],
+    "interactFrames": [],
+    "inputs": [
+      {
+        "from": 72,
+        "to": 78,
+        "direction": -1
+      },
+      {
+        "from": 78,
+        "to": 84,
+        "direction": -1
+      },
+      {
+        "from": 84,
+        "to": 90,
+        "direction": -1
+      },
+      {
+        "from": 90,
+        "to": 96,
+        "direction": -1
+      },
+      {
+        "from": 96,
+        "to": 102,
+        "direction": -1
+      },
+      {
+        "from": 102,
+        "to": 108,
+        "direction": -1
+      },
+      {
+        "from": 108,
+        "to": 114,
+        "direction": -1
+      },
+      {
+        "from": 144,
+        "to": 150,
+        "direction": -1
+      },
+      {
+        "from": 150,
+        "to": 156,
+        "direction": -1
+      }
+    ],
+    "climbInputs": [],
+    "areaId": "l8-shelter",
+    "start": {
+      "x": 2410,
+      "feetY": 450
+    },
+    "levelId": 8
+  },
+  {
+    "fps": 120,
+    "totalFrames": 348,
+    "jumpFrames": [
+      144,
+      276
+    ],
+    "interactFrames": [],
+    "inputs": [
+      {
+        "from": 144,
+        "to": 156,
+        "direction": -1
+      },
+      {
+        "from": 156,
+        "to": 168,
+        "direction": -1
+      },
+      {
+        "from": 168,
+        "to": 180,
+        "direction": -1
+      },
+      {
+        "from": 180,
+        "to": 192,
+        "direction": -1
+      },
+      {
+        "from": 192,
+        "to": 204,
+        "direction": -1
+      },
+      {
+        "from": 204,
+        "to": 216,
+        "direction": -1
+      },
+      {
+        "from": 216,
+        "to": 228,
+        "direction": -1
+      },
+      {
+        "from": 288,
+        "to": 300,
+        "direction": 0
+      },
+      {
+        "from": 300,
+        "to": 312,
+        "direction": -1
+      },
+      {
+        "from": 312,
+        "to": 324,
+        "direction": -1
+      }
+    ],
+    "climbInputs": [],
+    "areaId": "l8-shelter",
+    "start": {
+      "x": 2410,
+      "feetY": 450
+    },
+    "levelId": 8
+  },
+  {
+    "fps": 30,
+    "totalFrames": 84,
+    "jumpFrames": [
+      9,
+      18,
+      36
+    ],
+    "interactFrames": [
+      12
+    ],
+    "inputs": [
+      {
+        "from": 12,
+        "to": 15,
+        "direction": 0
+      },
+      {
+        "from": 15,
+        "to": 18,
+        "direction": -1
+      },
+      {
+        "from": 30,
+        "to": 33,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 12,
+        "to": 15,
+        "vertical": -1
+      },
+      {
+        "from": 15,
+        "to": 18,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l8-forgotten-route",
+    "start": {
+      "x": 11800,
+      "feetY": 450
+    },
+    "levelId": 8
+  },
+  {
+    "fps": 60,
+    "totalFrames": 162,
+    "jumpFrames": [
+      18,
+      30,
+      66
+    ],
+    "interactFrames": [
+      24
+    ],
+    "inputs": [
+      {
+        "from": 24,
+        "to": 30,
+        "direction": 0
+      },
+      {
+        "from": 54,
+        "to": 60,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 24,
+        "to": 30,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l8-forgotten-route",
+    "start": {
+      "x": 11800,
+      "feetY": 450
+    },
+    "levelId": 8
+  },
+  {
+    "fps": 120,
+    "totalFrames": 324,
+    "jumpFrames": [
+      36,
+      60,
+      132
+    ],
+    "interactFrames": [
+      48
+    ],
+    "inputs": [
+      {
+        "from": 48,
+        "to": 60,
+        "direction": 0
+      },
+      {
+        "from": 108,
+        "to": 120,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 48,
+        "to": 60,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l8-forgotten-route",
+    "start": {
+      "x": 11800,
+      "feetY": 450
+    },
+    "levelId": 8
+  },
+  {
+    "fps": 30,
+    "totalFrames": 132,
+    "jumpFrames": [
+      3,
+      24,
+      42,
+      72
+    ],
+    "interactFrames": [
+      21
+    ],
+    "inputs": [
+      {
+        "from": 21,
+        "to": 24,
+        "direction": 0
+      },
+      {
+        "from": 27,
+        "to": 30,
+        "direction": 0
+      },
+      {
+        "from": 30,
+        "to": 33,
+        "direction": 0
+      },
+      {
+        "from": 33,
+        "to": 36,
+        "direction": 0
+      },
+      {
+        "from": 36,
+        "to": 39,
+        "direction": 0
+      },
+      {
+        "from": 39,
+        "to": 42,
+        "direction": -1
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 21,
+        "to": 24,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l8-eagles-perch",
+    "start": {
+      "x": 17560,
+      "feetY": 440
+    },
+    "levelId": 8
+  },
+  {
+    "fps": 60,
+    "totalFrames": 264,
+    "jumpFrames": [
+      0,
+      54,
+      90,
+      138
+    ],
+    "interactFrames": [
+      42
+    ],
+    "inputs": [
+      {
+        "from": 42,
+        "to": 48,
+        "direction": 0
+      },
+      {
+        "from": 48,
+        "to": 54,
+        "direction": -1
+      },
+      {
+        "from": 60,
+        "to": 66,
+        "direction": 0
+      },
+      {
+        "from": 66,
+        "to": 72,
+        "direction": 0
+      },
+      {
+        "from": 72,
+        "to": 78,
+        "direction": 0
+      },
+      {
+        "from": 78,
+        "to": 84,
+        "direction": -1
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 42,
+        "to": 48,
+        "vertical": -1
+      },
+      {
+        "from": 48,
+        "to": 54,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l8-eagles-perch",
+    "start": {
+      "x": 17560,
+      "feetY": 440
+    },
+    "levelId": 8
+  },
+  {
+    "fps": 120,
+    "totalFrames": 528,
+    "jumpFrames": [
+      108,
+      180,
+      276
+    ],
+    "interactFrames": [
+      84
+    ],
+    "inputs": [
+      {
+        "from": 84,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 108,
+        "direction": -1
+      },
+      {
+        "from": 120,
+        "to": 132,
+        "direction": 0
+      },
+      {
+        "from": 132,
+        "to": 144,
+        "direction": 0
+      },
+      {
+        "from": 144,
+        "to": 156,
+        "direction": 0
+      },
+      {
+        "from": 156,
+        "to": 168,
+        "direction": -1
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 84,
+        "to": 96,
+        "vertical": -1
+      },
+      {
+        "from": 96,
+        "to": 108,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l8-eagles-perch",
+    "start": {
+      "x": 17560,
+      "feetY": 440
+    },
+    "levelId": 8
   }
 ]

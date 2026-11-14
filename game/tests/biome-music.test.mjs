@@ -14,9 +14,9 @@ import fake from "./helpers/fakeAudioContext.cjs";
 const {FakeAudioContext}=fake;
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 
-test("existing biome keys select eight original arrangements with distinct meter, texture and phrase development",()=>{
-    assert.deepEqual(levels.map(l=>l.audio.music),["grassland","forest","deepForest","cave","desert","temple","frozen"]);
-    assert.deepEqual(Object.keys(MUSIC_TRACKS),["map","grassland","forest","deepForest","cave","desert","temple","frozen"]);
+test("existing biome keys select nine original arrangements with distinct meter, texture and phrase development",()=>{
+    assert.deepEqual(levels.map(l=>l.audio.music),["grassland","forest","deepForest","cave","desert","temple","frozen","mountain"]);
+    assert.deepEqual(Object.keys(MUSIC_TRACKS),["map","grassland","forest","deepForest","cave","desert","temple","frozen","mountain"]);
     const textures=new Set(),rhythms=new Set();
     for(const key of Object.keys(MUSIC_TRACKS)) {
         const {score,notes,duration}=arrangeMusic(key);
@@ -31,7 +31,7 @@ test("existing biome keys select eight original arrangements with distinct meter
         assert.notDeepEqual(signature(0),signature(1),`${key} needs an answering phrase, not an eight-bar copy`);
         assert.notDeepEqual(signature(0),signature(2),`${key} needs a varied return`);
     }
-    assert.equal(textures.size,8);assert.equal(rhythms.size,8);
+    assert.equal(textures.size,9);assert.equal(rhythms.size,9);
     assert.equal(arrangeMusic("desertRuins"),null,"unfinished biomes have no placeholder scores");
     // Forest family shares the motif's rising 3rd/5th contour with a changed mode/register.
     assert.deepEqual(MUSIC_TRACKS.forest.melody[0].map(n=>n-67),[0,4,7,9]);
@@ -138,7 +138,7 @@ test("worker transport cancels obsolete jobs, transfers stereo buffers and termi
     }
 });
 
-test("listening room switches all eight tracks, controls real channel gains and stops on background/dispose without persistent storage",async()=>{
+test("listening room switches all nine tracks, controls real channel gains and stops on background/dispose without persistent storage",async()=>{
     const elements=new Map(),make=()=>({children:[],hidden:false,value:'60',checked:false,events:new Map(),
         classList:{toggle(){}},appendChild(e){this.children.push(e)},setAttribute(k,v){this[k]=v},
         addEventListener(k,fn){this.events.set(k,fn)},emit(k){return this.events.get(k)?.()}});
@@ -148,7 +148,7 @@ test("listening room switches all eight tracks, controls real channel gains and 
     const context=new FakeAudioContext();
     const preview=mountMusicPreview(doc,win,{audioFactory:settings=>new AudioManager(settings,{contextFactory:()=>context,
         assetsFactory:()=>({music:key=>({name:key,duration:60}),effect:()=>null,clear(){}})})});
-    assert.equal(get('tracks').children.length,8);assert.equal(context.sources.length,0);
+    assert.equal(get('tracks').children.length,9);assert.equal(context.sources.length,0);
     for(const card of get('tracks').children){card.children[2].emit('click');await tick();assert.ok(preview.audio.music);}
     get('previewMaster').value='50';get('previewMaster').emit('input');
     get('previewMusic').value='40';get('previewMusic').emit('input');assert.equal(preview.audio.musicGain.gain.value,.2);

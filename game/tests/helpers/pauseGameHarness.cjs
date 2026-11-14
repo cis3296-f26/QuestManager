@@ -182,7 +182,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.audio.scene, "grassland"); assert.ok(a.audio.music);
         console.log("PASS actual audio wiring: single jump, landing, pickup, stomp, death and victory; earned coins silent; replay music restored.");
     }
-    for (const id of [1, 2, 3, 4, 5, 6, 7]) {
+    for (const id of [1, 2, 3, 4, 5, 6, 7, 8]) {
         if (id > 1) { a.progress.completeLevel(id - 1, []); a.map.refresh(); a.map.openLevel(id); await turn(); }
         assert.equal(a.level.config.id, id);
         assert.equal(a.audio.scene, a.level.config.audio.music);
@@ -221,6 +221,12 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
             }
             if(id===6){a.level.sunPulses[0].time=4.2;assert.equal(a.level.sunPulses[0].state,"charging");a.level.sunPulses[1].time=4.9;assert.equal(a.level.sunPulses[1].state,"active");}
             if(id===7){a.level.player.reset({x:500,feetY:430});a.level.player.supportPlatform=a.level.platforms.find(p=>p.id==="l7-practice-ice");a.level.player.velocityX=180;a.level.player.iceAirborne=true;Object.assign(a.level.stalactites[0],{state:"warning",warningTime:.2});}
+            if(id===8){
+                const c=a.level.config.climbables[0];a.level.player.reset({x:c.x-16,feetY:c.bottomFeet});
+                key("KeyE");assert.equal(a.level.player.climbingId,c.id);key("KeyW");
+                frame(1/fps);assert.ok(a.level.player.y+64<c.bottomFeet);canvas.emit("keyup",{code:"KeyW"});
+                Object.assign(a.level.stalactites[0],{state:"warning",warningTime:.2});
+            }
             key("Escape"); assert.equal(a.pause.screen, "main");
             const before = snapshot();
             // Deliberately retain canvas focus here: the explicit pause gate must freeze independently of the DOM.
@@ -257,7 +263,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     }
     // These are UI boundary setups, not continuous gameplay proofs. Preserve
     // the existing cave completion check and extend it through the desert.
-    for (const id of [4, 5, 6, 7]) {
+    for (const id of [4, 5, 6, 7, 8]) {
         a.map.openLevel(id); await turn(); a.restartLevel(); canvas.focus(); frame();
         const finish = async () => {
             const p = a.level.player;
@@ -271,12 +277,13 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.level.config.id, id, "completion does not automatically advance");
         assert.deepEqual([...a.progress.getLevel(id).coinIds], [a.level.config.coins[2].id]);
         assert.equal(a.progress.getLevel(id + 1).unlocked, true);
-        assert.equal(element("nextLevel").disabled, id === 7);
-        if (id === 7) assert.match(element("nextLevel").textContent, /Coming soon/);
+        assert.equal(element("nextLevel").disabled, id === 8);
+        if (id === 8) assert.match(element("nextLevel").textContent, /Coming soon/);
         element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
         assert.equal(a.level.complete, false); assert.equal(a.level.player.x, a.level.config.spawn.x);
-        assert.equal(a.audio.scene, id === 4 ? "cave" : id === 5 ? "desert" : id === 6 ? "temple" : "frozen");
+        assert.equal(a.audio.scene, id === 4 ? "cave" : id === 5 ? "desert" : id === 6 ? "temple" : id === 7 ? "frozen" : "mountain");
         assert.ok(a.coins.saved.has(a.level.config.coins[2].id));
+        if(id===7){await finish();click("nextLevel");await turn();assert.equal(a.level.config.id,8);assert.equal(a.audio.scene,"mountain");assert.match(element("levelHeading").textContent,/Skyward Ascent/);}
         if(id===6){await finish();click("nextLevel");await turn();assert.equal(a.level.config.id,7);assert.equal(a.audio.scene,"frozen");assert.match(element("levelHeading").textContent,/Frozen Peaks/);}
         if (id === 5) {
             await finish();click("nextLevel");await turn();
@@ -289,7 +296,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
             assert.match(element("levelHeading").textContent, /Sunscorched Dunes/);
         }
     }
-    console.log("PASS temple-to-frozen navigation, Level 7 save/replay and unavailable Level 8 wiring.");
+    console.log("PASS frozen-to-mountain navigation, Level 8 save/replay, paused climbing and unavailable Level 9 wiring.");
     a.startDeath("Test transition"); canvas.focus(); key("Escape"); assert.equal(a.pause.paused, false);
     for (let i = 0; i < 50; i++) frame();
     assert.equal(a.deathTime, 0);

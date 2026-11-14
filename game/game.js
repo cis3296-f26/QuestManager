@@ -1,3 +1,5 @@
+import { toggleClimb, climbVertical, detachClimb } from "./engine/Climbing.js";
+import { MountainRenderer, drawClimbables } from "./rendering/MountainRenderer.js";
 import { FrozenRenderer } from "./rendering/FrozenRenderer.js";
 import { TempleRenderer } from "./rendering/TempleRenderer.js";
 import { drawSunPulses } from "./rendering/SunPulseRenderer.js";
@@ -52,6 +54,7 @@ const cave = new CaveRenderer();
 const desert = new DesertRenderer();
 const temple = new TempleRenderer();
 const frozen = new FrozenRenderer();
+const mountain = new MountainRenderer();
 
 let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
@@ -261,13 +264,18 @@ canvas.addEventListener("keydown", event => {
 
     if (level.complete || deathTimeLeft > 0) return;
 
-    const controls = ["ArrowLeft", "ArrowRight", "KeyA", "KeyD", "Space", "KeyW", "ArrowUp"];
+    const controls = ["ArrowLeft", "ArrowRight", "KeyA", "KeyD", "Space", "KeyW", "ArrowUp", "KeyE", "KeyS", "ArrowDown"];
     const flyControls = developer?.enabled && developer.fly && ["KeyS", "ArrowDown", "ShiftLeft", "ShiftRight"].includes(event.code);
     if (!controls.includes(event.code) && !flyControls) return;
 
     // Stop arrows and Space from scrolling the page while playing.
     event.preventDefault();
     keys.add(event.code);
+    if (event.code === "KeyE" && !event.repeat && !developer?.fly) { toggleClimb(level); return; }
+    if (player.climbingId && ["KeyW", "ArrowUp"].includes(event.code)) return;
+    if (player.climbingId && event.code === "Space" && !event.repeat) {
+        jump(player, jumpStrength); audioEvents.jump(); return;
+    }
 
     if (
         ["Space", "KeyW", "ArrowUp"].includes(event.code) &&
@@ -296,6 +304,7 @@ function startDeath(message, reason = "enemy") {
     audio.die(reason);
     coins.discard();
     updateCoinHUD();
+    if (player.climbingId) detachClimb(player);
     player.animation.beginDeath(player, canvas.height);
     deathTimeLeft = deathDelay;
     keys.clear();
@@ -314,7 +323,7 @@ function update(dt) {
 
     const beforeAudio = audioEvents.capture(level, coins);
     const direction = Number(right) - Number(left);
-    const result = developer ? developer.step(direction, keys, dt) : stepLevel(level, direction, dt);
+    const result = developer ? developer.step(direction, keys, dt) : stepLevel(level, direction, dt, { climbVertical: climbVertical(keys) });
     if (result.death) {
         const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: level.config.theme === "frozen" ? "A falling icicle caught you! Wait for the warning, then cross. Restarting…" : "A falling rock caught you! Restarting…", "sun-pulse": "A sun pulse caught you! Cross while the beam is dark. Restarting…" };
         startDeath(message[result.death], result.death);
@@ -343,16 +352,17 @@ function drawPlayer() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const scenery = level.config.theme === "frozen" ? frozen : level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
+    const scenery = level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
     scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme, level.config.openingLandscape ?? level.config.landscape);
 
     if (level.config.theme === "frozen") frozen.drawAtmosphere(ctx, level.wind.time, cameraX, { reduceMotion: settings.values.reduceMotion });
     ctx.save();
     ctx.translate(-cameraX, 0);
     scenery.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
-    (level.config.theme === "frozen" ? frozen : grassland).drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
+    (level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : grassland).drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
     if (level.config.theme === "temple") temple.drawMasonry(ctx, platforms, cameraX, canvas.width);
     drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
+    drawClimbables(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawExplorationFoliage(ctx, level.exploration, cameraX, canvas.width);
 
     const flagTop = level.config.finish.platform.y - 60;

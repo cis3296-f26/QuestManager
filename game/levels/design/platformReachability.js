@@ -1,3 +1,4 @@
+import { toggleClimb, climbStep } from "../../engine/Climbing.js";
 import { Player } from "../../entities/Player.js";
 import { jump, moveHorizontally, applyGravity } from "../../engine/Physics.js";
 import { movement } from "../../engine/Movement.js";
@@ -42,6 +43,26 @@ export function platformReachability(config, fps = 30) {
             }
         }
     }
+    // Supplement local jumps with real attachment/climbing/dismount inputs.
+    // A declared connection alone never grants an edge.
+    for(const c of config.climbables??[])for(const source of surfaces){
+        if(c.x-16<source.x || c.x+16>source.x+source.width || source.y<c.topFeet || source.y>c.bottomFeet)continue;
+        for(const direction of[-1,0,1]){
+            const player=new Player({x:c.x-16,feetY:source.y});
+            const local={player,config,puzzle:{barriers:config.barriers??[],gates:(config.gates??[]).map(g=>({...g,open:false}))}};
+            if(!toggleClimb(local))continue;
+            for(let f=0;f<fps*4&&player.y+player.height>c.topFeet;f++)climbStep(local,-1,1/fps);
+            jump(player,movement.jumpStrength);
+            for(let f=0;f<fps*1.5;f++){
+                moveHorizontally(player,direction,movement.speed,config.worldWidth,1/fps);
+                applyGravity(player,movement.gravity,surfaces,1/fps);
+                if(player.grounded){
+                    if(!edges.has(source.sourceId))edges.set(source.sourceId,new Set());
+                    edges.get(source.sourceId).add(player.supportPlatform.sourceId);break;
+                }
+            }
+        }
+    }
     const reached = new Set(surfaces.filter((p) => p.y === config.spawn.feetY &&
         config.spawn.x >= p.x && config.spawn.x + movement.playerWidth <= p.x + p.width).map((p) => p.sourceId));
     let changed = true;
@@ -52,3 +73,4 @@ export function platformReachability(config, fps = 30) {
     return { reached: [...reached], unreachable: config.platforms.filter((p) => !reached.has(p.id)).map((p) => p.id),
         limitation: "Local jump graph excludes enemy timing; moving endpoints are samples, not boarding proofs." };
 }
+

@@ -1,3 +1,4 @@
+import { climbVertical } from "../engine/Climbing.js";
 import { stepLevel } from "../engine/stepLevel.js";
 import { movement } from "../engine/Movement.js";
 import { locationsFor, placeSafely } from "./SafePosition.js";
@@ -75,11 +76,12 @@ export class DeveloperModeManager {
 
     step(direction, keys, dt) {
         const level = this.getLevel();
-        if (!this.available || !this.enabled) return stepLevel(level, direction, dt);
+        if (!this.available || !this.enabled) return stepLevel(level, direction, dt, { climbVertical: climbVertical(keys) });
         if (this.activeCheats) this.markAttempt();
         const vertical = Number(keys.has("KeyS") || keys.has("ArrowDown")) - Number(keys.has("KeyW") || keys.has("ArrowUp"));
         const boost = keys.has("ShiftLeft") || keys.has("ShiftRight");
         const result = stepLevel(level, direction, dt, {
+            climbVertical: climbVertical(keys),
             invincible: this.invincible || this.fly,
             flight: this.fly ? { vertical, speed: this.flightSpeed * (boost ? 1.6 : 1) } : null
         });

@@ -1,3 +1,4 @@
+import { toggleClimb } from "../../engine/Climbing.js";
 import { LevelManager } from "../LevelManager.js";
 import { CoinManager } from "../CoinManager.js";
 import { jump } from "../../engine/Physics.js";
@@ -17,13 +18,14 @@ export function simulateExploration(config, route) {
     let camera = Math.max(0, Math.min(config.worldWidth - movement.viewWidth, start.x - movement.viewWidth * 0.45));
     const ridden = new Set();
     for (let frame = 0; frame < route.totalFrames; frame++) {
+        if (route.interactFrames?.includes(frame) && !toggleClimb(level)) return { success: false, reason: "unreachable climb interaction", frame };
         if (jumps.has(frame)) {
-            if (!level.player.grounded) return { success: false, reason: "airborne jump", frame };
+            if (!level.player.grounded && !level.player.climbingId) return { success: false, reason: "airborne jump", frame };
             jump(level.player, movement.jumpStrength);
         }
         const direction = route.inputs?.find((i) => frame >= i.from && frame < i.to)?.direction ?? 1;
         if (![-1, 0, 1].includes(direction)) throw new Error("Invalid witness direction.");
-        const result = stepLevel(level, direction, 1 / route.fps);
+        const result = stepLevel(level, direction, 1 / route.fps, { climbVertical: route.climbInputs?.find(i=>frame>=i.from&&frame<i.to)?.vertical ?? 0 });
         if (result.death) return { success: false, reason: result.death, frame };
         coins.update(level.player, 1 / route.fps);
         const support = level.player.supportPlatform;

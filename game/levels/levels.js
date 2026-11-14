@@ -8,8 +8,10 @@ import { level6 } from "./Level6.js";
 
 import { level7 } from "./Level7.js";
 
+import { level8 } from "./Level8.js";
+
 // Registered levels share the engine and unlock from the preceding level's completion.
-export const levels = [level1, level2, level3, level4, level5, level6, level7];
+export const levels = [level1, level2, level3, level4, level5, level6, level7, level8];
 
 
 

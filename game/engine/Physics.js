@@ -11,6 +11,7 @@ export function moveHorizontally(player, direction, speed, worldWidth, dt) {
 }
 
 export function jump(player, strength) {
+    player.climbingId = null; player.climbMotion = 0;
     if (player.grounded) player.iceAirborne = isIce(player.supportPlatform);
     player.velocityY = -strength;
     player.grounded = false;

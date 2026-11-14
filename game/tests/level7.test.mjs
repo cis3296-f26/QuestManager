@@ -40,7 +40,7 @@ test('Frozen Peaks spans 23500px across five regions and eighteen purposeful bea
  assert.equal(level7.stalactites.length,3);assert.ok(level7.stalactites.every(s=>s.appearance==='icicle'&&s.warningDuration>=.9));
  assert.equal(level7.windZones,undefined,'blizzard atmosphere does not copy desert wind mechanics');
  assert.ok(level7.platforms.some(p=>p.surface?.type==='ice'));assert.ok(level7.platforms.some(p=>p.appearance==='snow'&&!p.surface));
- assert.equal(level7.platforms.filter(p=>p.type==='collapsing').length,3);assert.equal(levels.some(l=>l.id===8),false);
+ assert.equal(level7.platforms.filter(p=>p.type==='collapsing').length,3);assert.equal(levels.some(l=>l.id===9),false);
 });
 
 test('the introductory ice is enclosed by level snow catch areas, before any enemy or gap challenge',()=>{

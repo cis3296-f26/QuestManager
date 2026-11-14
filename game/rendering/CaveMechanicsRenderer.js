@@ -1,19 +1,19 @@
 // Render current state only; warning shake never moves the collision rectangles.
 export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={}) {
-    const temple=level.config.theme==="temple";
+    const temple=level.config.theme==="temple", mountainBiome=level.config.theme==="mountain";
     // Sealed alcoves are visibly stone, unlike blue-edged jump-through runways.
     for(const wall of level.config.barriers??[]) {
         if(wall.x+wall.width<cameraX||wall.x>cameraX+width)continue;
-        ctx.fillStyle=temple?"#9c8662":"#91869f";ctx.fillRect(wall.x,wall.y,wall.width,wall.height);
-        ctx.strokeStyle=temple?"#d6bd8a":"#d0c7d7";ctx.lineWidth=2;ctx.strokeRect(wall.x,wall.y,wall.width,wall.height);
-        ctx.fillStyle=temple?"#b8a17a":"#b4a7c2";
+        ctx.fillStyle=mountainBiome?"#888b87":temple?"#9c8662":"#91869f";ctx.fillRect(wall.x,wall.y,wall.width,wall.height);
+        ctx.strokeStyle=mountainBiome?"#626d70":temple?"#d6bd8a":"#d0c7d7";ctx.lineWidth=2;ctx.strokeRect(wall.x,wall.y,wall.width,wall.height);
+        ctx.fillStyle=mountainBiome?"#9da19a":temple?"#b8a17a":"#b4a7c2";
         for(let y=wall.y+8;y<wall.y+wall.height;y+=28)
             ctx.fillRect(wall.x+5,y,Math.min(12,wall.width-10),3);
     }
     for(const rock of level.stalactites) {
         if(rock.x+rock.width<cameraX||rock.x>cameraX+width)continue;
         const {x,y,width:w,height:h,state}=rock;
-        const ice=rock.config.appearance==="icicle";
+        const ice=rock.config.appearance==="icicle", mountain=rock.config.appearance==="rock";
         ctx.save();
         if(state==="spent") {
             if(rock.impactTime>0) {
@@ -26,8 +26,12 @@ export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={
         const shake=warning&&!reduceMotion?Math.sin(rock.warningTime*45)*2:0;
         ctx.translate(x+shake,y);ctx.fillStyle=ice?(warning?"#e1f7fa":"#87c5dd"):warning?"#c0b2c9":"#968ca8";
         ctx.strokeStyle=ice?"#356d8b":"#e1d4e5";ctx.lineWidth=1.5;
-        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(w,0);ctx.lineTo(w/2,h);ctx.closePath();ctx.fill();ctx.stroke();
-        ctx.fillStyle=ice?"#e4faff":"#86e2da";ctx.beginPath();ctx.moveTo(w*.36,h*.7);ctx.lineTo(w*.64,h*.7);
+        if(mountain){
+            ctx.fillStyle=warning?"#c4b896":"#8c9494";ctx.strokeStyle="#535f64";
+            ctx.beginPath();ctx.moveTo(w*.2,0);ctx.lineTo(w*.75,2);ctx.lineTo(w,h*.4);ctx.lineTo(w*.8,h);ctx.lineTo(w*.2,h*.9);ctx.lineTo(0,h*.35);ctx.closePath();ctx.fill();ctx.stroke();
+            ctx.beginPath();ctx.moveTo(w*.4,3);ctx.lineTo(w*.5,h*.4);ctx.lineTo(w*.3,h*.55);ctx.stroke();
+        }else{ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(w,0);ctx.lineTo(w/2,h);ctx.closePath();ctx.fill();ctx.stroke();}
+        ctx.fillStyle=ice?"#e4faff":mountain?"#a8a69b":"#86e2da";ctx.beginPath();ctx.moveTo(w*.36,h*.7);ctx.lineTo(w*.64,h*.7);
         ctx.lineTo(w/2,h);ctx.closePath();ctx.fill();
         if(warning) {
             ctx.fillStyle="#faedca";ctx.font="bold 16px Arial";ctx.textAlign="center";
