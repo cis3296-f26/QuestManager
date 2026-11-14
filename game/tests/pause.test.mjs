@@ -177,7 +177,7 @@ test("settings sliders and toggles update in place without losing input focus", 
     assert.equal(h.settings.values.masterVolume, 36); assert.equal(h.node("masterVolumeValue").textContent, "36%");
     assert.equal(h.document.activeElement, h.node("masterVolume"));
     h.node("showControls").listeners.change({ target: { checked: false } });
-    assert.equal(h.node("gameInstructions").hidden, true); assert.equal(h.node("controlsReference").hidden, true);
+    assert.equal(h.node("controlsReference").hidden, true);
     h.node("muted").listeners.change({ target: { checked: true } });
     assert.equal(h.settings.values.muted, true); assert.equal(h.pause.paused, true);
     h.click("settingsBack"); assert.equal(h.pause.screen, "main");

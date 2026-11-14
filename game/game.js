@@ -230,13 +230,6 @@ function playLevel(config, { developerBypass = false } = {}) {
     if (developerBypass) developer?.markAttempt();
     audio.setScene(config.audio?.music ?? "grassland", { gameplay: true });
     document.getElementById("levelHeading").textContent = `Level ${config.id}: ${config.name}`;
-    document.getElementById("enemyInstructions").textContent = config.theme === "frozen"
-        ? "Blue ice slides; snow stops normally. Stomp frost slimes, avoid owls and watch icicle warnings."
-        : config.theme === "temple"
-        ? "Stomp stone guardians; avoid scorpions. Watch CHARGING warnings and cross sun beams while dark."
-        : config.theme === "desert"
-        ? "Jump over scorpions: they cannot be stomped. Watch the ribbons before entering a wind gust."
-        : "Land on slimes to defeat them; mushrooms must still be avoided.";
     canvas.setAttribute("aria-label", `Level ${config.id}: ${config.name} platform game`);
     canvas.focus();
 }

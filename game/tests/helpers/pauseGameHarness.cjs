@@ -277,16 +277,16 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.level.complete, false); assert.equal(a.level.player.x, a.level.config.spawn.x);
         assert.equal(a.audio.scene, id === 4 ? "cave" : id === 5 ? "desert" : id === 6 ? "temple" : "frozen");
         assert.ok(a.coins.saved.has(a.level.config.coins[2].id));
-        if(id===6){await finish();click("nextLevel");await turn();assert.equal(a.level.config.id,7);assert.equal(a.audio.scene,"frozen");assert.match(element("enemyInstructions").textContent,/ice slides/);}
+        if(id===6){await finish();click("nextLevel");await turn();assert.equal(a.level.config.id,7);assert.equal(a.audio.scene,"frozen");assert.match(element("levelHeading").textContent,/Frozen Peaks/);}
         if (id === 5) {
             await finish();click("nextLevel");await turn();
             assert.equal(a.level.config.id,6);assert.equal(a.audio.scene,"temple");
-            assert.match(element("enemyInstructions").textContent,/guardians/);
+            assert.match(element("levelHeading").textContent,/Lost Sun Temple/);
         }
         if (id === 4) {
             await finish(); click("nextLevel"); await turn();
             assert.equal(a.level.config.id, 5); assert.equal(a.audio.scene, "desert");
-            assert.match(element("enemyInstructions").textContent, /scorpions/);
+            assert.match(element("levelHeading").textContent, /Sunscorched Dunes/);
         }
     }
     console.log("PASS temple-to-frozen navigation, Level 7 save/replay and unavailable Level 8 wiring.");

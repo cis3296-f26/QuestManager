@@ -37,7 +37,6 @@ export class PauseMenu {
         }
         for (const key of ["muted", "showControls", "reduceMotion"]) this.element(key).checked = values[key];
         this.element("controlsReference").hidden = !values.showControls;
-        this.element("gameInstructions").hidden = !values.showControls;
         this.element("settingsSaveStatus").textContent = this.settings.persistent
             ? `Preferences use separate browser storage for ${this.settings.userId ? "your account" : "guest play"}.`
             : "Preferences are kept for this session only because browser storage is unavailable.";
