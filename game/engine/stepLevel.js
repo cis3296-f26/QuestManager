@@ -2,7 +2,8 @@ import { climbStep, detachClimb } from "./Climbing.js";
 import { movement } from "./Movement.js";
 import { moveHorizontally, applyGravity, carryPlayer } from "./Physics.js";
 import { resolveEnemyInteractions } from "./EnemyInteractions.js";
-import { touchesHazard } from "./Hazards.js";
+import { updateCheckpoint } from "../levels/AttemptCheckpoints.js";
+import { touchesHazard, touchesLava } from "./Hazards.js";
 
 // One gameplay tick, shared with route validation. No DOM, persistence or navigation.
 export function stepLevel(level, direction, dt, { invincible = false, flight = null, climbVertical = 0 } = {}) {
@@ -42,10 +43,14 @@ export function stepLevel(level, direction, dt, { invincible = false, flight = n
     for (const rock of level.stalactites) fallingRock = rock.update(dt, player, previous, platforms) || fallingRock;
     let sunPulse = false;
     for (const trap of level.sunPulses) sunPulse = trap.update(dt, player, previous) || sunPulse;
+    let eruption = false;
+    for (const geyser of level.geysers) eruption = geyser.update(dt, player, previous) || eruption;
     const death = invincible || flight ? null : contact.deadly ? "enemy" : player.y >= movement.viewHeight ? "fall" :
-        touchesHazard(player, config.hazards ?? []) ? "thorns" : fallingRock ? "stalactite" : sunPulse ? "sun-pulse" : null;
+        touchesLava(player, previous, config.hazards ?? []) ? "lava" :
+        touchesHazard(player, (config.hazards ?? []).filter(h=>h.type!=="lava")) ? "thorns" : eruption ? "eruption" : fallingRock ? "stalactite" : sunPulse ? "sun-pulse" : null;
     if (death && player.climbingId) detachClimb(player);
     const discovered = death ? [] : level.exploration.update(player, dt);
-    return { death, stomped: contact.stomped, discovered };
+    const checkpoint = death || flight ? null : updateCheckpoint(level);
+    return { death, stomped: contact.stomped, discovered, checkpoint };
 }
 

@@ -3128,5 +3128,512 @@
       "feetY": 440
     },
     "levelId": 8
+  },
+  {
+    "fps": 30,
+    "totalFrames": 138,
+    "jumpFrames": [
+      60,
+      66,
+      96
+    ],
+    "interactFrames": [
+      63
+    ],
+    "inputs": [
+      {
+        "from": 63,
+        "to": 66,
+        "direction": 0
+      },
+      {
+        "from": 66,
+        "to": 69,
+        "direction": -1
+      },
+      {
+        "from": 69,
+        "to": 72,
+        "direction": 0
+      },
+      {
+        "from": 72,
+        "to": 75,
+        "direction": 0
+      },
+      {
+        "from": 75,
+        "to": 78,
+        "direction": 0
+      },
+      {
+        "from": 78,
+        "to": 81,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 63,
+        "to": 66,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l9-smoldering-hollow",
+    "start": {
+      "x": 2650,
+      "feetY": 400
+    },
+    "levelId": 9
+  },
+  {
+    "fps": 60,
+    "totalFrames": 282,
+    "jumpFrames": [
+      120,
+      132,
+      198
+    ],
+    "interactFrames": [
+      126
+    ],
+    "inputs": [
+      {
+        "from": 126,
+        "to": 132,
+        "direction": 0
+      },
+      {
+        "from": 132,
+        "to": 138,
+        "direction": -1
+      },
+      {
+        "from": 138,
+        "to": 144,
+        "direction": 0
+      },
+      {
+        "from": 144,
+        "to": 150,
+        "direction": 0
+      },
+      {
+        "from": 150,
+        "to": 156,
+        "direction": 0
+      },
+      {
+        "from": 156,
+        "to": 162,
+        "direction": 0
+      },
+      {
+        "from": 162,
+        "to": 168,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 126,
+        "to": 132,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l9-smoldering-hollow",
+    "start": {
+      "x": 2650,
+      "feetY": 400
+    },
+    "levelId": 9
+  },
+  {
+    "fps": 120,
+    "totalFrames": 564,
+    "jumpFrames": [
+      240,
+      264,
+      396
+    ],
+    "interactFrames": [
+      252
+    ],
+    "inputs": [
+      {
+        "from": 252,
+        "to": 264,
+        "direction": 0
+      },
+      {
+        "from": 264,
+        "to": 276,
+        "direction": -1
+      },
+      {
+        "from": 276,
+        "to": 288,
+        "direction": 0
+      },
+      {
+        "from": 288,
+        "to": 300,
+        "direction": 0
+      },
+      {
+        "from": 300,
+        "to": 312,
+        "direction": 0
+      },
+      {
+        "from": 312,
+        "to": 324,
+        "direction": 0
+      },
+      {
+        "from": 324,
+        "to": 336,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 252,
+        "to": 264,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l9-smoldering-hollow",
+    "start": {
+      "x": 2650,
+      "feetY": 400
+    },
+    "levelId": 9
+  },
+  {
+    "fps": 30,
+    "totalFrames": 162,
+    "jumpFrames": [
+      0,
+      15,
+      39,
+      114
+    ],
+    "interactFrames": [],
+    "inputs": [],
+    "climbInputs": [],
+    "areaId": "l9-magma-vault",
+    "start": {
+      "x": 12850,
+      "feetY": 450
+    },
+    "levelId": 9
+  },
+  {
+    "fps": 60,
+    "totalFrames": 324,
+    "jumpFrames": [
+      0,
+      30,
+      78,
+      228
+    ],
+    "interactFrames": [],
+    "inputs": [],
+    "climbInputs": [],
+    "areaId": "l9-magma-vault",
+    "start": {
+      "x": 12850,
+      "feetY": 450
+    },
+    "levelId": 9
+  },
+  {
+    "fps": 120,
+    "totalFrames": 660,
+    "jumpFrames": [
+      0,
+      72,
+      168,
+      408,
+      492
+    ],
+    "interactFrames": [],
+    "inputs": [
+      {
+        "from": 60,
+        "to": 72,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [],
+    "areaId": "l9-magma-vault",
+    "start": {
+      "x": 12850,
+      "feetY": 450
+    },
+    "levelId": 9
+  },
+  {
+    "fps": 30,
+    "totalFrames": 125,
+    "jumpFrames": [
+      6,
+      12,
+      30,
+      57,
+      78
+    ],
+    "interactFrames": [
+      9
+    ],
+    "inputs": [
+      {
+        "from": 9,
+        "to": 12,
+        "direction": 0
+      },
+      {
+        "from": 15,
+        "to": 18,
+        "direction": 0
+      },
+      {
+        "from": 18,
+        "to": 21,
+        "direction": 0
+      },
+      {
+        "from": 21,
+        "to": 24,
+        "direction": 0
+      },
+      {
+        "from": 24,
+        "to": 27,
+        "direction": 0
+      },
+      {
+        "from": 27,
+        "to": 30,
+        "direction": 0
+      },
+      {
+        "from": 90,
+        "to": 93,
+        "direction": 0
+      },
+      {
+        "from": 93,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 99,
+        "direction": 0
+      },
+      {
+        "from": 117,
+        "to": 120,
+        "direction": 0
+      },
+      {
+        "from": 120,
+        "to": 123,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 9,
+        "to": 12,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l9-eruption-crown",
+    "start": {
+      "x": 19500,
+      "feetY": 440
+    },
+    "levelId": 9
+  },
+  {
+    "fps": 60,
+    "totalFrames": 256,
+    "jumpFrames": [
+      12,
+      24,
+      60,
+      114,
+      156
+    ],
+    "interactFrames": [
+      18
+    ],
+    "inputs": [
+      {
+        "from": 18,
+        "to": 24,
+        "direction": 0
+      },
+      {
+        "from": 30,
+        "to": 36,
+        "direction": 0
+      },
+      {
+        "from": 36,
+        "to": 42,
+        "direction": 0
+      },
+      {
+        "from": 42,
+        "to": 48,
+        "direction": 0
+      },
+      {
+        "from": 48,
+        "to": 54,
+        "direction": 0
+      },
+      {
+        "from": 54,
+        "to": 60,
+        "direction": 0
+      },
+      {
+        "from": 180,
+        "to": 186,
+        "direction": 0
+      },
+      {
+        "from": 186,
+        "to": 192,
+        "direction": 0
+      },
+      {
+        "from": 192,
+        "to": 198,
+        "direction": 0
+      },
+      {
+        "from": 198,
+        "to": 204,
+        "direction": 0
+      },
+      {
+        "from": 240,
+        "to": 246,
+        "direction": 0
+      },
+      {
+        "from": 246,
+        "to": 252,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 18,
+        "to": 24,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l9-eruption-crown",
+    "start": {
+      "x": 19500,
+      "feetY": 440
+    },
+    "levelId": 9
+  },
+  {
+    "fps": 120,
+    "totalFrames": 512,
+    "jumpFrames": [
+      24,
+      48,
+      120,
+      228,
+      312
+    ],
+    "interactFrames": [
+      36
+    ],
+    "inputs": [
+      {
+        "from": 36,
+        "to": 48,
+        "direction": 0
+      },
+      {
+        "from": 60,
+        "to": 72,
+        "direction": 0
+      },
+      {
+        "from": 72,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 84,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 108,
+        "direction": 0
+      },
+      {
+        "from": 108,
+        "to": 120,
+        "direction": 0
+      },
+      {
+        "from": 360,
+        "to": 372,
+        "direction": 0
+      },
+      {
+        "from": 372,
+        "to": 384,
+        "direction": 0
+      },
+      {
+        "from": 384,
+        "to": 396,
+        "direction": 0
+      },
+      {
+        "from": 396,
+        "to": 408,
+        "direction": 0
+      },
+      {
+        "from": 480,
+        "to": 492,
+        "direction": 0
+      },
+      {
+        "from": 492,
+        "to": 504,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 36,
+        "to": 48,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l9-eruption-crown",
+    "start": {
+      "x": 19500,
+      "feetY": 440
+    },
+    "levelId": 9
   }
 ]

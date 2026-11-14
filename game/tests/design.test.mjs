@@ -111,7 +111,7 @@ test("shared runtime step preserves death priority, platform reset and camera-in
         if(h){
             level.player.x = h.x;
             level.player.y = h.y - level.player.height + 10;
-            assert.equal(stepLevel(level, 0, 1 / 60).death, "thorns");
+            assert.equal(stepLevel(level, 0, 1 / 60).death, h.type === "lava" ? "lava" : "thorns");
         }else{
             const rock=level.stalactites[0];assert.ok(rock,"a level without thorns still supplies its own damaging hazard");
             level.player.reset({x:rock.x,feetY:460});rock.state="falling";rock.y=level.player.y-rock.height-1;

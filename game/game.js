@@ -1,3 +1,4 @@
+import { VolcanoRenderer, drawVolcanoHazards, drawCheckpoints } from "./rendering/VolcanoRenderer.js";
 import { toggleClimb, climbVertical, detachClimb } from "./engine/Climbing.js";
 import { MountainRenderer, drawClimbables } from "./rendering/MountainRenderer.js";
 import { FrozenRenderer } from "./rendering/FrozenRenderer.js";
@@ -55,6 +56,7 @@ const desert = new DesertRenderer();
 const temple = new TempleRenderer();
 const frozen = new FrozenRenderer();
 const mountain = new MountainRenderer();
+const volcano = new VolcanoRenderer();
 
 let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
@@ -183,15 +185,15 @@ canvas.addEventListener("pointerdown", () => {
     canvas.focus();
 });
 
-function restartLevel() {
+function restartLevel({ respawn = false } = {}) {
     pause.close();
     clock.reset();
     attemptRevision++;
-    level.restart();
+    if (respawn) level.respawn(); else level.restart();
     developer?.beginAttempt({ bypass: testingLevel && !progress.getLevel(level.config.id).unlocked });
     coins.reset(progress.getLevel(level.config.id).coinIds);
     updateCoinHUD();
-    cameraX = 0;
+    cameraX = respawn ? Math.max(0, Math.min(worldWidth-canvas.width, player.x-canvas.width*.45)) : 0;
     deathTimeLeft = 0;
     keys.clear();
     audioEvents.reset();
@@ -315,7 +317,7 @@ function update(dt) {
     if (level.complete) return;
     if (deathTimeLeft > 0) {
         deathTimeLeft -= dt;
-        if (deathTimeLeft <= 0) restartLevel();
+        if (deathTimeLeft <= 0) restartLevel({ respawn: true });
         return;
     }
     const left = keys.has("ArrowLeft") || keys.has("KeyA");
@@ -325,10 +327,11 @@ function update(dt) {
     const direction = Number(right) - Number(left);
     const result = developer ? developer.step(direction, keys, dt) : stepLevel(level, direction, dt, { climbVertical: climbVertical(keys) });
     if (result.death) {
-        const message = { enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: level.config.theme === "frozen" ? "A falling icicle caught you! Wait for the warning, then cross. Restarting…" : "A falling rock caught you! Restarting…", "sun-pulse": "A sun pulse caught you! Cross while the beam is dark. Restarting…" };
+        const message = { lava: "You fell into lava! Returning to safety…", eruption: "The geyser erupted! Watch its warning before crossing. Restarting…", enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: level.config.theme === "frozen" ? "A falling icicle caught you! Wait for the warning, then cross. Restarting…" : "A falling rock caught you! Restarting…", "sun-pulse": "A sun pulse caught you! Cross while the beam is dark. Restarting…" };
         startDeath(message[result.death], result.death);
         return;
     }
+    if (result.checkpoint) status.textContent = `${result.checkpoint.label} reached. Unsaved coins still reset on death.`;
     if (result.discovered.length) status.textContent = `Found: ${level.exploration.notice}. Reach the flag to save new coins.`;
 
     cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
@@ -352,14 +355,15 @@ function drawPlayer() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const scenery = level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
+    const scenery = level.config.theme === "volcano" ? volcano : level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
     scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme, level.config.openingLandscape ?? level.config.landscape);
 
     if (level.config.theme === "frozen") frozen.drawAtmosphere(ctx, level.wind.time, cameraX, { reduceMotion: settings.values.reduceMotion });
     ctx.save();
     ctx.translate(-cameraX, 0);
     scenery.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
-    (level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : grassland).drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
+    if (level.config.theme === "volcano") drawVolcanoHazards(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion, poolsOnly: true });
+    (level.config.theme === "volcano" ? volcano : level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : grassland).drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
     if (level.config.theme === "temple") temple.drawMasonry(ctx, platforms, cameraX, canvas.width);
     drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawClimbables(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
@@ -380,6 +384,8 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
+    if (level.config.theme === "volcano") drawVolcanoHazards(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
+    drawCheckpoints(ctx, level, cameraX, canvas.width);
     drawSunPulses(ctx, level.sunPulses, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawWind(ctx, level.wind, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawCaveMechanics(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });

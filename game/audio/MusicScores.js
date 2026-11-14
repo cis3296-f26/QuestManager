@@ -47,6 +47,11 @@ export const MUSIC_TRACKS = Object.freeze({
         description: "An ascending warm reed refrain, broad open harmonies and a quiet marching drum; a spacious middle phrase before the summit return.",
         chords: [[48,55,60,64],[43,50,55,59],[45,52,57,60],[41,48,53,57],[48,55,60,67],[50,57,62,65],[41,48,53,60],[43,50,55,62]],
         melody: [[72,76,79,84],[83,79,74],[76,81,79,76],[77,81,84],[79,84,88,86],[86,81,77],[81,79,77,76],[74,79,84]] }
+    ,volcano: { title: "Embers Before the Gate", biome: "Volcano", bpm: 112, beatsPerBar: 4, bars: 24,
+        instruments: ["bass", "drum", "reed", "pad", "glass", "wood"],
+        description: "A low minor adventure refrain over deep bass and a restrained uneven drum pulse, with distant glass accents and a spacious answering phrase.",
+        chords: [[40,47,55,59],[36,43,52,55],[38,45,53,57],[35,42,51,54],[40,47,52,59],[43,50,55,59],[38,45,53,60],[35,42,51,59]],
+        melody: [[64,67,71,69],[67,64,60],[65,69,72,69],[66,63,59],[64,71,76,74],[71,67,62],[69,65,62,65],[63,66,64]] }
 });
 
 // Notes use beats and MIDI pitches. Phrase B answers A, then A' returns with
@@ -97,6 +102,13 @@ export function arrangeMusic(key) {
             melody.forEach((pitch,i)=>add(bar,[.1,.85,2,2.85][i],phrase===1?.85:.55,
                 pitch+(phrase===1?-12:0),phrase===1?"harp":"reed",.025,-.2));
             if(phrase===2&&local%2)add(bar,3.4,.5,chord[2]+24,"harp",.012,.45);
+        } else if (key === "volcano") {
+            chord.slice(0,3).forEach((pitch,i)=>add(bar,.05,4.2,pitch-12,"pad",.004,(i-1)*.5));
+            for(const at of[0,2])add(bar,at,.9,root-12,"bass",.018,-.15);
+            for(const [i,at]of(phrase===1?[0,2.5]:[0,.75,1.75,2.5,3.25]).entries())add(bar,at,.25,i%2?43:38,"drum",.013,-.1);
+            for(const at of[1.25,3.5])add(bar,at,.4,chord[1]+12,"wood",.012,.35);
+            melody.forEach((pitch,i)=>add(bar,[.1,1,2.1,3][i],.7,pitch+(phrase===2?12:0),"reed",.024,-.2));
+            if(phrase>0&&local%2)add(bar,3.1,2,chord.at(-1)+12,"glass",.008,.45);
         } else if (key === "mountain") {
             chord.slice(0,3).forEach((pitch,i)=>add(bar,.05,4.2,pitch,"pad",.004,(i-1)*.5));
             add(bar,0,1.3,root-12,"bass",.015,-.15);

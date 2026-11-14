@@ -1,3 +1,9 @@
+import { sweepAABB } from "./Collision.js";
+
+export function touchesLava(player, previous, hazards) {
+    return hazards.some(h => h.type === "lava" && Boolean(sweepAABB(previous, player, h, h)));
+}
+
 // All hazards use level-defined bounds. Add new renderers by type as needed.
 export function touchesHazard(player, hazards) {
     return hazards.some((hazard) =>
@@ -29,3 +35,4 @@ export function drawHazards(ctx, hazards) {
     }
     ctx.restore();
 }
+

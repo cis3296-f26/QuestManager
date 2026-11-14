@@ -34,7 +34,7 @@ test('Skyward Ascent has 24000 authored pixels, five areas, nineteen encounters 
  for(const s of level8.stages){let end=s.start;for(const b of s.beats){assert.equal(b.start,end);assert.ok(b.end>b.start&&b.title);end=b.end;}assert.equal(end,s.end);}
  assert.deepEqual(level8.coins.map(c=>c.id),[1,2,3].map(n=>`level-8-coin-${n}`));assert.equal(level8.explorationAreas.length,3);
  assert.equal(level8.climbables.length,5);assert.equal(level8.stalactites.length,3);assert.ok(level8.stalactites.every(r=>r.appearance==='rock'&&r.warningDuration>=.9));
- assert.equal(level8.windZones,undefined);assert.ok(level8.platforms.every(p=>!p.surface),'mountain terrain does not opt into ice physics');assert.equal(levels.some(l=>l.id===9),false);
+ assert.equal(level8.windZones,undefined);assert.ok(level8.platforms.every(p=>!p.surface),'mountain terrain does not opt into ice physics');assert.equal(levels.some(l=>l.id===10),false);
 });
 test('full all-coin and zero-coin normal-input routes use climbing and all required transfers at 30/60/120 FPS',()=>{
  for(const collection of['all','none'])for(const route of read(`level8-${collection==='all'?'routes':'main-routes'}`)){
@@ -101,7 +101,7 @@ test('completion-only coin unions unlock nine without implementing it, isolate a
  const open=(user='A')=>{const p=new LevelProgressManager(new LocalProgressStore(storage));levels.forEach(l=>p.registerLevel(l));p.setUser(user);return p;};
  const p=open();for(const l of levels.slice(0,7))p.completeLevel(l.id,l.coins.map(c=>c.id));assert.equal(p.getLevel(8).unlocked,true);const old=levels.slice(0,7).map(l=>p.getLevel(l.id));
  const c=new CoinManager(level8.coins),ids=level8.coins.map(c=>c.id);c.pending.add(ids[0]);assert.equal(open().getLevel(8).coinIds.length,0);c.discard();assert.equal(open().getLevel(8).coinIds.length,0);
- p.completeLevel(8,ids.slice(0,2));p.completeLevel(8,[ids[2]]);p.completeLevel(8,[]);assert.equal(open().getLevel(8).fullyCompleted,true);assert.equal(open().getLevel(9).unlocked,true);assert.equal(levels.some(l=>l.id===9),false);
+ p.completeLevel(8,ids.slice(0,2));p.completeLevel(8,[ids[2]]);p.completeLevel(8,[]);assert.equal(open().getLevel(8).fullyCompleted,true);assert.equal(open().getLevel(9).unlocked,true);assert.equal(levels.some(l=>l.id===10),false);
  assert.deepEqual(levels.slice(0,7).map(l=>open().getLevel(l.id)),old);assert.deepEqual(open('B').getLevel(8).coinIds,[]);assert.deepEqual(open().totalCoins,{earned:24,possible:30});
  const clean=open('C'),before=JSON.stringify([...disk]);clean.completeLevel(8,ids,{developerAssisted:true});assert.equal(JSON.stringify([...disk]),before);assert.equal(clean.getLevel(8).completed,false);
 });

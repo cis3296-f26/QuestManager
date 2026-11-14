@@ -17,7 +17,9 @@ export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
     ctx.rect(0, 0, 32, 24);
     ctx.clip();
 
-    if(enemy.appearance==="mountain-goat")drawGoat(ctx,enemy.walkTime);
+    if(enemy.appearance==="magma-slime")drawMagmaSlime(ctx,enemy.walkTime);
+    else if(enemy.appearance==="fire-bat")drawFireBat(ctx,enemy.walkTime);
+    else if(enemy.appearance==="mountain-goat")drawGoat(ctx,enemy.walkTime);
     else if(enemy.appearance==="mountain-eagle")drawEagle(ctx,enemy.walkTime);
     else if (enemy.appearance === "mushroom") drawMushroom(ctx, enemy.walkTime);
     else if(enemy.appearance==="frost-slime")drawSlime(ctx,enemy.walkTime,false,true);
@@ -164,4 +166,15 @@ function drawEagle(ctx,time){
  for(const side of[-1,1]){ctx.beginPath();ctx.moveTo(16,12);ctx.lineTo(16+side*15,3+flap);ctx.lineTo(16+side*13,14+flap);ctx.lineTo(16+side*7,18);ctx.closePath();ctx.fill();ctx.stroke();}
  ctx.fillStyle="#605347";ctx.beginPath();ctx.ellipse(17,15,6,7,.3,0,Math.PI*2);ctx.fill();
  ctx.fillStyle="#e6d6ae";ctx.beginPath();ctx.ellipse(21,9,5,4,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#c39b52";ctx.beginPath();ctx.moveTo(24,9);ctx.lineTo(30,12);ctx.lineTo(24,13);ctx.fill();ctx.fillStyle="#403c37";ctx.fillRect(22,8,2,2);
+}
+
+function drawMagmaSlime(ctx,time){
+ const wobble=Math.sin(time*8);ctx.fillStyle="#a75252";ctx.strokeStyle="#f2dfbc";ctx.lineWidth=1.5;
+ ctx.beginPath();ctx.moveTo(2,22);ctx.bezierCurveTo(1,12,7,3+wobble,16,4+wobble);ctx.bezierCurveTo(28,3+wobble,31,16,30,22);ctx.quadraticCurveTo(18,25,12,22);ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.strokeStyle="#edb86d";ctx.beginPath();ctx.moveTo(7,7);ctx.lineTo(12,12);ctx.lineTo(8,17);ctx.stroke();ctx.fillStyle="#faf0d5";ctx.fillRect(19,11,4,5);ctx.fillRect(25,11,4,5);ctx.fillStyle="#3d3443";ctx.fillRect(21,12,2,3);ctx.fillRect(27,12,2,3);
+}
+function drawFireBat(ctx,time){
+ const flap=Math.sin(time*12)*4;ctx.fillStyle="#443a50";ctx.strokeStyle="#e7ab76";ctx.lineWidth=1.4;
+ for(const side of[-1,1]){ctx.beginPath();ctx.moveTo(16,12);ctx.lineTo(16+side*15,3+flap);ctx.lineTo(16+side*12,19);ctx.lineTo(16+side*7,15);ctx.lineTo(16+side*4,21);ctx.closePath();ctx.fill();ctx.stroke();}
+ ctx.fillStyle="#9b5d53";ctx.beginPath();ctx.ellipse(16,13,5,8,0,0,Math.PI*2);ctx.fill();ctx.fillStyle="#ffe0a2";ctx.fillRect(13,10,2,3);ctx.fillRect(18,10,2,3);
 }
