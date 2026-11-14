@@ -129,10 +129,21 @@
             <p id="perfectCoins" hidden>Perfect! All 3 Coins Collected!</p>
             <p id="completionSaveStatus"></p>
         </section>
+        <section id="adventureEnding" hidden aria-label="Saved adventure achievements">
+            <p id="adventureTotals"></p><p id="adventureMessage"></p>
+            <p id="perfectAdventure" hidden>Perfect Adventure — All 30 Coins Collected!</p>
+        </section>
+        <section id="creditsPanel" hidden aria-label="QuestManager credits">
+            <h3>QuestManager Credits</h3>
+            <p>QuestManager — a project for CIS 3296 at Temple University.</p>
+            <p>A task-powered adventure. Thank you for playing!</p>
+            <button id="closeCredits" type="button">Back to Celebration</button>
+        </section>
+        <button id="viewCredits" type="button" hidden>View Credits</button>
         <form method="dialog" class="completion-actions">
-            <button type="submit" value="replay" autofocus>Replay Level</button>
+            <button id="completionReplay" type="submit" value="replay" autofocus>Replay Level</button>
             <button id="nextLevel" type="button" disabled>Next Level <small>Coming soon</small></button>
-            <button type="submit" value="map">World Map</button>
+            <button id="completionMap" type="submit" value="map">World Map</button>
         </form>
     </dialog>
     <dialog id="levelSelectionDialog" class="completion-dialog" aria-labelledby="selectionLevelTitle">

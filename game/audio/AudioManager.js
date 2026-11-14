@@ -188,6 +188,10 @@ export class AudioManager {
         this.transition = true; this.pending = null; this.stopEffects(); this.stopRetiringMusic(); this.stopMusic();
         this.play(["thorns", "stalactite", "sun-pulse"].includes(reason) ? "damage" : "death", { cue: true });
     }
+    finishAdventure() {
+        this.setScene("ending", { gameplay: false });
+        this.play("wardenVictory", { cue: true });
+    }
     complete() {
         if (this.transition) return;
         this.transition = true; this.pending = null; this.stopEffects(); this.stopRetiringMusic(); this.stopMusic();

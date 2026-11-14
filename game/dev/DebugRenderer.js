@@ -13,6 +13,7 @@ export function drawDebug(ctx,level,coins,cameraX) {
     for(const c of level.config.climbables??[]){ctx.setLineDash([3,3]);rect({x:c.x-c.attachRadius,y:c.topFeet-64,width:c.attachRadius*2,height:c.bottomFeet-c.topFeet+64},"#f0d490");ctx.setLineDash([]);}
     for(const g of level.geysers){ctx.setLineDash(g.state==="eruption"?[]:[4,3]);rect(g.config,g.state==="eruption"?"#ff7659":"#ffe595");ctx.setLineDash([]);ctx.fillStyle="#fff4c5";ctx.font="11px Arial";ctx.fillText(`${g.state} ${g.phase.remaining.toFixed(1)}s`,g.config.x+5,g.config.y+15);}
     for(const c of level.config.checkpoints??[])rect({x:c.x,y:c.feetY-64,width:32,height:64},"#c3d295");
+    if(level.warden){for(const s of level.warden.seals)rect(s,s.active?"#c3d295":"#ffd08a");for(const a of level.warden.attacks)rect(a.config,a.state==="active"?"#ff6b61":"#ffe9ac");if(!level.warden.defeated)rect(level.warden.config.exitGate,"#edb886");}
     level.puzzle.barriers.forEach(b=>rect(b,"#cfbda6"));
     for(const zone of level.wind.zones){ctx.setLineDash([6,4]);rect(zone,"#dfc475");ctx.setLineDash([]);}
     level.puzzle.switches.forEach(s=>rect(s,"#76e0d3"));

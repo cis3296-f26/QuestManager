@@ -4,7 +4,7 @@ import { CoinManager } from "../CoinManager.js";
 import { jump } from "../../engine/Physics.js";
 import { movement } from "../../engine/Movement.js";
 import { stepLevel } from "../../engine/stepLevel.js";
-import { followCamera } from "../../engine/Camera.js";
+import { followLevelCamera } from "../../engine/Camera.js";
 
 // Recorded keyboard inputs, starting at spawn. No teleports, noclip, save writes or enemy removal.
 export function simulateRoute(config, route, { collection = "all", mainRoute = false } = {}) {
@@ -28,7 +28,7 @@ export function simulateRoute(config, route, { collection = "all", mainRoute = f
         if (collection === "none" && coins.pending.size) return { success: false, reason: "unexpected coin pickup", frame };
         const support = level.player.supportPlatform;
         if (support) visited.add(support.id ?? support.config?.id);
-        camera = followCamera(camera, level.player, config.worldWidth, movement.viewWidth, 1 / route.fps);
+        camera = followLevelCamera(camera, level, movement.viewWidth, 1 / route.fps);
         if (camera < 0 || camera > config.worldWidth - movement.viewWidth) return { success: false, reason: "camera out of bounds", frame };
         if (level.player.x < camera || level.player.x + level.player.width > camera + movement.viewWidth ||
             level.player.y < movement.hudBottom) return { success: false, reason: "player hidden by viewport or HUD", frame };

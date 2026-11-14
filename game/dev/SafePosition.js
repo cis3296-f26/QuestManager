@@ -5,7 +5,7 @@ const overlaps=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.
 // surface, in a sealed gate, or within an enemy's entire current patrol envelope.
 export function safePosition(level, target) {
     const {player,config}=level, candidates=[];
-    const dangers=[...(config.lavaGeysers??[]),...(config.sunPulseTraps??[]),...level.puzzle.barriers,...(config.hazards??[]),...level.puzzle.gates.filter(g=>!g.open),
+    const dangers=[...(level.warden?.patterns.flatMap(p=>p.map(a=>a.config))??[]),...(level.warden&&!level.warden.defeated?[level.warden.config.exitGate]:[]),...(config.lavaGeysers??[]),...(config.sunPulseTraps??[]),...level.puzzle.barriers,...(config.hazards??[]),...level.puzzle.gates.filter(g=>!g.open),
         ...level.enemies.filter(e=>e.active).map(e=>({x:e.minX-24,y:e.feetY-e.height-8,
             width:e.maxX-e.minX+e.width+48,height:e.height+16})),
         ...level.stalactites.filter(r=>["warning","falling"].includes(r.state)).map(r=>r.config.trigger)];

@@ -3635,5 +3635,541 @@
       "feetY": 440
     },
     "levelId": 9
+  },
+  {
+    "fps": 30,
+    "totalFrames": 132,
+    "jumpFrames": [
+      48,
+      69,
+      102
+    ],
+    "interactFrames": [
+      66
+    ],
+    "inputs": [
+      {
+        "from": 66,
+        "to": 69,
+        "direction": 0
+      },
+      {
+        "from": 69,
+        "to": 72,
+        "direction": -1
+      },
+      {
+        "from": 72,
+        "to": 75,
+        "direction": 0
+      },
+      {
+        "from": 75,
+        "to": 78,
+        "direction": 0
+      },
+      {
+        "from": 78,
+        "to": 81,
+        "direction": 0
+      },
+      {
+        "from": 81,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 84,
+        "to": 87,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 66,
+        "to": 69,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l10-guardhouse",
+    "start": {
+      "x": 1670,
+      "feetY": 400
+    },
+    "levelId": 10
+  },
+  {
+    "fps": 60,
+    "totalFrames": 264,
+    "jumpFrames": [
+      96,
+      138,
+      204
+    ],
+    "interactFrames": [
+      132
+    ],
+    "inputs": [
+      {
+        "from": 132,
+        "to": 138,
+        "direction": 0
+      },
+      {
+        "from": 138,
+        "to": 144,
+        "direction": -1
+      },
+      {
+        "from": 144,
+        "to": 150,
+        "direction": 0
+      },
+      {
+        "from": 150,
+        "to": 156,
+        "direction": 0
+      },
+      {
+        "from": 156,
+        "to": 162,
+        "direction": 0
+      },
+      {
+        "from": 162,
+        "to": 168,
+        "direction": 0
+      },
+      {
+        "from": 168,
+        "to": 174,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 132,
+        "to": 138,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l10-guardhouse",
+    "start": {
+      "x": 1670,
+      "feetY": 400
+    },
+    "levelId": 10
+  },
+  {
+    "fps": 120,
+    "totalFrames": 516,
+    "jumpFrames": [
+      288,
+      396
+    ],
+    "interactFrames": [
+      264
+    ],
+    "inputs": [
+      {
+        "from": 264,
+        "to": 276,
+        "direction": 0
+      },
+      {
+        "from": 276,
+        "to": 288,
+        "direction": -1
+      },
+      {
+        "from": 288,
+        "to": 300,
+        "direction": -1
+      },
+      {
+        "from": 300,
+        "to": 312,
+        "direction": 0
+      },
+      {
+        "from": 312,
+        "to": 324,
+        "direction": 0
+      },
+      {
+        "from": 324,
+        "to": 336,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 264,
+        "to": 276,
+        "vertical": -1
+      },
+      {
+        "from": 276,
+        "to": 288,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l10-guardhouse",
+    "start": {
+      "x": 1670,
+      "feetY": 400
+    },
+    "levelId": 10
+  },
+  {
+    "fps": 30,
+    "totalFrames": 171,
+    "jumpFrames": [
+      3,
+      24,
+      51,
+      81,
+      102,
+      129
+    ],
+    "interactFrames": [
+      21
+    ],
+    "inputs": [
+      {
+        "from": 21,
+        "to": 24,
+        "direction": 0
+      },
+      {
+        "from": 27,
+        "to": 30,
+        "direction": 0
+      },
+      {
+        "from": 30,
+        "to": 33,
+        "direction": 0
+      },
+      {
+        "from": 33,
+        "to": 36,
+        "direction": 0
+      },
+      {
+        "from": 36,
+        "to": 39,
+        "direction": 0
+      },
+      {
+        "from": 39,
+        "to": 42,
+        "direction": 0
+      },
+      {
+        "from": 99,
+        "to": 102,
+        "direction": 0
+      },
+      {
+        "from": 123,
+        "to": 126,
+        "direction": 0
+      },
+      {
+        "from": 162,
+        "to": 165,
+        "direction": -1
+      },
+      {
+        "from": 165,
+        "to": 168,
+        "direction": 0
+      },
+      {
+        "from": 168,
+        "to": 171,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 21,
+        "to": 24,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l10-crown-tower",
+    "start": {
+      "x": 20000,
+      "feetY": 440
+    },
+    "levelId": 10
+  },
+  {
+    "fps": 60,
+    "totalFrames": 348,
+    "jumpFrames": [
+      0,
+      54,
+      102,
+      162,
+      204,
+      258
+    ],
+    "interactFrames": [
+      42
+    ],
+    "inputs": [
+      {
+        "from": 42,
+        "to": 48,
+        "direction": 0
+      },
+      {
+        "from": 48,
+        "to": 54,
+        "direction": -1
+      },
+      {
+        "from": 60,
+        "to": 66,
+        "direction": 0
+      },
+      {
+        "from": 66,
+        "to": 72,
+        "direction": 0
+      },
+      {
+        "from": 72,
+        "to": 78,
+        "direction": 0
+      },
+      {
+        "from": 78,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 198,
+        "to": 204,
+        "direction": 0
+      },
+      {
+        "from": 246,
+        "to": 252,
+        "direction": 0
+      },
+      {
+        "from": 324,
+        "to": 330,
+        "direction": -1
+      },
+      {
+        "from": 330,
+        "to": 336,
+        "direction": 0
+      },
+      {
+        "from": 336,
+        "to": 342,
+        "direction": 0
+      },
+      {
+        "from": 342,
+        "to": 348,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 42,
+        "to": 48,
+        "vertical": -1
+      },
+      {
+        "from": 48,
+        "to": 54,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l10-crown-tower",
+    "start": {
+      "x": 20000,
+      "feetY": 440
+    },
+    "levelId": 10
+  },
+  {
+    "fps": 120,
+    "totalFrames": 696,
+    "jumpFrames": [
+      108,
+      204,
+      324,
+      408,
+      516
+    ],
+    "interactFrames": [
+      84
+    ],
+    "inputs": [
+      {
+        "from": 84,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 108,
+        "direction": -1
+      },
+      {
+        "from": 120,
+        "to": 132,
+        "direction": 0
+      },
+      {
+        "from": 132,
+        "to": 144,
+        "direction": 0
+      },
+      {
+        "from": 144,
+        "to": 156,
+        "direction": 0
+      },
+      {
+        "from": 156,
+        "to": 168,
+        "direction": 0
+      },
+      {
+        "from": 396,
+        "to": 408,
+        "direction": 0
+      },
+      {
+        "from": 492,
+        "to": 504,
+        "direction": 0
+      },
+      {
+        "from": 648,
+        "to": 660,
+        "direction": -1
+      },
+      {
+        "from": 660,
+        "to": 672,
+        "direction": 0
+      },
+      {
+        "from": 672,
+        "to": 684,
+        "direction": 0
+      },
+      {
+        "from": 684,
+        "to": 696,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 84,
+        "to": 96,
+        "vertical": -1
+      },
+      {
+        "from": 96,
+        "to": 108,
+        "vertical": -1
+      }
+    ],
+    "areaId": "l10-crown-tower",
+    "start": {
+      "x": 20000,
+      "feetY": 440
+    },
+    "levelId": 10
+  },
+  {
+    "fps": 30,
+    "totalFrames": 156,
+    "jumpFrames": [
+      0,
+      15,
+      114
+    ],
+    "interactFrames": [],
+    "inputs": [
+      {
+        "from": 12,
+        "to": 15,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [],
+    "areaId": "l10-treasury",
+    "start": {
+      "x": 13180,
+      "feetY": 430
+    },
+    "levelId": 10
+  },
+  {
+    "fps": 60,
+    "totalFrames": 312,
+    "jumpFrames": [
+      0,
+      30,
+      228
+    ],
+    "interactFrames": [],
+    "inputs": [
+      {
+        "from": 24,
+        "to": 30,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [],
+    "areaId": "l10-treasury",
+    "start": {
+      "x": 13180,
+      "feetY": 430
+    },
+    "levelId": 10
+  },
+  {
+    "fps": 120,
+    "totalFrames": 636,
+    "jumpFrames": [
+      0,
+      72,
+      468
+    ],
+    "interactFrames": [],
+    "inputs": [
+      {
+        "from": 48,
+        "to": 60,
+        "direction": 0
+      },
+      {
+        "from": 60,
+        "to": 72,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [],
+    "areaId": "l10-treasury",
+    "start": {
+      "x": 13180,
+      "feetY": 430
+    },
+    "levelId": 10
   }
 ]

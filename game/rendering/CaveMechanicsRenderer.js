@@ -1,12 +1,12 @@
 // Render current state only; warning shake never moves the collision rectangles.
 export function drawCaveMechanics(ctx,level,cameraX,width,{reduceMotion=false}={}) {
-    const temple=["temple","volcano"].includes(level.config.theme), mountainBiome=["mountain","volcano"].includes(level.config.theme);
+    const temple=["temple","volcano","castle"].includes(level.config.theme), mountainBiome=["mountain","volcano"].includes(level.config.theme);
     // Sealed alcoves are visibly stone, unlike blue-edged jump-through runways.
     for(const wall of level.config.barriers??[]) {
         if(wall.x+wall.width<cameraX||wall.x>cameraX+width)continue;
-        ctx.fillStyle=level.config.theme==="volcano"?"#514f55":mountainBiome?"#888b87":temple?"#9c8662":"#91869f";ctx.fillRect(wall.x,wall.y,wall.width,wall.height);
-        ctx.strokeStyle=level.config.theme==="volcano"?"#aaa18e":mountainBiome?"#626d70":temple?"#d6bd8a":"#d0c7d7";ctx.lineWidth=2;ctx.strokeRect(wall.x,wall.y,wall.width,wall.height);
-        ctx.fillStyle=level.config.theme==="volcano"?"#6e6565":mountainBiome?"#9da19a":temple?"#b8a17a":"#b4a7c2";
+        ctx.fillStyle=["volcano","castle"].includes(level.config.theme)?"#514f55":mountainBiome?"#888b87":temple?"#9c8662":"#91869f";ctx.fillRect(wall.x,wall.y,wall.width,wall.height);
+        ctx.strokeStyle=["volcano","castle"].includes(level.config.theme)?"#aaa18e":mountainBiome?"#626d70":temple?"#d6bd8a":"#d0c7d7";ctx.lineWidth=2;ctx.strokeRect(wall.x,wall.y,wall.width,wall.height);
+        ctx.fillStyle=["volcano","castle"].includes(level.config.theme)?"#6e6565":mountainBiome?"#9da19a":temple?"#b8a17a":"#b4a7c2";
         for(let y=wall.y+8;y<wall.y+wall.height;y+=28)
             ctx.fillRect(wall.x+5,y,Math.min(12,wall.width-10),3);
     }

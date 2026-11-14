@@ -52,6 +52,22 @@ export const MUSIC_TRACKS = Object.freeze({
         description: "A low minor adventure refrain over deep bass and a restrained uneven drum pulse, with distant glass accents and a spacious answering phrase.",
         chords: [[40,47,55,59],[36,43,52,55],[38,45,53,57],[35,42,51,54],[40,47,52,59],[43,50,55,59],[38,45,53,60],[35,42,51,59]],
         melody: [[64,67,71,69],[67,64,60],[65,69,72,69],[66,63,59],[64,71,76,74],[71,67,62],[69,65,62,65],[63,66,64]] }
+    ,castle: { title: "The Crown Behind the Stone", biome: "Volcano Castle", bpm: 100, beatsPerBar: 4, bars: 24,
+        instruments: ["reed","pad","drum","glass","bass"],
+        description: "A measured fortress procession, low reeds and broad stone-like harmonies, with a quiet machinery pulse and distant glass answers.",
+        chords: [[45,52,57,60],[41,48,53,57],[43,50,55,58],[40,47,52,56],[45,52,60,64],[48,55,60,64],[43,50,58,62],[40,47,56,59]],
+        melody: [[69,64,65,72],[69,65,60],[67,70,74],[68,64,59],[69,72,76,74],[72,67,64],[70,74,77,74],[68,71,69]] }
+    ,warden: { title: "Three Seals at the Ember Throne", biome: "The Ember Warden", bpm: 120, beatsPerBar: 4, bars: 24,
+        instruments: ["wood","bass","drum","bell"],
+        description: "An urgent, restrained wooden ostinato, answering low bass and three rising bell calls; tension without loud arcade effects.",
+        chords: [[38,45,50,53],[34,41,46,50],[36,43,48,51],[33,40,45,49],[38,45,53,57],[41,48,53,57],[36,43,51,55],[33,40,49,52]],
+        melody: [[62,69,65,62],[65,70,65],[63,67,72,67],[61,64,69],[65,69,74,77],[72,69,65],[67,72,75,72],[64,61,62]] }
+    ,ending: { title: "Morning Beyond the Fortress", biome: "Adventure Ending", bpm: 78, beatsPerBar: 3, bars: 24,
+        instruments: ["keys","pad","harp","bell","bass"],
+        description: "A warm three-beat homecoming, gentle piano and harp over open major harmonies; a new sunrise after the final seal.",
+        chords: [[48,55,60,64],[53,60,65,69],[45,52,57,60],[43,50,55,59],[48,55,60,67],[50,57,62,65],[53,60,65,69],[43,50,55,60]],
+        melody: [[76,79,84],[81,77,76],[79,76,72],[74,79],[84,88,86],[81,77,74],[81,84,79],[74,76,72]] }
+
 });
 
 // Notes use beats and MIDI pitches. Phrase B answers A, then A' returns with
@@ -67,7 +83,24 @@ export function arrangeMusic(key) {
     for (let bar = 0; bar < score.bars; bar++) {
         const phrase = Math.floor(bar / 8), local = bar % 8;
         const chord = score.chords[local], root = chord[0], melody = score.melody[local];
-        if (key === "grassland") {
+        if (key === "castle") {
+            chord.slice(0,3).forEach((p,i)=>add(bar,.05,4.3,p-12,"pad",.005,(i-1)*.5));
+            for(const at of [0,2.5])add(bar,at,1,root-12,"bass",.017,-.15);
+            for(const at of phrase===1?[0,2]:[0,1.25,2,3.25])add(bar,at,.28,38,"drum",.011,-.1);
+            melody.forEach((p,i)=>add(bar,[.1,1,2,3][i],.8,p+(phrase===2?12:0),"reed",.024,-.2));
+            if(phrase>0&&local%2)add(bar,2.8,2,chord.at(-1)+12,"glass",.009,.4);
+        } else if (key === "warden") {
+            for(const [i,at] of [0,.5,1,1.5,2,2.5,3,3.5].entries())add(bar,at,.28,chord[(i+phrase)%chord.length]+12,"wood",phrase===1?.014:.020,i%2?.25:-.25);
+            for(const at of [0,1.75,3])add(bar,at,.65,root-12,"bass",.018,-.1);
+            for(const [i,at]of [0,.75,2,2.75,3.5].entries())add(bar,at,.22,i%2?43:38,"drum",.014);
+            if(local%2===0)melody.forEach((p,i)=>add(bar,.15+i*.9,1,p,"bell",.014,.35));
+        } else if (key === "ending") {
+            chord.slice(0,3).forEach((p,i)=>add(bar,.05,3.3,p,"pad",.005,(i-1)*.5));
+            add(bar,0,1.4,root-12,"bass",.012,-.1);
+            for(const [i,at]of [0,1,2].entries())add(bar,at,1,chord[i]+12,"harp",.013,.35);
+            melody.forEach((p,i)=>add(bar,.15+i*.85,.95,p+(phrase===1?-12:0),"keys",.027,-.2));
+            if(phrase===2&&local%2===0)add(bar,1.8,1.6,chord.at(-1)+24,"bell",.009,.4);
+        } else if (key === "grassland") {
             for (const at of [0, 2]) add(bar, at, .65, root - 12, "bass", .018, -.15);
             for (const [i, at] of [.5, 1.5, 2.5, 3.5].entries()) {
                 add(bar, at, .55, chord[(i + phrase) % chord.length] + 12, "keys", .010, .35);

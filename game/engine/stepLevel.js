@@ -45,7 +45,8 @@ export function stepLevel(level, direction, dt, { invincible = false, flight = n
     for (const trap of level.sunPulses) sunPulse = trap.update(dt, player, previous) || sunPulse;
     let eruption = false;
     for (const geyser of level.geysers) eruption = geyser.update(dt, player, previous) || eruption;
-    const death = invincible || flight ? null : contact.deadly ? "enemy" : player.y >= movement.viewHeight ? "fall" :
+    const guardian = level.warden?.update(player, previous, dt, { flight: Boolean(flight), invincible }) ?? false;
+    const death = invincible || flight ? null : guardian ? "warden" : contact.deadly ? "enemy" : player.y >= movement.viewHeight ? "fall" :
         touchesLava(player, previous, config.hazards ?? []) ? "lava" :
         touchesHazard(player, (config.hazards ?? []).filter(h=>h.type!=="lava")) ? "thorns" : eruption ? "eruption" : fallingRock ? "stalactite" : sunPulse ? "sun-pulse" : null;
     if (death && player.climbingId) detachClimb(player);

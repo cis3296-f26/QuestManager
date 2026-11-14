@@ -4,7 +4,7 @@ import { CoinManager } from "../CoinManager.js";
 import { jump } from "../../engine/Physics.js";
 import { movement } from "../../engine/Movement.js";
 import { stepLevel } from "../../engine/stepLevel.js";
-import { followCamera } from "../../engine/Camera.js";
+import { followLevelCamera } from "../../engine/Camera.js";
 
 // Local witnesses begin on the area's declared, validated entrance terrain.
 // Full spawn-to-flag proofs remain separate; these are not whole-level playthroughs.
@@ -30,7 +30,7 @@ export function simulateExploration(config, route) {
         coins.update(level.player, 1 / route.fps);
         const support = level.player.supportPlatform;
         if (support?.type === "moving") ridden.add(support.config.id);
-        camera = followCamera(camera, level.player, config.worldWidth, movement.viewWidth, 1 / route.fps);
+        camera = followLevelCamera(camera, level, movement.viewWidth, 1 / route.fps);
         if (level.player.y < movement.hudBottom || level.player.x < camera ||
             level.player.x + level.player.width > camera + movement.viewWidth) return { success: false, reason: "hidden player", frame };
         if (level.exploration.exited.has(area.id) && (!area.coinId || coins.pending.has(area.coinId))) return {

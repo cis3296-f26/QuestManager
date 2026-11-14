@@ -1,3 +1,4 @@
+import { drawCastleStone } from "./CastleRenderer.js";
 import { drawBasalt } from "./VolcanoRenderer.js";
 import { drawMountainSurface, drawBridgeDeck } from "./MountainRenderer.js";
 import { drawFrozenSurface } from "./FrozenTerrain.js";
@@ -18,11 +19,12 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
         if(frozen)drawFrozenSurface(ctx,{x:0,y:0,width,height,appearance:config.appearance,type:platform.type});
         const stone=config.appearance==="rock",sand=config.appearance==="sandstone";
         const mountain=config.appearance==="mountain", bridge=config.appearance==="rope-bridge";
-        const basalt=config.appearance==="basalt";
+        const basalt=config.appearance==="basalt", castle=config.appearance==="castle-stone";
+        if(castle)drawCastleStone(ctx,{x:0,y:0,width,height});
         if(basalt)drawBasalt(ctx,{x:0,y:0,width,height});
         if(mountain)drawMountainSurface(ctx,{x:0,y:0,width,height});
         if(bridge)drawBridgeDeck(ctx,{x:0,y:0,width,height});
-        if(!frozen&&!mountain&&!bridge&&!basalt){
+        if(!frozen&&!mountain&&!bridge&&!basalt&&!castle){
         ctx.fillStyle = sand?"#bc9165":stone?"#92869f":"#aa8055";
         ctx.strokeStyle = "#51452b";
         ctx.lineWidth = 2;
@@ -48,7 +50,7 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
             ctx.moveTo(-5, -4); ctx.lineTo(-9, 0); ctx.lineTo(-5, 4);
             ctx.moveTo(5, -4); ctx.lineTo(9, 0); ctx.lineTo(5, 4); ctx.stroke();
             ctx.restore();
-        } else if (platform.state !== "stable" || bridge || basalt) {
+        } else if (platform.state !== "stable" || bridge || basalt || castle) {
             ctx.strokeStyle = basalt ? "#efaf68" : frozen ? "#356c87" : "#51452b";
             ctx.lineWidth = 2;
             for (const x of [width * 0.28, width * 0.7]) {

@@ -63,7 +63,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const key = (code, extra = {}) => canvas.emit("keydown", { code, repeat: false, ...extra });
     let time = 0;
     const frame = (seconds = 1 / 60) => { time += seconds * 1000; a.audio.context?.advance(seconds); a.gameLoop(time); };
-    const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, sunPulses:a.level.sunPulses, geysers:a.level.geysers, checkpoint:a.level.checkpointIndex, puzzle: a.level.puzzle, wind: a.level.wind,
+    const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, sunPulses:a.level.sunPulses, geysers:a.level.geysers, warden:a.level.warden, checkpoint:a.level.checkpointIndex, puzzle: a.level.puzzle, wind: a.level.wind,
         coins: { time: a.coins.time, pending: [...a.coins.pending], saved: [...a.coins.saved], effects: a.coins.effects },
         reveal: [...a.level.exploration.reveal], notice: a.level.exploration.noticeTime, camera: a.camera });
 
@@ -182,7 +182,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.audio.scene, "grassland"); assert.ok(a.audio.music);
         console.log("PASS actual audio wiring: single jump, landing, pickup, stomp, death and victory; earned coins silent; replay music restored.");
     }
-    for (const id of [1, 2, 3, 4, 5, 6, 7, 8, 9]) {
+    for (const id of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
         if (id > 1) { a.progress.completeLevel(id - 1, []); a.map.refresh(); a.map.openLevel(id); await turn(); }
         assert.equal(a.level.config.id, id);
         assert.equal(a.audio.scene, a.level.config.audio.music);
@@ -286,8 +286,8 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         assert.equal(a.level.config.id, id, "completion does not automatically advance");
         assert.deepEqual([...a.progress.getLevel(id).coinIds], [a.level.config.coins[2].id]);
         assert.equal(a.progress.getLevel(id + 1).unlocked, true);
-        assert.equal(element("nextLevel").disabled, id === 9);
-        if (id === 9) assert.match(element("nextLevel").textContent, /Coming soon/);
+        assert.equal(element("nextLevel").disabled, false);
+        if (id === 9) assert.equal(element("nextLevel").textContent, "Next Level");
         element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
         assert.equal(a.level.complete, false); assert.equal(a.level.player.x, a.level.config.spawn.x);
         assert.equal(a.audio.scene, id === 4 ? "cave" : id === 5 ? "desert" : id === 6 ? "temple" : id === 7 ? "frozen" : id === 8 ? "mountain" : "volcano");
@@ -306,7 +306,37 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
             assert.match(element("levelHeading").textContent, /Sunscorched Dunes/);
         }
     }
-    console.log("PASS mountain-to-volcano navigation, Level 9 save/replay, paused geysers and unavailable Level 10 wiring.");
+    // Actual entry-point keyboard replay from a declared local boss entrance.
+    // This is not the full-level proof (those start at spawn in level10.test).
+    for (const config of a.map.levels.slice(0,9)) a.progress.completeLevel(config.id,config.coins.map(c=>c.id));
+    a.map.refresh();a.map.openLevel(10);await turn();
+    const bossRoute=JSON.parse(fs.readFileSync(path.join(root,"game/tests/fixtures/level10-boss-route.json"),"utf8"));
+    const bossRun=async({assisted=false,pending=[]}={})=>{
+        a.restartLevel();canvas.focus();frame();
+        const p=a.level.player;p.reset({x:26950,feetY:430});p.supportPlatform=a.level.platforms.find(p=>p.id==="l10-throne-approach");
+        // The flag alone is rejected, including a test flight beyond its lock.
+        const savedX=p.x;p.x=a.level.flagX;assert.equal(a.level.checkCompletion(),false);p.x=savedX;
+        a.level.developerAssisted=assisted;for(const id of pending)a.coins.pending.add(id);
+        for(let f=0;f<bossRoute.totalFrames&&!a.level.complete;f++){
+            a.keys.clear();const dir=bossRoute.inputs.find(i=>f>=i.from&&f<i.to)?.direction??1;
+            if(dir)key(dir>0?"KeyD":"KeyA");const v=bossRoute.climbInputs.find(i=>f>=i.from&&f<i.to)?.vertical??0;
+            if(v)key(v>0?"KeyS":"KeyW");if(bossRoute.interactFrames.includes(f))key("KeyE");if(bossRoute.jumpFrames.includes(f))key("Space");
+            frame();assert.equal(a.deathTime,0,`boss keyboard frame ${f}`);
+            if(f===60){key("Escape");const frozen=snapshot();for(let k=0;k<30;k++)frame(.1);assert.equal(snapshot(),frozen);click("pauseResume");canvas.focus();frame();}
+        }
+        a.keys.clear();await turn();assert.equal(a.level.warden.defeated,true);assert.equal(element("levelCompleteDialog").open,true);
+        assert.equal(element("nextLevel").hidden,true);assert.equal(a.audio.scene,"ending");
+    };
+    const finalCoins=a.level.config.coins.map(c=>c.id);
+    await bossRun({pending:finalCoins.slice(0,1)});assert.equal(element("levelCompleteTitle").textContent,"QUEST COMPLETE!");assert.match(element("adventureTotals").textContent,/10\/10.*28\/30/);assert.equal(element("perfectAdventure").hidden,true);
+    click("viewCredits");assert.equal(element("creditsPanel").hidden,false);click("closeCredits");assert.equal(element("creditsPanel").hidden,true);assert.equal(document.activeElement.id,"viewCredits");
+    element("levelCompleteDialog").returnValue="replay";element("levelCompleteDialog").close();assert.equal(a.level.warden.state,"dormant");assert.equal(a.level.player.x,80);
+    await bossRun({pending:finalCoins.slice(1)});assert.match(element("adventureTotals").textContent,/30\/30/);assert.equal(element("perfectAdventure").hidden,false);assert.equal(a.progress.getLevel(11).unlocked,false);
+    element("levelCompleteDialog").returnValue="replay";element("levelCompleteDialog").close();
+    const banked=JSON.stringify(a.progress.data);await bossRun({assisted:true});assert.equal(element("levelCompleteTitle").textContent,"TEST RUN — PROGRESS NOT SAVED");assert.equal(element("perfectAdventure").hidden,true);assert.equal(JSON.stringify(a.progress.data),banked);
+    element("levelCompleteDialog").returnValue="map";element("levelCompleteDialog").close();await turn();assert.equal(a.playing,false);a.map.openLevel(10);await turn();
+    console.log("PASS final castle: real keyboard boss, frozen phases, verified ending totals, credits, replay, map and assisted non-saving.");
+    console.log("PASS mountain-to-volcano navigation, Level 9 save/replay, paused geysers and Level 10 navigation.");
     a.startDeath("Test transition"); canvas.focus(); key("Escape"); assert.equal(a.pause.paused, false);
     for (let i = 0; i < 50; i++) frame();
     assert.equal(a.deathTime, 0);

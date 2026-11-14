@@ -1,3 +1,6 @@
+import { CastleRenderer, drawWarden } from "./rendering/CastleRenderer.js";
+import { renderAdventureEnding } from "./ui/Endgame.js";
+import { sceneForLevel } from "./levels/EmberWarden.js";
 import { VolcanoRenderer, drawVolcanoHazards, drawCheckpoints } from "./rendering/VolcanoRenderer.js";
 import { toggleClimb, climbVertical, detachClimb } from "./engine/Climbing.js";
 import { MountainRenderer, drawClimbables } from "./rendering/MountainRenderer.js";
@@ -17,7 +20,7 @@ import { levels } from "./levels/levels.js";
 import { WorldMap } from "./ui/WorldMap.js";
 import { drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
-import { followCamera } from "./engine/Camera.js";
+import { followLevelCamera } from "./engine/Camera.js";
 import { jump } from "./engine/Physics.js";
 import { movement } from "./engine/Movement.js";
 import { stepLevel } from "./engine/stepLevel.js";
@@ -57,6 +60,7 @@ const temple = new TempleRenderer();
 const frozen = new FrozenRenderer();
 const mountain = new MountainRenderer();
 const volcano = new VolcanoRenderer();
+const castle = new CastleRenderer();
 
 let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
@@ -154,7 +158,8 @@ async function finishLevel() {
     // Check identity again at the save boundary (including sign-outs in another tab).
     const verified = assisted ? false : await accountSession.verifyAccount(userId);
     if (revision !== attemptRevision || !level.complete) return;
-    const saved = verified && !assisted && !level.developerAssisted
+    const eligible = verified && !assisted && !level.developerAssisted && (!level.warden || level.warden.defeated);
+    const saved = eligible
         ? progress.completeLevel(level.config.id, attemptIds, { developerAssisted: level.developerAssisted })
         : progress.getLevel(level.config.id);
     worldMap.refresh();
@@ -174,6 +179,7 @@ async function finishLevel() {
         ? "Your account could not be verified. This attempt was not saved; replay to try again."
         : progress.persistent ? "Progress saved for your account on this browser."
             : "Progress kept for this session only; it will not survive closing or refreshing this page.";
+    if (level.config.id === 10) renderAdventureEnding(document, progress, { eligible, assisted: assisted || level.developerAssisted });
     status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
     completionDialog.returnValue = "";
     completionDialog.showModal();
@@ -223,6 +229,12 @@ function closeCompletion() {
 }
 
 function playLevel(config, { developerBypass = false } = {}) {
+    document.getElementById("adventureEnding").hidden = true;
+    document.getElementById("creditsPanel").hidden = true;
+    document.getElementById("viewCredits").hidden = true;
+    document.getElementById("nextLevel").hidden = config.id === 10;
+    document.getElementById("completionReplay").textContent = config.id === 10 ? "Replay Level 10" : "Replay Level";
+    document.getElementById("completionMap").textContent = config.id === 10 ? "Return to World Map" : "World Map";
     testingLevel = developerBypass;
     closeCompletion();
     level.load(config);
@@ -324,24 +336,29 @@ function update(dt) {
     const right = keys.has("ArrowRight") || keys.has("KeyD");
 
     const beforeAudio = audioEvents.capture(level, coins);
+    const beforeWarden = level.warden?.state, beforeSeals = level.warden?.progress;
     const direction = Number(right) - Number(left);
     const result = developer ? developer.step(direction, keys, dt) : stepLevel(level, direction, dt, { climbVertical: climbVertical(keys) });
     if (result.death) {
-        const message = { lava: "You fell into lava! Returning to safety…", eruption: "The geyser erupted! Watch its warning before crossing. Restarting…", enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: level.config.theme === "frozen" ? "A falling icicle caught you! Wait for the warning, then cross. Restarting…" : "A falling rock caught you! Restarting…", "sun-pulse": "A sun pulse caught you! Cross while the beam is dark. Restarting…" };
+        const message = { warden: "The guardian caught you! The three seals reset at the throne refuge.", lava: "You fell into lava! Returning to safety…", eruption: "The geyser erupted! Watch its warning before crossing. Restarting…", enemy: "A creature caught you! Restarting…", fall: "You fell! Restarting…", thorns: "You touched the thorns! Restarting…", stalactite: level.config.theme === "frozen" ? "A falling icicle caught you! Wait for the warning, then cross. Restarting…" : "A falling rock caught you! Restarting…", "sun-pulse": "A sun pulse caught you! Cross while the beam is dark. Restarting…" };
         startDeath(message[result.death], result.death);
         return;
     }
+    const scene = sceneForLevel(level);
+    if (audio.scene !== scene) audio.setScene(scene, { gameplay: true });
+    if (level.warden?.progress > beforeSeals) audio.play("switch");
+    if (level.warden?.state === "defeating" && beforeWarden !== "defeating") audio.play("wardenVictory");
     if (result.checkpoint) status.textContent = `${result.checkpoint.label} reached. Unsaved coins still reset on death.`;
     if (result.discovered.length) status.textContent = `Found: ${level.exploration.notice}. Reach the flag to save new coins.`;
 
-    cameraX = followCamera(cameraX, player, worldWidth, canvas.width, dt);
+    cameraX = followLevelCamera(cameraX, level, canvas.width, dt);
 
     // Hazards win over collection when both are touched in the same frame.
     if (coins.update(player, dt)) updateCoinHUD();
     audioEvents.after(beforeAudio, level, coins, result);
 
     if (level.checkCompletion() || developer?.checkFlyingFinish()) {
-        audio.complete();
+        if (level.config.id === 10) audio.finishAdventure(); else audio.complete();
         keys.clear();
         status.textContent = "Flag reached! Saving collectible progress…";
         void finishLevel();
@@ -355,17 +372,19 @@ function drawPlayer() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const scenery = level.config.theme === "volcano" ? volcano : level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
+    const scenery = level.config.theme === "castle" ? castle : level.config.theme === "volcano" ? volcano : level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : level.config.theme === "temple" ? temple : level.config.theme === "desert" ? desert : level.config.theme === "cave" ? cave : grassland;
     scenery.drawBackground(ctx, canvas.width, canvas.height, cameraX, groundY, level.config.theme, level.config.openingLandscape ?? level.config.landscape);
 
     if (level.config.theme === "frozen") frozen.drawAtmosphere(ctx, level.wind.time, cameraX, { reduceMotion: settings.values.reduceMotion });
     ctx.save();
     ctx.translate(-cameraX, 0);
     scenery.drawDecorations(ctx, level.config.scenery ?? [], groundY, cameraX, canvas.width);
-    if (level.config.theme === "volcano") drawVolcanoHazards(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion, poolsOnly: true });
-    (level.config.theme === "volcano" ? volcano : level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : grassland).drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
+    drawWarden(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion, bodyOnly: true });
+    if (["volcano", "castle"].includes(level.config.theme)) drawVolcanoHazards(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion, poolsOnly: true });
+    (level.config.theme === "castle" ? castle : level.config.theme === "volcano" ? volcano : level.config.theme === "mountain" ? mountain : level.config.theme === "frozen" ? frozen : grassland).drawPlatforms(ctx, platforms.filter((platform) => !platform.type), cameraX, canvas.width);
     if (level.config.theme === "temple") temple.drawMasonry(ctx, platforms, cameraX, canvas.width);
     drawInteractivePlatforms(ctx, platforms, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
+    drawWarden(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawClimbables(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawExplorationFoliage(ctx, level.exploration, cameraX, canvas.width);
 
@@ -384,7 +403,7 @@ function draw() {
     ctx.closePath();
     ctx.fill();
 
-    if (level.config.theme === "volcano") drawVolcanoHazards(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
+    if (["volcano", "castle"].includes(level.config.theme)) drawVolcanoHazards(ctx, level, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawCheckpoints(ctx, level, cameraX, canvas.width);
     drawSunPulses(ctx, level.sunPulses, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
     drawWind(ctx, level.wind, cameraX, canvas.width, { reduceMotion: settings.values.reduceMotion });
@@ -405,7 +424,11 @@ function draw() {
         ctx.font = "bold 17px Georgia";
         ctx.fillText(section.title, 25, 34, canvas.width - 190);
         ctx.font = "13px Arial";
-        ctx.fillText(section.hint, 25, 55, canvas.width - 190);
+        ctx.fillText(level.warden?.defeated ? "The guardian rests. Follow the sunrise gallery to your final flag." : section.hint, 25, 55, canvas.width - 190);
+    }
+    if (level.warden && level.warden.state !== "dormant" && !level.complete) {
+        ctx.fillStyle="#faf0e6";ctx.font="bold 12px Arial";
+        ctx.fillText(level.warden.defeated ? "Guardian defeated — the final gate is open." : `Activate the three Ember Seals · ${level.warden.progress}/3 · Phase ${level.warden.phaseNumber}`, 25, 81, canvas.width-40);
     }
     drawCoinHUD(ctx, level.config.coins, coins.saved, coins.pending, canvas.width);
     drawDiscoveryNotice(ctx, level.exploration);
@@ -473,6 +496,8 @@ connectGameSession(changeAccount).then((session) => {
         }
     });
 });
+document.getElementById("viewCredits").addEventListener("click", () => { document.getElementById("creditsPanel").hidden=false; document.getElementById("closeCredits").focus(); });
+document.getElementById("closeCredits").addEventListener("click", () => { document.getElementById("creditsPanel").hidden=true; document.getElementById("viewCredits").focus(); });
 requestAnimationFrame(gameLoop);
 
 

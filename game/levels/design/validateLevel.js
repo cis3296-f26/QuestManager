@@ -1,3 +1,4 @@
+import { validateWarden } from "../EmberWarden.js";
 import { validateCheckpoints } from "../AttemptCheckpoints.js";
 import { validateLavaGeysers } from "../../entities/LavaGeyser.js";
 import { validateClimbables } from "../../engine/Climbing.js";
@@ -34,7 +35,7 @@ export function jumpEnvelope(fps) {
 // Structural checks never edit level definitions, runtime state, saves, or the database.
 // Successful route simulations are still required: a geometric check cannot establish fairness.
 export function validateLevel(config) {
-    const errors = [...validateCheckpoints(config), ...validateLavaGeysers(config), ...validateClimbables(config), ...validateSurfaces(config), ...validateSunPulses(config), ...validateWind(config), ...validateCaveMechanics(config), ...validateExploration(config), ...validatePlatformPurpose(config), ...validateTreeSpacing(config.scenery, config.groundY)], warnings = [];
+    const errors = [...validateWarden(config), ...validateCheckpoints(config), ...validateLavaGeysers(config), ...validateClimbables(config), ...validateSurfaces(config), ...validateSunPulses(config), ...validateWind(config), ...validateCaveMechanics(config), ...validateExploration(config), ...validatePlatformPurpose(config), ...validateTreeSpacing(config.scenery, config.groundY)], warnings = [];
     const fail = (message) => errors.push(message);
     const { platforms = [], enemies = [], coins = [], hazards = [], stages = [] } = config;
     const ids = new Set();

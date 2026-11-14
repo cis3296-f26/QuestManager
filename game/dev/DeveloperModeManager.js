@@ -70,6 +70,7 @@ export class DeveloperModeManager {
         const level = this.getLevel();
         const location = locationsFor(level.config).find(location => location.id === id);
         if (!location || !placeSafely(level, location.target)) return false;
+        if (location.id === "boss-entrance" && level.warden) level.warden.reset();
         this.markAttempt();
         return true;
     }
@@ -94,7 +95,7 @@ export class DeveloperModeManager {
 
     checkFlyingFinish() {
         const level = this.getLevel(), player = level.player;
-        if (!this.available || !this.enabled || !this.fly || level.complete) return false;
+        if (!this.available || !this.enabled || !this.fly || level.complete || level.warden && !level.warden.defeated) return false;
         if (player.x <= level.flagX + 4 && player.x + player.width >= level.flagX &&
             player.y < level.config.finish.platform.y && player.y + player.height >= level.config.finish.platform.y - 60) {
             this.markAttempt();

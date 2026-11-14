@@ -1,3 +1,4 @@
+import { EmberWarden } from "./EmberWarden.js";
 import { LavaGeyser } from "../entities/LavaGeyser.js";
 import { Player } from "../entities/Player.js";
 import { Enemy } from "../entities/Enemy.js";
@@ -20,6 +21,7 @@ export class LevelManager {
         this.enemies = config.enemies.map((enemy) => new Enemy(enemy, enemy.feetY ?? config.groundY));
         this.exploration = new Exploration(config.explorationAreas);
         this.wind = new Wind(config.windZones);
+        this.warden = config.warden ? new EmberWarden(config.warden) : null;
         this.checkpointIndex = -1;
         this.geysers = (config.lavaGeysers ?? []).map(c => new LavaGeyser(c));
         this.sunPulses = (config.sunPulseTraps ?? []).map(c => new SunPulseTrap(c));
@@ -33,6 +35,7 @@ export class LevelManager {
     }
 
     restart() {
+        this.warden?.reset();
         this.checkpointIndex = -1;
         this.player.reset(this.config.spawn);
         this.geysers.forEach(g => g.reset());
@@ -68,7 +71,7 @@ export class LevelManager {
 
     // Report the first contact with the flag while standing on its platform.
     checkCompletion() {
-        if (this.complete) return false;
+        if (this.complete || this.warden && !this.warden.defeated) return false;
         const { player, flagX } = this;
         this.complete = player.grounded &&
             player.y + player.height === this.config.finish.platform.y &&

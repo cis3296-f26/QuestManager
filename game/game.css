@@ -357,3 +357,8 @@ h1 {
 #completionSaveStatus.is-test-run { border: 2px solid #9a6d27; padding: 10px; border-radius: 8px; background: #f3e3bb; color: #654318; font-weight: bold; }
 
 .dev-reset-warning { margin-top: 10px; padding: 12px; border: 2px solid #9a6d27; border-radius: 9px; background: #f3e3bb; line-height: 1.5; }
+
+#adventureEnding { border-block: 2px solid #b49b63; padding: 12px; margin: 18px 0; background: #f6ebcd; }
+#adventureTotals, #perfectAdventure { color: #3d5f26; font-weight: bold; }
+#creditsPanel { padding: 16px; margin: 14px 0; border: 1px solid #b49b63; border-radius: 10px; }
+#viewCredits, #closeCredits { padding: 10px 18px; border: 2px solid #65543b; border-radius: 8px; background: #f6ebcd; color: #3d5f26; }

@@ -24,6 +24,7 @@ export function drawEnemy(ctx, enemy, cameraX = 0, viewWidth = Infinity) {
     else if (enemy.appearance === "mushroom") drawMushroom(ctx, enemy.walkTime);
     else if(enemy.appearance==="frost-slime")drawSlime(ctx,enemy.walkTime,false,true);
     else if(enemy.appearance==="snow-owl")drawOwl(ctx,enemy.walkTime);
+    else if(enemy.appearance==="castle-sentry")drawGuardian(ctx,enemy.walkTime);
     else if(enemy.appearance==="guardian")drawGuardian(ctx,enemy.walkTime);
     else if(enemy.appearance==="scorpion")drawScorpion(ctx,enemy.walkTime);
     else if(enemy.appearance==="bat")drawBat(ctx,enemy.walkTime);

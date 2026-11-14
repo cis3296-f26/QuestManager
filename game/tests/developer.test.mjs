@@ -163,7 +163,7 @@ test("flying to the flag can exercise completion without granting eligibility",(
     for(const config of levels) {
         const {dev,level,p}=fixture(config);dev.enable(true);dev.set("fly",true);
         p.x=level.flagX;p.y=config.finish.platform.y-70;p.grounded=false;
-        assert.equal(dev.checkFlyingFinish(),true);assert.equal(level.complete,true);assert.equal(level.developerAssisted,true);
+        assert.equal(dev.checkFlyingFinish(),!level.warden);assert.equal(level.complete,!level.warden);assert.equal(level.developerAssisted,true);
         assert.equal(dev.checkFlyingFinish(),false);
     }
 });

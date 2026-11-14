@@ -20,7 +20,7 @@ test('Inferno’s Edge defines 27000 pixels, five regions, twenty-two encounters
  assert.deepEqual(level9.stages.map(s=>[s.start,s.end]),[[0,5000],[5000,10500],[10500,16000],[16000,22000],[22000,27000]]);
  for(const s of level9.stages){let end=s.start;for(const b of s.beats){assert.equal(b.start,end);assert.ok(b.end>b.start&&b.title);end=b.end;}assert.equal(end,s.end);}
  assert.deepEqual(level9.coins.map(c=>c.id),[1,2,3].map(n=>`level-9-coin-${n}`));assert.equal(level9.explorationAreas.length,3);assert.equal(level9.lavaGeysers.length,6);assert.equal(level9.checkpoints.length,2);
- assert.equal(level9.enemies.length,5);assert.ok(level9.platforms.every(p=>!p.surface));assert.equal(levels.some(l=>l.id===10),false);
+ assert.equal(level9.enemies.length,5);assert.ok(level9.platforms.every(p=>!p.surface));assert.equal(levels.some(l=>l.id===11),false);
  assert.ok(level9.hazards.some(h=>h.type==='lava'));assert.ok(level9.platforms.some((p,i,a)=>p.terrain&&i&&p.x>a[i-1].x+a[i-1].width&&!level9.hazards.some(h=>h.x<p.x&&h.x+h.width>a[i-1].x+a[i-1].width)),'dry ravines remain; lava does not fill every gap');
 });
 test('continuous spawn-to-flag all/zero-coin proofs survive live lava, six vents, creatures and transfers at all frame rates',()=>{
@@ -96,7 +96,7 @@ test('magma slimes retain stomp/bounce; fire bats reject stomps and all patrols 
 test('completed attempts union three coins, preserve earlier accounts and unlock unavailable ten without checkpoint banking',()=>{
  const disk=new Map(),storage={getItem:k=>disk.get(k),setItem:(k,v)=>disk.set(k,v)};const open=(user='A')=>{const p=new LevelProgressManager(new LocalProgressStore(storage));levels.forEach(l=>p.registerLevel(l));p.setUser(user);return p;};
  const p=open();for(const l of levels.slice(0,8))p.completeLevel(l.id,l.coins.map(c=>c.id));assert.equal(p.getLevel(9).unlocked,true);const old=levels.slice(0,8).map(l=>p.getLevel(l.id)),ids=level9.coins.map(c=>c.id),c=new CoinManager(level9.coins);
- c.pending.add(ids[0]);c.discard();assert.deepEqual(open().getLevel(9).coinIds,[]);p.completeLevel(9,ids.slice(0,2));p.completeLevel(9,[ids[2]]);p.completeLevel(9,[]);assert.equal(open().getLevel(9).fullyCompleted,true);assert.equal(open().getLevel(10).unlocked,true);assert.equal(levels.some(l=>l.id===10),false);assert.deepEqual(open().totalCoins,{earned:27,possible:30});
+ c.pending.add(ids[0]);c.discard();assert.deepEqual(open().getLevel(9).coinIds,[]);p.completeLevel(9,ids.slice(0,2));p.completeLevel(9,[ids[2]]);p.completeLevel(9,[]);assert.equal(open().getLevel(9).fullyCompleted,true);assert.equal(open().getLevel(10).unlocked,true);assert.equal(levels.some(l=>l.id===11),false);assert.deepEqual(open().totalCoins,{earned:27,possible:30});
  assert.deepEqual(levels.slice(0,8).map(l=>open().getLevel(l.id)),old);assert.deepEqual(open('B').getLevel(9).coinIds,[]);const clean=open('C'),before=JSON.stringify([...disk]);clean.completeLevel(9,ids,{developerAssisted:true});assert.equal(JSON.stringify([...disk]),before);assert.equal(clean.getLevel(9).completed,false);
 });
 test('five volcanic regions, exact damage artwork, reduced-motion warnings and refuges render without changing gameplay',()=>{
