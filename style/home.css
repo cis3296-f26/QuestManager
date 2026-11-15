@@ -9,6 +9,45 @@ body {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
+    position: relative;
+}
+
+.app-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 16px 12px;
+}
+
+.app-header h1 {
+    margin: 0;
+    color: #3d5f26;
+    font-family: "Abril Fatface", Georgia, serif;
+    font-size: 1.5rem;
+}
+
+#accountView {
+    position: absolute;
+    top: 0;
+    right: 16px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: #cbb69f;
+    color: #3d5f26;
+    font-family: "Abril Fatface", Georgia, serif;
+}
+
+#accountView[hidden] {
+    display: none;
+}
+
+#appView h1{
+    padding-right: 200px
 }
 
 /* Green tabs above the main panel. */
@@ -127,6 +166,20 @@ body {
     #home #taskInput {
         min-width: 0;
         flex: 1 1 160px;
+    }
+
+    .app-header {
+        flex-wrap: wrap;
+        margin: 0 8px 12px;
+    }
+
+    #appView h1 {
+        padding-right: 0;
+        margin-top: 44px;
+    }
+
+    #accountView{
+        right: 8px;
     }
 }
 
