@@ -17,6 +17,7 @@ export const CATEGORIES = [
         label: "Room",
         slots: [
             { id: "wallpaper", label: "Wallpaper" },
+            { id: "flooring", label: "Flooring" },
             { id: "dresser", label: "Dressers" },
             { id: "decoration", label: "Decorations" }
         ]
@@ -25,13 +26,13 @@ export const CATEGORIES = [
 
 export const BASE_SHEETS = {
     avatar: { src: "assets/character/1.1Base.png", count: 4 },
-    room:   { src: "assets/room/base_room.png", count: 1 }
+    room:   { src: "assets/background", count: 1 }
 };
 
 // Slot stacking order, back to front.
 export const LAYER_ORDER = {
     avatar: ["armor", "equipment", "hat"],
-    room: ["wallpaper", "dresser", "decoration"]
+    room: ["wallpaper", "flooring", "dresser", "decoration"]
 };
 
 // Items for sale. To add one: add an object here, put its sprite in assets/itemSprites,
