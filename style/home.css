@@ -615,3 +615,16 @@ body {
     color: #304c1e;
     font: inherit;
 }
+
+.home-scene {
+    position: relative;
+    width: 350px;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.home-scene > .avatar-stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+}
