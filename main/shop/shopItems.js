@@ -24,7 +24,7 @@ export const CATEGORIES = [
 ];
 
 export const BASE_SHEETS = {
-    avatar: { src: "assets/character/1.1BaseCharacter.png", count: 4 },
+    avatar: { src: "assets/character/1.1Base.png", count: 4 },
     room:   { src: "assets/room/base_room.png", count: 1 }
 };
 
