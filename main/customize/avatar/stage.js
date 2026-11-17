@@ -1,10 +1,10 @@
-import { BASE_SHEETS, LAYER_ORDER, SHOP_ITEMS } from "../../shop/shopItems.js";
+import { BASE_SHEETS, DEFAULT_ITEMS, LAYER_ORDER, SHOP_ITEMS } from "../../shop/shopItems.js";
 
 export function stageLayers(categoryId, itemIds, items = SHOP_ITEMS) {
     const base = BASE_SHEETS[categoryId];
-    const layers = [{
-        src: base.src, count: base.count, alt: "", base: true
-    }];
+    const layers = base
+       ? [ { src: base.src, count: base.count, alt: "", base: true } ]
+       : [];
 
     for (const slotId of LAYER_ORDER[categoryId] ?? []) {
         const item = items.find((c) =>
@@ -13,7 +13,13 @@ export function stageLayers(categoryId, itemIds, items = SHOP_ITEMS) {
             itemIds.includes(c.id)
         );
         const src = item && (item.sheet || item.sprite);
-        if (src) layers.push({ src, count: item.count || 1, alt: item.name, base: false });
+        if (src) {
+            layers.push({ src, count: item.count || 1, alt: item.name, base: false });
+        } else if (DEFAULT_ITEMS[slotId]) {
+            //nothing equipped, draw default
+            const fallback = DEFAULT_ITEMS[slotId];
+            layers.push({ src: fallback.sprite, count: fallback.count || 1, alt: fallback.name, base: true });
+        }
     }
     
     return layers;

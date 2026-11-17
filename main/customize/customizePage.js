@@ -4,7 +4,7 @@
 
 import { getCurrentUser, refreshCurrentUser, setCurrentEquipped } from "../users/userSession.js";
 import { saveEquipped } from "../users/playerData.js";
-import { SHOP_ITEMS, CATEGORIES } from "../shop/shopItems.js";
+import { SHOP_ITEMS, CATEGORIES, DEFAULT_ITEMS} from "../shop/shopItems.js";
 import { groupBySlot, buildLoadout, cleanEquipped, toggleItem, getCategory } from "./avatar/loadout.js";
 import { renderStage, describeStage } from "./avatar/stage.js";
 
@@ -101,10 +101,12 @@ function renderShowcase(user) {
 
     const slots = category.slots.map((slot) => {
         const item = loadout[slot.id];
+        const fallback = DEFAULT_ITEMS[slot.id];
+        const shown = item ? item.name : (fallback ? fallback.name : "Empty");
         return `
             <li class="slot-row">
                 <span class="slot-label">${slot.label.replace(/s$/, "")}</span>
-                <span class="slot-value ${item ? "" : "is-empty"}">${item ? item.name : "Empty"}</span>
+                <span class="slot-value ${item || fallback ? "" : "is-empty"}">${shown}</span>
                 ${item
                     ? `<button class="slot-remove" type="button" data-equip-item="${item.id}"
                                aria-label="Unequip ${item.name}">Remove</button>`
@@ -134,8 +136,16 @@ function renderHomeAvatar(user) {
     renderStage(homeAvatar, "avatar", equippedIds, describeStage("avatar", equippedIds));
 }
 
+function renderHomeRoom(user) {
+    const homeRoom = document.getElementById("homeRoom");
+    if (!homeRoom) return;
+    const equippedIds = user ? ownedEquipped(user) : [];
+    renderStage(homeRoom, "room", equippedIds, describeStage("room", equippedIds));
+}
+
 function renderCustomize() {
     const user = getCurrentUser();
+    renderHomeRoom(user);
     renderHomeAvatar(user);
 
     if (!user) {
