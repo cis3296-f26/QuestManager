@@ -1,0 +1,72 @@
+{
+  "reference": "438a10a8a48806401e20454c019eb64a5a6c44a9",
+  "unmodifiedLevels": [
+    {
+      "id": 2,
+      "hash": "0a13d25be5c46d5bf2800c3c51834a87e7c794c0a7fdac0e81dda4ff0d180a8b"
+    },
+    {
+      "id": 3,
+      "hash": "9c083bb5d3a67abd396e396bda1f1922c76faae014169d37aa022032e447f771"
+    },
+    {
+      "id": 4,
+      "hash": "49f740b7def9b421d9a5653b735f5069590cb53a7440ce0dfc289df8af1d3e04"
+    }
+  ],
+  "laterLevel1": "a66cc51c20b252cc7d8ef162c087be0c498e5cc42ff8cc17fb3830076aee14c0",
+  "laterScenery": "51f01363b4a9d38708a66f9b110dea5cc4132d258251b8dfefd2d8026b774382",
+  "laterCoins": "e01aaa2e7a7a521f3bae472a2948067cfa95ee2fa78f48ae09627f142ceaa727",
+  "ids": [
+    "level-1-coin-1",
+    "level-1-coin-2",
+    "level-1-coin-3"
+  ],
+  "traces": [
+    {
+      "id": 2,
+      "camera": 0,
+      "hash": "14ef5dac9c9ee4959d7b209b7ef67433e99d2c9ab454852a213a092aeec79ef9"
+    },
+    {
+      "id": 2,
+      "camera": 3000,
+      "hash": "8fa166bf539ecb673625ea589c801528b93696f5516154f8568e82fa89461f49"
+    },
+    {
+      "id": 2,
+      "camera": 6000,
+      "hash": "89374fb4fb966da21403e7d60c1666039de976b5dee5c7b22bf88365dbcae63d"
+    },
+    {
+      "id": 3,
+      "camera": 0,
+      "hash": "daf2f9fcc5e1b41481df1e0360c89feec008f8883909ac9d54de99fcc31fed30"
+    },
+    {
+      "id": 3,
+      "camera": 3000,
+      "hash": "62bf69a55f5b7f822f659add62b02a8bf1bbf4d11b7d9c97856ca3aff9616ced"
+    },
+    {
+      "id": 3,
+      "camera": 6000,
+      "hash": "d1b7dfa7dbb58c6fde0082fc22eda0cdc3b44deee9650333482ddf19b4ee0404"
+    },
+    {
+      "id": 4,
+      "camera": 0,
+      "hash": "cf2d102ffc4ee29423eb68275a2afae08b8aac7acb7c4c1fe0f52403b795350e"
+    },
+    {
+      "id": 4,
+      "camera": 3000,
+      "hash": "8386e0141915656bb03a63e513fbcc9faf3e9564158c9cd9cf4d18f476614d73"
+    },
+    {
+      "id": 4,
+      "camera": 6000,
+      "hash": "6c509153eb60181f30e81f415e1c2147d9df7d549756eb14ab5e51cd60bb7d45"
+    }
+  ]
+}

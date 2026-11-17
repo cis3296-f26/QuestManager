@@ -1,0 +1,722 @@
+[
+  {
+    "fps": 30,
+    "totalFrames": 115,
+    "jumpFrames": [
+      6,
+      21,
+      39,
+      69
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3820,
+      "feetY": 460
+    },
+    "areaId": "l1-meadow-canopy",
+    "levelId": 1
+  },
+  {
+    "fps": 60,
+    "totalFrames": 229,
+    "jumpFrames": [
+      12,
+      42,
+      78,
+      138
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3820,
+      "feetY": 460
+    },
+    "areaId": "l1-meadow-canopy",
+    "levelId": 1
+  },
+  {
+    "fps": 120,
+    "totalFrames": 458,
+    "jumpFrames": [
+      12,
+      84,
+      156,
+      276
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3820,
+      "feetY": 460
+    },
+    "areaId": "l1-meadow-canopy",
+    "levelId": 1
+  },
+  {
+    "fps": 30,
+    "totalFrames": 58,
+    "jumpFrames": [
+      0
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4350,
+      "feetY": 460
+    },
+    "areaId": "l1-clover-hollow",
+    "levelId": 1
+  },
+  {
+    "fps": 60,
+    "totalFrames": 116,
+    "jumpFrames": [
+      0
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4350,
+      "feetY": 460
+    },
+    "areaId": "l1-clover-hollow",
+    "levelId": 1
+  },
+  {
+    "fps": 120,
+    "totalFrames": 231,
+    "jumpFrames": [
+      0
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4350,
+      "feetY": 460
+    },
+    "areaId": "l1-clover-hollow",
+    "levelId": 1
+  },
+  {
+    "fps": 30,
+    "totalFrames": 184,
+    "jumpFrames": [
+      0,
+      15,
+      33,
+      54,
+      75,
+      96,
+      159
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4625,
+      "feetY": 460
+    },
+    "areaId": "l2-leafy-canopy",
+    "levelId": 2
+  },
+  {
+    "fps": 60,
+    "totalFrames": 368,
+    "jumpFrames": [
+      6,
+      36,
+      72,
+      144,
+      192,
+      318
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4625,
+      "feetY": 460
+    },
+    "areaId": "l2-leafy-canopy",
+    "levelId": 2
+  },
+  {
+    "fps": 120,
+    "totalFrames": 735,
+    "jumpFrames": [
+      12,
+      84,
+      156,
+      288,
+      384,
+      636
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4625,
+      "feetY": 460
+    },
+    "areaId": "l2-leafy-canopy",
+    "levelId": 2
+  },
+  {
+    "fps": 30,
+    "totalFrames": 62,
+    "jumpFrames": [
+      15
+    ],
+    "inputs": [],
+    "start": {
+      "x": 7300,
+      "feetY": 365
+    },
+    "areaId": "l2-ferry-branch",
+    "levelId": 2
+  },
+  {
+    "fps": 60,
+    "totalFrames": 125,
+    "jumpFrames": [
+      30
+    ],
+    "inputs": [],
+    "start": {
+      "x": 7300,
+      "feetY": 365
+    },
+    "areaId": "l2-ferry-branch",
+    "levelId": 2
+  },
+  {
+    "fps": 120,
+    "totalFrames": 251,
+    "jumpFrames": [
+      60
+    ],
+    "inputs": [],
+    "start": {
+      "x": 7300,
+      "feetY": 365
+    },
+    "areaId": "l2-ferry-branch",
+    "levelId": 2
+  },
+  {
+    "fps": 30,
+    "totalFrames": 63,
+    "jumpFrames": [
+      0,
+      15,
+      36
+    ],
+    "inputs": [
+      {
+        "from": 15,
+        "to": 18,
+        "direction": 0
+      },
+      {
+        "from": 18,
+        "to": 21,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 15460,
+      "feetY": 460
+    },
+    "areaId": "l2-root-gallery",
+    "levelId": 2
+  },
+  {
+    "fps": 60,
+    "totalFrames": 133,
+    "jumpFrames": [
+      0,
+      30,
+      78
+    ],
+    "inputs": [
+      {
+        "from": 30,
+        "to": 36,
+        "direction": 0
+      },
+      {
+        "from": 36,
+        "to": 42,
+        "direction": 0
+      },
+      {
+        "from": 42,
+        "to": 48,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 15460,
+      "feetY": 460
+    },
+    "areaId": "l2-root-gallery",
+    "levelId": 2
+  },
+  {
+    "fps": 120,
+    "totalFrames": 278,
+    "jumpFrames": [
+      0,
+      72,
+      168
+    ],
+    "inputs": [
+      {
+        "from": 60,
+        "to": 72,
+        "direction": 0
+      },
+      {
+        "from": 72,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 84,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 108,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 15460,
+      "feetY": 460
+    },
+    "areaId": "l2-root-gallery",
+    "levelId": 2
+  },
+  {
+    "fps": 30,
+    "totalFrames": 125,
+    "jumpFrames": [
+      6,
+      21,
+      39,
+      63
+    ],
+    "inputs": [],
+    "start": {
+      "x": 2630,
+      "feetY": 460
+    },
+    "areaId": "l3-hidden-bough",
+    "levelId": 3
+  },
+  {
+    "fps": 60,
+    "totalFrames": 249,
+    "jumpFrames": [
+      12,
+      42,
+      78,
+      126
+    ],
+    "inputs": [],
+    "start": {
+      "x": 2630,
+      "feetY": 460
+    },
+    "areaId": "l3-hidden-bough",
+    "levelId": 3
+  },
+  {
+    "fps": 120,
+    "totalFrames": 497,
+    "jumpFrames": [
+      12,
+      84,
+      156,
+      252
+    ],
+    "inputs": [],
+    "start": {
+      "x": 2630,
+      "feetY": 460
+    },
+    "areaId": "l3-hidden-bough",
+    "levelId": 3
+  },
+  {
+    "fps": 30,
+    "totalFrames": 74,
+    "jumpFrames": [
+      6
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4250,
+      "feetY": 460
+    },
+    "areaId": "l3-fern-passage",
+    "levelId": 3
+  },
+  {
+    "fps": 60,
+    "totalFrames": 148,
+    "jumpFrames": [
+      6
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4250,
+      "feetY": 460
+    },
+    "areaId": "l3-fern-passage",
+    "levelId": 3
+  },
+  {
+    "fps": 120,
+    "totalFrames": 295,
+    "jumpFrames": [
+      12
+    ],
+    "inputs": [],
+    "start": {
+      "x": 4250,
+      "feetY": 460
+    },
+    "areaId": "l3-fern-passage",
+    "levelId": 3
+  },
+  {
+    "fps": 30,
+    "totalFrames": 181,
+    "jumpFrames": [
+      0,
+      15,
+      36,
+      60,
+      87,
+      108,
+      141
+    ],
+    "inputs": [
+      {
+        "from": 90,
+        "to": 93,
+        "direction": 0
+      },
+      {
+        "from": 93,
+        "to": 96,
+        "direction": 0
+      },
+      {
+        "from": 96,
+        "to": 99,
+        "direction": 0
+      },
+      {
+        "from": 99,
+        "to": 102,
+        "direction": 0
+      },
+      {
+        "from": 102,
+        "to": 105,
+        "direction": 0
+      },
+      {
+        "from": 105,
+        "to": 108,
+        "direction": 0
+      },
+      {
+        "from": 108,
+        "to": 111,
+        "direction": 0
+      },
+      {
+        "from": 111,
+        "to": 114,
+        "direction": 0
+      },
+      {
+        "from": 114,
+        "to": 117,
+        "direction": 0
+      },
+      {
+        "from": 117,
+        "to": 120,
+        "direction": 0
+      },
+      {
+        "from": 120,
+        "to": 123,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 10580,
+      "feetY": 460
+    },
+    "areaId": "l3-last-nest",
+    "levelId": 3
+  },
+  {
+    "fps": 60,
+    "totalFrames": 359,
+    "jumpFrames": [
+      0,
+      30,
+      84,
+      162,
+      210,
+      288
+    ],
+    "inputs": [
+      {
+        "from": 78,
+        "to": 84,
+        "direction": 0
+      },
+      {
+        "from": 138,
+        "to": 144,
+        "direction": 0
+      },
+      {
+        "from": 192,
+        "to": 198,
+        "direction": 0
+      },
+      {
+        "from": 198,
+        "to": 204,
+        "direction": 0
+      },
+      {
+        "from": 204,
+        "to": 210,
+        "direction": 0
+      },
+      {
+        "from": 216,
+        "to": 222,
+        "direction": 0
+      },
+      {
+        "from": 222,
+        "to": 228,
+        "direction": 0
+      },
+      {
+        "from": 228,
+        "to": 234,
+        "direction": 0
+      },
+      {
+        "from": 234,
+        "to": 240,
+        "direction": 0
+      },
+      {
+        "from": 240,
+        "to": 246,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 10580,
+      "feetY": 460
+    },
+    "areaId": "l3-last-nest",
+    "levelId": 3
+  },
+  {
+    "fps": 120,
+    "totalFrames": 725,
+    "jumpFrames": [
+      0,
+      72,
+      144,
+      324,
+      420,
+      576
+    ],
+    "inputs": [
+      {
+        "from": 360,
+        "to": 372,
+        "direction": 0
+      },
+      {
+        "from": 372,
+        "to": 384,
+        "direction": 0
+      },
+      {
+        "from": 384,
+        "to": 396,
+        "direction": 0
+      },
+      {
+        "from": 396,
+        "to": 408,
+        "direction": 0
+      },
+      {
+        "from": 408,
+        "to": 420,
+        "direction": 0
+      },
+      {
+        "from": 420,
+        "to": 432,
+        "direction": 0
+      },
+      {
+        "from": 432,
+        "to": 444,
+        "direction": 0
+      },
+      {
+        "from": 444,
+        "to": 456,
+        "direction": 0
+      },
+      {
+        "from": 456,
+        "to": 468,
+        "direction": 0
+      },
+      {
+        "from": 468,
+        "to": 480,
+        "direction": 0
+      },
+      {
+        "from": 480,
+        "to": 492,
+        "direction": 0
+      }
+    ],
+    "start": {
+      "x": 10580,
+      "feetY": 460
+    },
+    "areaId": "l3-last-nest",
+    "levelId": 3
+  },
+  {
+    "fps": 30,
+    "totalFrames": 147,
+    "jumpFrames": [
+      6,
+      21,
+      39,
+      63,
+      84,
+      114
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3100,
+      "feetY": 460
+    },
+    "areaId": "l4-high-crystals",
+    "levelId": 4
+  },
+  {
+    "fps": 60,
+    "totalFrames": 294,
+    "jumpFrames": [
+      12,
+      42,
+      78,
+      120,
+      168,
+      228
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3100,
+      "feetY": 460
+    },
+    "areaId": "l4-high-crystals",
+    "levelId": 4
+  },
+  {
+    "fps": 120,
+    "totalFrames": 587,
+    "jumpFrames": [
+      12,
+      84,
+      156,
+      240,
+      336,
+      456
+    ],
+    "inputs": [],
+    "start": {
+      "x": 3100,
+      "feetY": 460
+    },
+    "areaId": "l4-high-crystals",
+    "levelId": 4
+  },
+  {
+    "fps": 30,
+    "totalFrames": 171,
+    "jumpFrames": [
+      0,
+      15,
+      36,
+      57,
+      90,
+      111,
+      132
+    ],
+    "inputs": [],
+    "start": {
+      "x": 11780,
+      "feetY": 460
+    },
+    "areaId": "l4-hidden-vault",
+    "levelId": 4
+  },
+  {
+    "fps": 60,
+    "totalFrames": 341,
+    "jumpFrames": [
+      0,
+      30,
+      72,
+      114,
+      168,
+      216,
+      264
+    ],
+    "inputs": [],
+    "start": {
+      "x": 11780,
+      "feetY": 460
+    },
+    "areaId": "l4-hidden-vault",
+    "levelId": 4
+  },
+  {
+    "fps": 120,
+    "totalFrames": 681,
+    "jumpFrames": [
+      0,
+      72,
+      156,
+      240,
+      336,
+      432,
+      528
+    ],
+    "inputs": [],
+    "start": {
+      "x": 11780,
+      "feetY": 460
+    },
+    "areaId": "l4-hidden-vault",
+    "levelId": 4
+  }
+]
