@@ -1,10 +1,15 @@
 import { BASE_SHEETS, DEFAULT_ITEMS, LAYER_ORDER, SHOP_ITEMS } from "../../shop/shopItems.js";
+import { appearanceLayers, normalizeAppearance } from "./appearance.js";
 
-export function stageLayers(categoryId, itemIds, items = SHOP_ITEMS) {
+export function stageLayers(categoryId, itemIds, items = SHOP_ITEMS, appearance = null) {
     const base = BASE_SHEETS[categoryId];
-    const layers = base
-       ? [ { src: base.src, count: base.count, alt: "", base: true } ]
-       : [];
+    // An avatar with a chosen look is built from skin/outfit/eyes/hair layers;
+    // otherwise (not onboarded yet) the old single base sprite is used.
+    const layers = categoryId === "avatar" && normalizeAppearance(appearance)
+        ? appearanceLayers(appearance)
+        : base
+            ? [ { src: base.src, count: base.count, alt: "", base: true } ]
+            : [];
 
     for (const slotId of LAYER_ORDER[categoryId] ?? []) {
         const item = items.find((c) =>
@@ -37,10 +42,10 @@ export function describeStage(categoryId, itemIds, items = SHOP_ITEMS) {
 }
 
 // Fills a container with the base image plus one <img> per equipped item.
-export function renderStage(container, categoryId, itemIds, label = "", withBase = true) {
+export function renderStage(container, categoryId, itemIds, label = "", withBase = true, appearance = null) {
     container.innerHTML = "";
 
-    for (const layer of stageLayers(categoryId, itemIds)) {
+    for (const layer of stageLayers(categoryId, itemIds, SHOP_ITEMS, appearance)) {
          if (layer.base && !withBase) continue;
         const el = document.createElement("div");
         el.className = "stage-layer stage-sheet " + (layer.base ? "stage-base" : "stage-item");
@@ -60,7 +65,7 @@ export function renderStage(container, categoryId, itemIds, label = "", withBase
 let tick = 0;
 setInterval(() => {
     tick++;
-    document.querySelectorAll(".avatar-stage .stage-sheet, .showcase-stage .stage-sheet").forEach((el) => {
+    document.querySelectorAll(".avatar-stage .stage-sheet, .showcase-stage .stage-sheet, .onb-stage .stage-sheet").forEach((el) => {
         const count = Number(el.dataset.count);
         if (count > 1) el.style.backgroundPositionX = `${((tick % count) / (count - 1)) * 100}%`;
     });

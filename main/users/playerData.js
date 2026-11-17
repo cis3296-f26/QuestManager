@@ -145,3 +145,9 @@ export async function deleteTask(taskId) {
     // Supabase returns no error when row-level security blocks a delete, just no rows.
     if (!data || data.length === 0) throw new Error("The task wasn't deleted (no permission or already gone).");
 }
+
+// Stored in the Supabase auth user's metadata (no table or SQL needed).
+export async function saveAppearance(appearance) {
+    const { error } = await supabase.auth.updateUser({ data: { appearance } });
+    if (error) throw error;
+}
