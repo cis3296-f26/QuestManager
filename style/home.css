@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@700&display=swap");
+
 /* Reuse the landscape from the login design. */
 body {
     min-height: 100vh;
@@ -530,24 +532,26 @@ body {
         padding: 18px;
     }
 }
-/* .task-grid uses display:grid, which overrides "hidden", so force it. */
-.priority-list[hidden] {
-    display: none !important;
-}
 
-/* Arrow points down when open, right when collapsed. */
-.priority-caret {
-    display: inline-block;
-    transition: transform 0.15s;
-}
-
-.priority-section.is-collapsed .priority-caret {
-    transform: rotate(-90deg);
-}
 /* ---------- Priority sections ---------- */
+/* High / Medium / Low side by side */
 #priorityBoard {
-    display: grid;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 14px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    #priorityBoard { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Drag feedback */
+#priorityBoard li[draggable="true"] { cursor: grab; }
+#priorityBoard li.is-dragging { opacity: 0.4; }
+.priority-section.is-drop-target {
+    outline: 3px dashed var(--priority-color);
+    outline-offset: 2px;
 }
 
 /* Each section gets a colored left edge. */
@@ -628,3 +632,103 @@ body {
     inset: 0;
     width: 100%;
 }
+
+/* ---------- UI edits ---------- */
+
+/* 1. Title font (pixel-style to match the sprites) */
+#appView h1 {
+    font-family: "Pixelify Sans", "Abril Fatface", Georgia, serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* 2. Center the + inside the circle */
+#home #toggleTaskForm {
+    position: relative;
+    padding: 0;
+    font-size: 0;          /* hides the "+" character */
+    line-height: 0;
+}
+#home #toggleTaskForm::before,
+#home #toggleTaskForm::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: #fff;
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
+}
+#home #toggleTaskForm::before { width: 18px; height: 3px; }  /* horizontal bar */
+#home #toggleTaskForm::after  { width: 3px; height: 18px; }  /* vertical bar */
+
+/* 3. Space between the description box and the fields below it */
+#home #taskForm #taskDescription {
+    margin-bottom: 20px;
+}
+
+/* 4. Time, task type and priority match the deadline field */
+#home .quest-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+#home .quest-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #fff8ee;
+    font-size: 15px;
+}
+#home #questDueDate,
+#home #questDueTime,
+#home #questType,
+#home #questPriority {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 999px;
+    background: #faf0e6;
+    color: #3d5f26;
+    opacity: 1;
+    cursor: pointer;
+}
+
+/* 5. Difficulty colors: green / blue / red when selected */
+#home .difficulty-choices #difficultyEasy:checked + label {
+    background: var(--diff-easy);
+    border-color: var(--diff-easy);
+    color: #fff;
+}
+#home .difficulty-choices #difficultyMedium:checked + label {
+    background: var(--diff-medium);
+    border-color: var(--diff-medium);
+    color: #fff;
+}
+#home .difficulty-choices #difficultyHard:checked + label {
+    background: var(--diff-hard);
+    border-color: var(--diff-hard);
+    color: #fff;
+}
+
+:root {
+    --title-font: "Pixelify Sans", "Abril Fatface", Georgia, serif;
+}
+
+#appView h1,
+#mainNav .nav-link {
+    font-family: var(--title-font);
+}
+
+/* Priority columns: one neutral tone, so color only means difficulty */
+/* Priority columns: sand shades, darker = more urgent */
+.priority-section[data-priority="high"]   { --priority-color: #b9a283; }
+.priority-section[data-priority="medium"] { --priority-color: #cbb69f; }
+.priority-section[data-priority="low"]    { --priority-color: #ddcdb8; }
+
+/* Dark text so the count stays readable on the light bubbles */
+.priority-count { color: #3d5f26; }
+
+.priority-section[data-priority="high"] { border-left-width: 10px; }
+.priority-section[data-priority="low"]  { border-left-width: 3px; }
