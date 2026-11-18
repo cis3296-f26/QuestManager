@@ -52,7 +52,22 @@ function renderPriorityBoard() {
         const tasks = todays.filter(t => t.priority === priority);
 
         target.replaceChildren();
-        tasks.forEach(t => renderTask(t, target));
+                tasks.forEach(t => {
+            renderTask(t, target);
+            // Only the quest's owner can change it, so only they can drag it.
+            const li = target.lastElementChild;
+            const user = getCurrentUser();
+            if (li && user && user.id === t.userID) {
+                li.draggable = true;
+                li.dataset.taskId = t.taskID;
+                li.addEventListener("dragstart", event => {
+                    event.dataTransfer.setData("text/plain", String(t.taskID));
+                    event.dataTransfer.effectAllowed = "move";
+                    li.classList.add("is-dragging");
+                });
+                li.addEventListener("dragend", () => li.classList.remove("is-dragging"));
+            }
+        });
         section.querySelector(".priority-count").textContent = tasks.length;
     });
 }
@@ -98,8 +113,8 @@ function renderTask(task, target) {
 
     var difficulty = document.createElement("p");
     difficulty.className = "quest-difficulty";
-    difficulty.textContent = "Difficulty: " + task.difficulty;
-
+    difficulty.textContent = "Difficulty: " +
+        task.difficulty.charAt(0).toUpperCase() + task.difficulty.slice(1);
     // This reflects completion; payment remains handled by the existing logic.
     var badge = document.createElement("span");
     badge.className = "quest-status";
@@ -166,7 +181,7 @@ function renderTask(task, target) {
 }
 
 // ---------- Adding tasks ----------
-async function addTaskFor(title, difficulty, date, description = "", time = null, priority = "medium", taskType = "personal") {
+async function addTaskFor(title, difficulty, date, description = "", time = null, priority = "Medium", taskType = "personal") {
     // Save the description alongside the other task details.
     const row = await createTask(title, description, difficulty, date, time, priority, taskType);
     allTasks.push(QuestObject.fromRow(row));
@@ -292,24 +307,6 @@ async function removeTask(task, button) {
         alert("Couldn't delete that quest: " + error.message);
     }
 }
-
-/*async function addDayTask() {
-    const dayInput = document.getElementById("dayTaskInput");
-    const dayButton = document.getElementById("dayAddButton");
-    const title = dayInput.value.trim();
-    if (!getCurrentUser() || title === "") return;
-
-    dayButton.disabled = true;
-    try {
-        await addTaskFor(title, "easy", selectedDate, "", null);
-        dayInput.value = "";
-    } catch (error) {
-        console.error(error);
-        alert("Couldn't save the task: " + error.message);
-    } finally {
-        dayButton.disabled = !getCurrentUser();
-    }
-}*/
 
 // ---------- Session ----------
 let activeUserId = null;
@@ -541,24 +538,42 @@ priorityBoard.querySelectorAll(".priority-toggle").forEach(toggle => {
 });
 // Redraw the board when a different task type is picked.
 typeFilter.addEventListener("change", renderPriorityBoard);
+// ---------- Drag a quest to another priority ----------
+async function changePriority(taskId, priority) {
+    const task = allTasks.find(t => String(t.taskID) === String(taskId));
+    if (!task || task.priority === priority) return;
+
+    try {
+        const row = await updateTask(task.taskID, { priority });
+        const updated = QuestObject.fromRow(row);
+        allTasks = allTasks.map(t => t.taskID === task.taskID ? updated : t);
+    } catch (error) {
+        console.error(error);
+        alert("Couldn't move that quest: " + error.message);
+    }
+    renderLists();
+}
+
+priorityBoard.querySelectorAll(".priority-section").forEach(section => {
+    section.addEventListener("dragover", event => {
+        event.preventDefault();                       // allow dropping here
+        event.dataTransfer.dropEffect = "move";
+        section.classList.add("is-drop-target");
+    });
+    section.addEventListener("dragleave", event => {
+        if (!section.contains(event.relatedTarget)) section.classList.remove("is-drop-target");
+    });
+    section.addEventListener("drop", event => {
+        event.preventDefault();
+        section.classList.remove("is-drop-target");
+        changePriority(event.dataTransfer.getData("text/plain"), section.dataset.priority);
+    });
+});
 // ---------- Wiring ----------
 questForm.addEventListener("submit", event => {
     event.preventDefault();
     addTask();
 });
-
-/*toggleDayForm.addEventListener("click", () => {
-    if (!getCurrentUser()) return;
-    const open = dayForm.hidden;
-    dayForm.hidden = !open;
-    toggleDayForm.setAttribute("aria-expanded", String(open));
-    toggleDayForm.textContent = open ? "−" : "+";
-    if (open) document.getElementById("dayTaskInput").focus();
-});*/
-
-/*document.getElementById("dayTaskInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") document.getElementById("dayAddButton").click();
-});*/
 
 ["questDueDate", "questDueTime"].forEach(id => {
     const el = document.getElementById(id);
