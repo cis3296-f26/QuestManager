@@ -141,6 +141,7 @@
                                 </div>
                             </fieldset>
 
+                            <p id="questFormError" class="form-error" role="alert" hidden></p>
                             <button id="addButton" type="submit">Add Quest</button>
                         </form>
                     </dialog>
@@ -154,6 +155,14 @@
                             <option value="health">Health</option>
                             <option value="other">Other</option>
                         </select>
+                    </div>
+                    <div id="missedBanner" class="missed-banner" hidden>
+                        <div class="missed-banner-row">
+                            <span id="missedText"></span>
+                            <button id="missedToggle" type="button" aria-expanded="false">View</button>
+                            <button id="missedMoveAll" type="button">Move all to today</button>
+                        </div>
+                        <ul id="missedList" class="task-grid" hidden></ul>
                     </div>
                     <div id="priorityBoard">
                         <section class="priority-section" data-priority="high">
