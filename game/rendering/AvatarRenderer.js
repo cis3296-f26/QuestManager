@@ -32,19 +32,30 @@ export class AvatarRenderer {
                 })());
                 return images.get(src);
             };
-            const layers = await Promise.all(stageLayers("avatar", equipped).map(async (layer) => {
+            const definitions = stageLayers("avatar", equipped, SHOP_ITEMS,
+                data.session.user.user_metadata?.appearance);
+            const layers = await Promise.all(definitions.map(async (layer) => {
                 const sources = layer.frames?.length ? layer.frames : [layer.src];
                 const frames = await Promise.all(sources.map(load));
                 if (!frames[0]) return null;
+                // Current wardrobe assets are horizontal sheets (four 32px frames).
+                // Older separate-frame images still use one full image per frame.
+                const count = layer.count ?? 1;
+                if (!Number.isInteger(count) || count < 1 ||
+                    frames[0].naturalWidth % count !== 0) return null;
+                const frameWidth = frames[0].naturalWidth / count;
                 return {
                     // Keep indices aligned if a later frame is unavailable.
                     frames: frames.map((frame) => frame ?? frames[0]),
-                    rigged: frames[0].naturalWidth === 128 &&
-                        frames[0].naturalHeight === 128 && /\.png$/i.test(layer.src)
+                    count,
+                    rigged: [32, 128].includes(frameWidth) &&
+                        frames[0].naturalHeight === frameWidth && /\.png$/i.test(layer.src)
                 };
             }));
-            // A missing base keeps the animated stick figure as a fallback.
-            if (layers[0] && version === this.loadVersion) this.layers = layers.filter(Boolean);
+            // Missing body parts keep the fallback; a missing optional item is skipped.
+            const baseComplete = definitions.every((layer, i) => !layer.base || layers[i]);
+            if (layers[0] && baseComplete && version === this.loadVersion)
+                this.layers = layers.filter(Boolean);
         } catch (error) {
             console.warn("Could not load the game avatar:", error);
         }
@@ -69,16 +80,22 @@ export class AvatarRenderer {
             // All matching PNG layers use the same joint transforms and frame clock.
             for (const layer of this.layers) {
                 const image = layer.frames[pose.spriteFrame % layer.frames.length];
+                const count = layer.count ?? 1;
+                const frameWidth = image.naturalWidth / count;
+                const sourceX = (pose.spriteFrame % count) * frameWidth;
                 ctx.save();
                 if (layer.rigged) {
                     ctx.translate(-player.height / 2, -player.height);
                     ctx.scale(player.height / 128, player.height / 128);
-                    drawRigLayer(ctx, image, pose);
+                    drawRigLayer(ctx, image, pose, {
+                        x: sourceX, width: frameWidth, height: image.naturalHeight
+                    });
                 } else {
                     // Preserve legacy item pictures without slicing them into body parts.
-                    const scale = player.height / Math.max(image.naturalWidth, image.naturalHeight);
-                    const w = image.naturalWidth * scale, h = image.naturalHeight * scale;
-                    ctx.drawImage(image, -w / 2, -h, w, h);
+                    const scale = player.height / Math.max(frameWidth, image.naturalHeight);
+                    const w = frameWidth * scale, h = image.naturalHeight * scale;
+                    ctx.drawImage(image, sourceX, 0, frameWidth, image.naturalHeight,
+                        -w / 2, -h, w, h);
                 }
                 ctx.restore();
             }

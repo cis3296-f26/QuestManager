@@ -8,8 +8,10 @@ const root = path.resolve(__dirname, '../../..');
 async function run(scenario) {
     const calls = [], storage = new Map();
     let account = 'account-A';
+    const appearances = {}, imageFailures = new Set(), waitingImages = [];
+    let deferImages = false;
     const supabase = {
-        auth: { async getSession() { return { data: { session: { user: { id: account } } } }; } },
+        auth: { async getSession() { return { data: { session: account ? { user: { id: account, user_metadata: { appearance: appearances[account] } } } : null } }; } },
         from(table) {
             const query = { fields: '', filters: {}, inserted: null };
             const result = () => table === 'profiles'
@@ -33,7 +35,13 @@ async function run(scenario) {
     const context = vm.createContext({ console, document, setInterval() {}, URL,
         CustomEvent: class { constructor(type) { this.type = type; } },
         localStorage: { getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, value) },
-        Image: class { constructor() { this.naturalWidth = this.naturalHeight = 128; } async decode() {} }
+        Image: class {
+            constructor() { this.naturalWidth = 128; this.naturalHeight = 32; }
+            async decode() {
+                if ([...imageFailures].some(file => this.src.endsWith(file))) throw Error('Missing image');
+                if (deferImages) await new Promise(resolve => waitingImages.push(resolve));
+            }
+        }
     });
     const client = new vm.SyntheticModule(['supabase'], function () { this.setExport('supabase', supabase); }, { context });
     await client.link(() => {}); await client.evaluate();
@@ -87,6 +95,20 @@ async function run(scenario) {
         assert.equal(avatar.layers.length, 2, 'base plus equipped item');
         account = 'account-B'; await avatar.load();
         assert.equal(avatar.layers.length, 1, 'second account must not inherit equipment');
+        assert.ok(avatar.layers.every(l=>l.count===4&&l.rigged),'32px sheet frames use the shared character rig');
+        account='account-A';appearances[account]={skin:3,hairStyle:2,hairColor:'brown',eyes:5};await avatar.load();
+        assert.equal(avatar.layers.length,5,'skin, outfit, eyes, hair and owned hat');
+        assert.deepEqual(Array.from(avatar.layers,l=>l.frames[0].src.split('/').at(-1)),
+            ['skin3.png','outfit.png','eyes5.png','hair2-brown.png','wizard_hat.png']);
+        imageFailures.add('wizard_hat.png');await avatar.load();assert.equal(avatar.layers.length,4,'missing optional item leaves the chosen body intact');
+        imageFailures.add('skin3.png');await avatar.load();assert.equal(avatar.layers.length,0,'incomplete body uses fallback');imageFailures.clear();
+        deferImages=true;const old=avatar.load();
+        while(!waitingImages.length)await new Promise(resolve=>setImmediate(resolve));
+        deferImages=false;account='account-B';await avatar.load();waitingImages.splice(0).forEach(resolve=>resolve());await old;
+        assert.equal(avatar.layers.length,1,'late previous-account images cannot replace the new account');
+        assert.ok(avatar.layers[0].frames[0].src.endsWith('1.1Base.png'));
+        account=null;await avatar.load();assert.equal(avatar.layers.length,0,'sign-out clears all avatar images');
+
     } else if (scenario === 'session') {
         const session = await load('main/users/userSession.js');
         await session.setUserFromSession({ user: { id: 'account-A' } });
