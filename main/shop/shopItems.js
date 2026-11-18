@@ -45,13 +45,15 @@ export const DEFAULT_ITEMS = {
 // and add a matching row in the Supabase shop_items table.
 export const SHOP_ITEMS = [
     // ----- Wardrobe -----
-    { id: "wizard_hat", name: "Wizard Hat", price: 25, category: "avatar", slot: "hat",
-    sheet: "assets/itemSprites/equipment/wizard_hat.png", count: 4 },
-
-    { id: "gold_crown",    name: "Gold Crown",    price: 60, category: "avatar", slot: "hat",       sprite: "assets/itemSprites/equipment/shield.jpg" },
-    { id: "leather_tunic", name: "Leather Tunic", price: 30, category: "avatar", slot: "armor",     sprite: "assets/itemSprites/equipment/shield.jpg" },
-    { id: "sword",         name: "Sword",         price: 20, category: "avatar", slot: "equipment", sprite: "assets/itemSprites/equipment/sword.jpg" },
-    { id: "shield",        name: "Shield",        price: 30, category: "avatar", slot: "equipment", sprite: "assets/itemSprites/equipment/shield.jpg" },
+    { id: "wizard_hat", name: "Wizard Hat", price: 25, category: "avatar", slot: "hat", sheet: "assets/itemSprites/equipment/wizard_hat.png", count: 4 },
+    { id: "gold_crown",    name: "Gold Crown",    price: 60, category: "avatar", slot: "hat", sheet: "assets/itemSprites/equipment/crown.png", count:4},
+    { id: "big_hat",    name: "Big Hat", price: 100, category: "avatar", slot: "hat",       sheet: "assets/itemSprites/equipment/bigHat.png", count: 4 },
+    { id: "chainmail",    name: "Chainmail Armor",    price: 100, category: "avatar", slot: "armor",       sheet: "assets/itemSprites/equipment/chainArmor.png", count: 4 },
+    { id: "soldier",    name: "Soldier Armor",    price: 150, category: "avatar", slot: "armor",       sheet: "assets/itemSprites/equipment/soldierArmor.png", count: 4 },
+    { id: "sun_hat",    name: "Sun Hat",    price: 80, category: "avatar", slot: "hat", sheet: "assets/itemSprites/equipment/sunHat.png", count: 4},
+    { id: "sword",         name: "Sword",         price: 20, category: "avatar", slot: "equipment", sheet: "assets/itemSprites/equipment/sword.png", count: 4 },
+    //{ id: "shield",        name: "Shield",        price: 30, category: "avatar", slot: "equipment", sprite: "assets/itemSprites/equipment/shield.jpg" },
+     //{ id: "leather_tunic", name: "Leather Tunic", price: 30, category: "avatar", slot: "armor",     sprite: "assets/itemSprites/equipment/shield.jpg" },
 
     // ----- Room -----
     { id: "blue_carpet",      name: "Blue Carpet",      price: 15, category: "room", slot: "flooring",   sprite: "assets/background/BlueCarpet.png" },
