@@ -1,4 +1,11 @@
+import { validateWarden } from "../EmberWarden.js";
+import { validateCheckpoints } from "../AttemptCheckpoints.js";
+import { validateLavaGeysers } from "../../entities/LavaGeyser.js";
+import { validateClimbables } from "../../engine/Climbing.js";
+import { validateSurfaces } from "../../engine/SurfaceMovement.js";
+import { validateSunPulses } from "../../entities/SunPulseTrap.js";
 import { validateCaveMechanics } from "./validateCaveMechanics.js";
+import { validateWind } from "../../engine/Wind.js";
 import { movement } from "../../engine/Movement.js";
 import { jump, moveHorizontally, applyGravity } from "../../engine/Physics.js";
 import { Player } from "../../entities/Player.js";
@@ -28,11 +35,11 @@ export function jumpEnvelope(fps) {
 // Structural checks never edit level definitions, runtime state, saves, or the database.
 // Successful route simulations are still required: a geometric check cannot establish fairness.
 export function validateLevel(config) {
-    const errors = [...validateCaveMechanics(config), ...validateExploration(config), ...validatePlatformPurpose(config), ...validateTreeSpacing(config.scenery, config.groundY)], warnings = [];
+    const errors = [...validateWarden(config), ...validateCheckpoints(config), ...validateLavaGeysers(config), ...validateClimbables(config), ...validateSurfaces(config), ...validateSunPulses(config), ...validateWind(config), ...validateCaveMechanics(config), ...validateExploration(config), ...validatePlatformPurpose(config), ...validateTreeSpacing(config.scenery, config.groundY)], warnings = [];
     const fail = (message) => errors.push(message);
     const { platforms = [], enemies = [], coins = [], hazards = [], stages = [] } = config;
     const ids = new Set();
-    for (const object of [...platforms, ...enemies, ...coins, ...hazards, ...(config.stalactites ?? []), ...(config.switches ?? []), ...(config.gates ?? [])]) {
+    for (const object of [...platforms, ...enemies, ...coins, ...hazards, ...(config.stalactites ?? []), ...(config.switches ?? []), ...(config.gates ?? []), ...(config.barriers ?? []), ...(config.windZones ?? []), ...(config.sunPulseTraps ?? []), ...(config.climbables ?? []), ...(config.lavaGeysers ?? []), ...(config.checkpoints ?? [])]) {
         if (!object.id || ids.has(object.id)) fail(`Missing or duplicate object ID: ${object.id}`);
         ids.add(object.id);
     }

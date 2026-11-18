@@ -52,20 +52,20 @@
                     </button>
                     <button type="button" class="map-node" data-level="5"
                         style="left:81.9378%;top:70.2550%"
-                        aria-label="Level 5: Desert Ruins, coming soon" disabled
-                        title="Desert Ruins — coming soon">
+                        aria-label="Level 5: Sunscorched Dunes, complete Level 4 to unlock" disabled
+                        title="Complete Level 4 to unlock">
                         <span>5</span><span class="map-lock" aria-hidden="true">🔒</span>
                     </button>
                     <button type="button" class="map-node" data-level="6"
                         style="left:83.3732%;top:47.7337%"
-                        aria-label="Level 6: Desert Ruins, coming soon" disabled
-                        title="Desert Ruins — coming soon">
+                        aria-label="Level 6: The Lost Sun Temple, complete Level 5 to unlock" disabled
+                        title="The Lost Sun Temple — complete Level 5 to unlock">
                         <span>6</span><span class="map-lock" aria-hidden="true">🔒</span>
                     </button>
                     <button type="button" class="map-node" data-level="7"
                         style="left:75.7177%;top:31.5864%"
-                        aria-label="Level 7: Frozen Peaks, coming soon" disabled
-                        title="Frozen Peaks — coming soon">
+                        aria-label="Level 7: Frozen Peaks, complete Level 6 to unlock" disabled
+                        title="Frozen Peaks — complete Level 6 to unlock">
                         <span>7</span><span class="map-lock" aria-hidden="true">🔒</span>
                     </button>
                     <button type="button" class="map-node" data-level="8"
@@ -110,14 +110,9 @@
                     <button type="button" id="backToMap" class="adventure-button secondary">World Map</button>
                 </div>
             </header>
-            <p id="gameInstructions">
-                Move with A/D or the left/right arrows.
-                Jump with Space, W, or the up arrow. Press R to restart. Esc pauses or resumes. Reach the flag to finish!
-                Land on slimes to defeat them; mushrooms must still be avoided.
-            </p>
             <p id="coinCounter" class="visually-hidden" role="status" aria-live="polite">Coins: 0/3</p>
             <canvas id="gameCanvas" width="960" height="540" tabindex="0"
-                aria-label="Level 1 platform game" aria-describedby="gameInstructions">
+                aria-label="Level 1 platform game" aria-describedby="controlsReference">
                 Your browser does not support the canvas needed for this game.
             </canvas>
             <p id="gameStatus" role="status" aria-live="polite">Your adventure begins here.</p>
@@ -134,10 +129,21 @@
             <p id="perfectCoins" hidden>Perfect! All 3 Coins Collected!</p>
             <p id="completionSaveStatus"></p>
         </section>
+        <section id="adventureEnding" hidden aria-label="Saved adventure achievements">
+            <p id="adventureTotals"></p><p id="adventureMessage"></p>
+            <p id="perfectAdventure" hidden>Perfect Adventure — All 30 Coins Collected!</p>
+        </section>
+        <section id="creditsPanel" hidden aria-label="QuestManager credits">
+            <h3>QuestManager Credits</h3>
+            <p>QuestManager — a project for CIS 3296 at Temple University.</p>
+            <p>A task-powered adventure. Thank you for playing!</p>
+            <button id="closeCredits" type="button">Back to Celebration</button>
+        </section>
+        <button id="viewCredits" type="button" hidden>View Credits</button>
         <form method="dialog" class="completion-actions">
-            <button type="submit" value="replay" autofocus>Replay Level</button>
+            <button id="completionReplay" type="submit" value="replay" autofocus>Replay Level</button>
             <button id="nextLevel" type="button" disabled>Next Level <small>Coming soon</small></button>
-            <button type="submit" value="map">World Map</button>
+            <button id="completionMap" type="submit" value="map">World Map</button>
         </form>
     </dialog>
     <dialog id="levelSelectionDialog" class="completion-dialog" aria-labelledby="selectionLevelTitle">
@@ -192,6 +198,9 @@
                     <dt>A / Left Arrow</dt><dd>Move Left</dd>
                     <dt>D / Right Arrow</dt><dd>Move Right</dd>
                     <dt>Space / W / Up Arrow</dt><dd>Jump</dd>
+                    <dt>E</dt><dd>Attach to / detach from a nearby rope or ladder</dd>
+                    <dt>W / Up · S / Down</dt><dd>Climb up / down while attached</dd>
+                    <dt>Space</dt><dd>Jump off a rope or ladder</dd>
                     <dt>R</dt><dd>Restart Level</dd>
                     <dt>Esc</dt><dd>Pause / Resume</dd>
                 </dl>

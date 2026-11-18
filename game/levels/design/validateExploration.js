@@ -17,7 +17,7 @@ export function validateExploration(config) {
         for (const id of area.platformIds ?? []) if (!config.platforms.some((p) => p.id === id)) errors.push(`Unknown exploration platform ${id}.`);
         for (const id of area.discoveryPlatforms ?? []) if (!area.platformIds?.includes(id)) errors.push(`Discovery platform ${id} is outside the exploration route.`);
         if (area.coinId && !config.coins.some((coin) => coin.id === area.coinId)) errors.push(`Unknown exploration coin ${area.coinId}.`);
-        for (const veil of area.foreground ?? []) if (!validBox(veil) || !["hedge", "roots", "leaves", "crystals"].includes(veil.kind)) errors.push(`Invalid exploration foliage in ${area.id}.`);
+        for (const veil of area.foreground ?? []) if (!validBox(veil) || !["hedge", "roots", "leaves", "crystals", "sandstone"].includes(veil.kind)) errors.push(`Invalid exploration foliage in ${area.id}.`);
     }
     return errors;
 }

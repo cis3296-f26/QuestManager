@@ -1,0 +1,58 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "hash": "10b478eca6c6686c84042e52b1e608a2976eac7019e20cca6e47d31258db06d6"
+    },
+    {
+      "id": 2,
+      "hash": "190f14b904620ba273fecae45e4b20ce4add6912464b921969e7c71cdbbd0786"
+    },
+    {
+      "id": 3,
+      "hash": "6b702b098478aa0b53b9c830f14fc7534d728fb0011d849f6a74a107d4c21902"
+    },
+    {
+      "id": 4,
+      "hash": "44619def27cc339eaff9ab3a5164a91248250f8eca57c9f6ea84c05a48a6b610"
+    },
+    {
+      "id": 5,
+      "hash": "4893090148da5b87441a911ce5c9093eb8185e54bd247b35f9d04795b00a4d75"
+    },
+    {
+      "id": 6,
+      "hash": "ff7a4b761663004bd569b3a780d14b665ff5834bf8504a833849e485a1d6bd0d"
+    }
+  ],
+  "music": [
+    {
+      "key": "map",
+      "hash": "02eb9115c9ff9608d415eb00eb039ffe91a8fd855af2b4740c045ffeee9fc1a0"
+    },
+    {
+      "key": "grassland",
+      "hash": "98369f8afd18bbaacc75d1d3c98ab32676895a45c76160c523c51ee22be102b7"
+    },
+    {
+      "key": "forest",
+      "hash": "b158ced1755272381798b93181249cad3ed437911b006e29cc1cce29668b7e0a"
+    },
+    {
+      "key": "deepForest",
+      "hash": "a3b37a9a5a3f92114b7229b11f85693c6ecd7b35ee16e678bfcc69ea3776c187"
+    },
+    {
+      "key": "cave",
+      "hash": "bd5fb9d9bd4c80875051b6478606be423e34da134d39c2b2c068dbf515b3cb4e"
+    },
+    {
+      "key": "desert",
+      "hash": "8724cec696b9101e25d262c494fa02368c9f349246c08e8ba52c3c918d9f4602"
+    },
+    {
+      "key": "temple",
+      "hash": "e06d9ac458425609389de4f1e22d0d7ebc63c6593187715d16d999a2c618da29"
+    }
+  ]
+}

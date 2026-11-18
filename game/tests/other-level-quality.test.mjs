@@ -15,20 +15,21 @@ const hash=v=>createHash("sha256").update(JSON.stringify(v)).digest("hex");
 const id=p=>p?.id??p?.config?.id;
 const overlaps=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 
-test("quality pass preserves approved Level 1, every coin ID, later challenge geometry and moving/collapse configurations",()=>{
+test("cave revisions preserve Levels 1–3, the approved cave entrance, coin IDs, moving/collapse definitions and flags",()=>{
     assert.equal(hash(levels[0]),baseline.level1);
     for(const ref of baseline.others) {
         const config=levels.find(l=>l.id===ref.id);
         assert.deepEqual(config.coins.map(c=>c.id),ref.coins);
-        assert.equal(hash(config.stages.slice(1)),ref.laterStages,`Level ${ref.id}: later gameplay changed`);
+        if(ref.id===4)assert.equal(hash(config.stages[0]),ref.entrance,"approved cave entrance changed");
+        else assert.equal(hash(config.stages.slice(1)),ref.laterStages,`Level ${ref.id}: later gameplay changed`);
         assert.equal(hash(config.platforms.filter(p=>p.type)),ref.moving);
         assert.equal(hash(config.finish),ref.finish);
     }
 });
 
 test("entrances have different terrain/coin choices rather than the same early y365 shelf",()=>{
-    assert.deepEqual(levels.slice(1).map(l=>l.coins[0].y),[305,270,470]);
-    for(const config of levels.slice(1)) {
+    assert.deepEqual(levels.slice(1,4).map(l=>l.coins[0].y),[305,270,470]);
+    for(const config of levels.slice(1,4)) {
         const stage=config.stages[0];assert.ok(stage.platforms.filter(p=>p.terrain).length>=4);
         assert.ok(new Set(stage.platforms.filter(p=>p.terrain).map(p=>p.y)).size>=3);
         assert.deepEqual(validateLevel(config).errors,[]);
@@ -86,7 +87,7 @@ test("intro slimes leave recovery after a worst-position stomp instead of forcin
 });
 
 test("cave alcove is optional: all-coin proofs use it while zero-coin proofs use the stone crossing",()=>{
-    for(const suffix of ["routes","main-routes"])for(const config of levels.slice(1)) {
+    for(const suffix of ["routes","main-routes"])for(const config of levels.slice(1,4)) {
         const routes=JSON.parse(readFileSync(new URL(`./fixtures/level${config.id}-${suffix}.json`,import.meta.url)));
         for(const route of routes) {
             const all=suffix==="routes",r=simulateRoute(config,route,{collection:all?"all":"none",mainRoute:!all});
@@ -118,7 +119,7 @@ test("new terrain is unavailable inside the real opening pits; lower alcove rema
 });
 
 test("forest and cave presentation data changes drawing, without mutating collisions or authored state",()=>{
-    for(const config of levels.slice(1)) {
+    for(const config of levels.slice(1,4)) {
         const calls=[],ctx=new Proxy({globalAlpha:1},{get:(o,k)=>o[k]??((...a)=>calls.push([k,...a]))});
         const before=JSON.stringify(config),grass=new GrasslandRenderer(),renderer=config.theme==="cave"?new CaveRenderer():grass;
         for(const camera of [0,500,4000,11000]) {

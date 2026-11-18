@@ -7,6 +7,7 @@ export class GameAudioEvents {
         return { grounded: level.player.grounded, walkPhase: level.player.walkPhase,
             coins: new Set(coins.pending),
             rocks: new Map(level.stalactites.map(r=>[r,{warning:r.warningCount,impact:r.impactCount}])),
+            geysers: new Map(level.geysers.map(g=>[g,g.state])),
             switches: level.puzzle.activationCount,
             platforms: new Map(level.platforms.filter((p) => p.type === "collapsing").map((p) => [p, p.state])) };
     }
@@ -15,6 +16,10 @@ export class GameAudioEvents {
         for(const [rock,previous] of before.rocks) {
             if(rock.warningCount>previous.warning)this.audio.play("crack");
             if(rock.impactCount>previous.impact)this.audio.play("break");
+        }
+        for(const [g,state] of before.geysers ?? []) if(Math.abs(player.x-g.config.x)<640 && g.state!==state) {
+            if(g.state==="warning")this.audio.play("lavaBubble");
+            if(g.state==="eruption")this.audio.play("eruption");
         }
         if(level.puzzle.activationCount>before.switches){this.audio.play("switch");this.audio.play("gate");}
         for (const id of coins.pending) if (!before.coins.has(id)) this.audio.play("coin");

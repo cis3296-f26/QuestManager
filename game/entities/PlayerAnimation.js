@@ -49,6 +49,11 @@ export class PlayerAnimation {
 
             if (complete) {
                 this.state = "complete";
+            } else if (player.climbingId) {
+                this.state = "climb";
+                const reach=Math.sin(player.climbPhase??0)*0.28;
+                target.leftArm=-1.5+reach; target.rightArm=1.5+reach;
+                target.leftLeg=.2-reach; target.rightLeg=-.2-reach;
             } else if (!player.grounded) {
                 this.state = player.velocityY < 0 ? "jump" : "fall";
                 const air = Math.max(-1, Math.min(1, player.velocityY / 350));
@@ -93,3 +98,4 @@ export class PlayerAnimation {
         this.wasGrounded = player.grounded;
     }
 }
+

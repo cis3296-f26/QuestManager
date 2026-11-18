@@ -1,7 +1,9 @@
+import { synthesizeMusic, synthesizeMusicAsync } from "./MusicSynth.js";
+import { MUSIC_TRACKS } from "./MusicScores.js";
+
 // Original QuestManager scores and sound recipes. No external samples or game music.
 // Low sample rate, rounded waves and sparse phrases keep the retro palette soft.
 const rate = 22050;
-const frequency = (midi) => 440 * 2 ** ((midi - 69) / 12);
 const rounded = (phase) => Math.sin(phase) * .85 + Math.asin(Math.sin(phase)) * (2 / Math.PI) * .15;
 
 function tone(data, start, duration, hz, amplitude, { endHz = hz, noise = 0, wrap = false } = {}) {
@@ -19,19 +21,6 @@ function tone(data, start, duration, hz, amplitude, { endHz = hz, noise = 0, wra
     }
 }
 
-const themes = {
-    map: { bpm: 76, chords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 50, 55]],
-        melody: [[72, 76], [79], [], [74, 71], [72, 79], [76], [], [74, 72]] },
-    grassland: { bpm: 88, chords: [[48, 52, 55], [41, 45, 48], [45, 48, 52], [43, 47, 50]],
-        melody: [[76, 79, 81], [79, 76], [], [74, 79], [76, 84], [81, 79], [], [74, 72]] },
-    forest: { bpm: 82, chords: [[45, 48, 52], [41, 45, 48], [48, 52, 55], [40, 47, 52]],
-        melody: [[69, 72], [76, 74], [], [71, 76], [72, 79, 76], [74], [], [71, 69]] },
-    cave: { bpm: 72, chords: [[50, 57, 60], [46, 53, 57], [48, 55, 62], [45, 52, 59]],
-        melody: [[74], [81, 77], [], [72, 79], [77], [], [76, 81], [74]] },
-    deepForest: { bpm: 78, chords: [[50, 53, 57], [46, 50, 53], [48, 52, 55], [45, 52, 57]],
-        melody: [[74, 77], [81], [], [76, 72], [74, 81], [77, 76], [], [73, 74]] }
-};
-
 const effects = {
     jump: [.17, [[0, .15, 300, .12, { endHz: 540 }]]],
     land: [.11, [[0, .10, 105, .075, { endHz: 72, noise: .3 }]]],
@@ -44,11 +33,21 @@ const effects = {
     break: [.29, [[0, .12, 155, .08, { endHz: 75, noise: .6 }], [.08, .19, 110, .055, { noise: .6 }]]],
     switch: [.23, [[0,.10,523,.06],[.09,.13,659,.065]]],
     gate: [.37, [[0,.23,130,.055,{endHz:196,noise:.2}],[.16,.20,392,.045]]],
+    lavaBubble: [.32, [[0,.12,95,.055,{endHz:145,noise:.55}],[.16,.13,125,.045,{endHz:180,noise:.5}]]],
+    eruption: [.42, [[0,.38,90,.07,{endHz:180,noise:.7}],[.08,.26,155,.04,{endHz:80,noise:.6}]]],
+    wardenVictory: [.95, [[0,.25,392,.085],[.18,.25,523,.08],[.36,.25,659,.075],[.52,.4,784,.07],[.52,.4,523,.035]]],
     victory: [1.10, [[0, .20, 523, .09], [.16, .20, 659, .09], [.32, .22, 784, .085], [.53, .52, 1047, .07], [.53, .52, 659, .035]]]
 };
 
 export function createSynthAssets(context) {
-    const cache = new Map();
+    const cache = new Map(), musicCache = new Map();
+    let job = null;
+    const remember = (name, result) => {
+        if (!result) return null;
+        musicCache.delete(name); musicCache.set(name, result);
+        if (musicCache.size > 2) musicCache.delete(musicCache.keys().next().value);
+        return result;
+    };
     const buffer = (key, duration, fill) => {
         if (cache.has(key)) return cache.get(key);
         const result = context.createBuffer(1, Math.ceil(duration * rate), rate);
@@ -56,25 +55,65 @@ export function createSynthAssets(context) {
         cache.set(key, result);
         return result;
     };
-    return {
+    const assets = {
         effect(name) {
             const recipe = effects[name];
             return recipe ? buffer(`fx:${name}`, recipe[0], (data) => recipe[1].forEach((note) => tone(data, ...note))) : null;
         },
         music(name) {
-            const theme = themes[name];
-            if (!theme) return null;
-            const beat = 60 / theme.bpm, duration = beat * 32;
-            return buffer(`music:${name}`, duration, (data) => {
-                for (let bar = 0; bar < 8; bar++) {
-                    const chord = theme.chords[bar % theme.chords.length], start = bar * beat * 4;
-                    chord.forEach((note) => tone(data, start, beat * 3.8, frequency(note + 12), .011, { wrap: true }));
-                    tone(data, start, beat * 1.6, frequency(chord[0] - 12), .024, { wrap: true });
-                    tone(data, start + beat * 2.4, beat, frequency(chord[0]), .012, { wrap: true });
-                    theme.melody[bar].forEach((note, i) => tone(data, start + beat * (i * 1.25 + .3), beat * .9, frequency(note), .042, { wrap: true }));
-                }
-            });
+            if (musicCache.has(name)) {
+                const cached = musicCache.get(name);
+                musicCache.delete(name); musicCache.set(name, cached);
+                return cached;
+            }
+            const result = synthesizeMusic(context, name);
+            if (!result) return null;
+            return remember(name, result);
         },
-        clear() { cache.clear(); }
+        getMusic(name) { return musicCache.get(name) ?? null; },
+        prepareMusic(name) {
+            if (!MUSIC_TRACKS[name]) return Promise.resolve(null);
+            if (musicCache.has(name)) return Promise.resolve(assets.music(name));
+            if (job?.name === name) return job.promise;
+            job?.cancel();
+            const request = { name, cancelled: false };
+            request.promise = new Promise(resolve => {
+                let worker, timer, fallingBack = false;
+                const finish = result => {
+                    clearTimeout(timer); worker?.terminate();
+                    if (job === request) job = null;
+                    resolve(request.cancelled ? null : remember(name, result));
+                };
+                request.cancel = () => { request.cancelled = true; finish(null); };
+                const fallback = () => {
+                    if (fallingBack || request.cancelled) return;
+                    fallingBack = true;
+                    clearTimeout(timer); worker?.terminate();
+                    synthesizeMusicAsync(context, name, () => request.cancelled).then(finish, () => finish(null));
+                };
+                try {
+                    if (!globalThis.Worker) { fallback(); return; }
+                    worker = new Worker(new URL("./music-worker.js", import.meta.url), { type: "module" });
+                    worker.onmessage = ({ data }) => {
+                        if (request.cancelled) return;
+                        if (data.failed) { fallback(); return; }
+                        if (data.missing) { finish(null); return; }
+                        try {
+                            const result = context.createBuffer(2, data.channels[0].length, data.sampleRate);
+                            data.channels.forEach((samples,c) => result.getChannelData(c).set(samples));
+                            finish(result);
+                        } catch { finish(null); }
+                    };
+                    worker.onerror = fallback;
+                    timer = setTimeout(fallback, 15000);
+                    worker.postMessage({ key: name });
+                } catch { fallback(); }
+            });
+            job = request;
+            return request.promise;
+        },
+        // At most two long stereo buffers; effects keep their own tiny cache.
+        clear() { job?.cancel(); job = null; cache.clear(); musicCache.clear(); }
     };
+    return assets;
 }

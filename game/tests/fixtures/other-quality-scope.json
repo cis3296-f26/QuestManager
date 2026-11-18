@@ -55,7 +55,8 @@
       ],
       "laterStages": "072e84f8a9ec33be9a823de477329ae463a4298bf316e9195e6a6b1d381a88f0",
       "moving": "04ac0a1e3deff118234355c4ce39bbc1da6bfca454e53d0c1522fefd2407b699",
-      "finish": "35b91fb14c4a3027c1b57cf5bbc5147cf195bdaddeb7694fd9d818efe5f2d4fa"
+      "finish": "35b91fb14c4a3027c1b57cf5bbc5147cf195bdaddeb7694fd9d818efe5f2d4fa",
+      "entrance": "cd15c2ce6d4c9bfdca884b9c445eeec16dc85701c331d3a8335220b845d0e000"
     }
   ]
 }

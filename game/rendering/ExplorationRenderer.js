@@ -7,6 +7,13 @@ export function drawExplorationFoliage(ctx, exploration, cameraX, viewWidth) {
         ctx.save();
         ctx.globalAlpha *= 0.52 - (exploration.reveal.get(area.id) ?? 0) * 0.40;
         ctx.translate(veil.x, veil.y);
+        if(veil.kind==="sandstone") {
+            // A recessed rock window, not a bush disguised as a secret.
+            ctx.strokeStyle="#a77c55";ctx.lineWidth=12;
+            ctx.beginPath();ctx.moveTo(6,veil.height);ctx.lineTo(6,18);
+            ctx.quadraticCurveTo(veil.width/2,-4,veil.width-6,18);ctx.lineTo(veil.width-6,veil.height);ctx.stroke();
+            ctx.restore();continue;
+        }
         if(veil.kind==="crystals") {
             for(let i=0;i<3;i++)drawCrystalCluster(ctx,(i+.5)*veil.width/3,veil.height,(veil.height/40),i%2?"#a99bdf":"#71d7d0");
             ctx.restore();continue;

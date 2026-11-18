@@ -41,6 +41,7 @@ export class LevelProgressManager {
     }
 
     getLevel(id) {
+        if (!Number.isInteger(id) || id < 1 || id > this.totalLevels) return { unlocked: false, completed: false, coinIds: [], fullyCompleted: false };
         const record = this.data.levels[id];
         const coinIds = [...(record?.coinIds ?? [])];
         return {

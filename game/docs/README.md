@@ -6,6 +6,13 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Current reviews and level guides
 
+- [Level 7: Frozen Peaks design, previews and playtest](LEVEL7_PLAYTEST.md)
+
+- [Level 6: The Lost Sun Temple design, previews and playtest](LEVEL6_PLAYTEST.md)
+
+- [Level 5: Sunscorched Dunes design, previews and playtest](LEVEL5_PLAYTEST.md)
+
+- [Timed cave vault and falling spikes](TIMED_CAVE_PLAYTEST.md)
 - [Level 1 opening review](OPENING_QUALITY_REVIEW.md)
 - [Levels 2–4 quality review](OTHER_LEVEL_QUALITY_REVIEW.md)
 - [Master integration review](MASTER_INTEGRATION_REVIEW.md)
@@ -16,6 +23,7 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Feature testing
 
+- [Biome soundtrack and listening room](BIOME_MUSIC_REVIEW.md)
 - [Collectible coins](COIN_PLAYTEST.md)
 - [Enemy stomping](STOMP_PLAYTEST.md)
 - [Moving and collapsing platforms](PLATFORM_PLAYTEST.md)

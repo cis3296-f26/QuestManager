@@ -1,3 +1,7 @@
+import { drawCastleStone } from "./CastleRenderer.js";
+import { drawBasalt } from "./VolcanoRenderer.js";
+import { drawMountainSurface, drawBridgeDeck } from "./MountainRenderer.js";
+import { drawFrozenSurface } from "./FrozenTerrain.js";
 // Cosmetic warning shake never moves the collision surface or the player's feet.
 export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { reduceMotion = false } = {}) {
     for (const platform of platforms) {
@@ -11,17 +15,30 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
         ctx.translate(platform.x + width / 2 + shake, platform.y + progress * progress * 85);
         if (falling) { ctx.rotate(progress * 0.12); ctx.globalAlpha *= 1 - progress; }
         ctx.translate(-width / 2, 0);
-        const stone=config.appearance==="rock";
-        ctx.fillStyle = stone?"#92869f":"#aa8055";
+        const frozen=["ice","snow"].includes(config.appearance);
+        if(frozen)drawFrozenSurface(ctx,{x:0,y:0,width,height,appearance:config.appearance,type:platform.type});
+        const stone=config.appearance==="rock",sand=config.appearance==="sandstone";
+        const mountain=config.appearance==="mountain", bridge=config.appearance==="rope-bridge";
+        const basalt=config.appearance==="basalt", castle=config.appearance==="castle-stone";
+        if(castle)drawCastleStone(ctx,{x:0,y:0,width,height});
+        if(basalt)drawBasalt(ctx,{x:0,y:0,width,height});
+        if(mountain)drawMountainSurface(ctx,{x:0,y:0,width,height});
+        if(bridge)drawBridgeDeck(ctx,{x:0,y:0,width,height});
+        if(!frozen&&!mountain&&!bridge&&!basalt&&!castle){
+        ctx.fillStyle = sand?"#bc9165":stone?"#92869f":"#aa8055";
         ctx.strokeStyle = "#51452b";
         ctx.lineWidth = 2;
         ctx.fillRect(0, 0, width, height);
         ctx.strokeRect(1, 1, width - 2, height - 2);
-        ctx.fillStyle = stone?"#d0c7d7":"#638647";
+        ctx.fillStyle = sand?"#f5d99a":stone?"#d0c7d7":"#638647";
         ctx.fillRect(0, 0, width, config.appearance === "grass" ? 8 : 4);
-        ctx.strokeStyle = stone?"#6c617c":"#795c3f";
-        for (let x = 28; x < width - 4; x += 28) {
+        ctx.strokeStyle = sand?"#8b6444":stone?"#6c617c":"#795c3f";
+        if(sand) {
+            ctx.beginPath();ctx.moveTo(8,14);ctx.lineTo(width-8,12);ctx.stroke();
+        }
+        for (let x = 28; !sand && x < width - 4; x += 28) {
             ctx.beginPath(); ctx.moveTo(x, 5); ctx.lineTo(x, height - 2); ctx.stroke();
+        }
         }
         if (platform.type === "moving") {
             // Simple cream arrows distinguish ferries and lifts from static terrain.
@@ -33,8 +50,8 @@ export function drawInteractivePlatforms(ctx, platforms, cameraX, viewWidth, { r
             ctx.moveTo(-5, -4); ctx.lineTo(-9, 0); ctx.lineTo(-5, 4);
             ctx.moveTo(5, -4); ctx.lineTo(9, 0); ctx.lineTo(5, 4); ctx.stroke();
             ctx.restore();
-        } else if (platform.state !== "stable") {
-            ctx.strokeStyle = "#51452b";
+        } else if (platform.state !== "stable" || bridge || basalt || castle) {
+            ctx.strokeStyle = basalt ? "#efaf68" : frozen ? "#356c87" : "#51452b";
             ctx.lineWidth = 2;
             for (const x of [width * 0.28, width * 0.7]) {
                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x - 4, height * 0.35);

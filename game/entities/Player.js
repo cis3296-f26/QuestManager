@@ -12,7 +12,11 @@ export class Player {
     reset(spawn) {
         this.x = spawn.x;
         this.y = spawn.feetY - this.height;
+        this.climbingId = null;
+        this.climbMotion = 0; this.climbPhase = 0;
         this.velocityY = 0;
+        this.velocityX = 0;
+        this.iceAirborne = false;
         this.grounded = true;
         this.supportPlatform = null;
         this.facing = 1;
@@ -32,4 +36,5 @@ export class Player {
         }
     }
 }
+
 

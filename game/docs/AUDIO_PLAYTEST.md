@@ -5,9 +5,9 @@ new database tables or dependencies. Listening approval is still pending.
 
 ## What changed
 
-- `audio/SynthAssets.js`: cached soft sine/triangle tones and quiet woody textures.
-  Three sparse eight-bar loops: welcoming map, cheerful grasslands and playful,
-  slightly mysterious forest. Loops run approximately 22–25 seconds with rest bars.
+- The current soundtrack is documented in [Biome soundtrack and listening room](BIOME_MUSIC_REVIEW.md).
+  Five original 24-bar stereo arrangements run approximately 51–85 seconds, with
+  distinct instruments, rhythms and phrase variations. Effects retain their original samples.
 - `audio/AudioManager.js`: one browser audio context, one background track, bounded
   effects, gesture unlock, category gains and safe failure/cleanup. Pause and window
   blur preserve music position; restarts begin the level theme again. Death and
@@ -35,7 +35,7 @@ Refresh fully. Click or press a key to enable audio; browser autoplay restrictio
 can keep a new page silent until that interaction. Unsupported audio leaves the
 whole game playable without sound.
 
-1. Listen to the map, then Levels 1 and 2. Each should have one distinct, gentle
+1. Listen to the map, then Levels 1–4. Each should have one distinct, gentle
    theme. Stay for several loops and assess repetition, balance and loop seams.
 2. Run, stop and jump with Space, W or Up. Footsteps should be quiet and stop in
    midair. Jump/landing should play once, with no landing chatter while standing.
