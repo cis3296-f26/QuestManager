@@ -1,11 +1,15 @@
 // The existing 128px avatar has separate limb regions below its large head.
 // Partition the original pixels at their joints, without replacing the artwork.
-export function drawRigLayer(ctx, image, pose) {
+export function drawRigLayer(ctx, image, pose, source = { x: 0, width: 128, height: 128 }) {
+    // Joint coordinates stay in the original 128px space. Crop within ONE sheet
+    // frame, then scale its pixels into that space so every equipped layer agrees.
+    const scaleX = source.width / 128, scaleY = source.height / 128;
     const part = (x, y, width, height, pivotX, pivotY, angle = 0) => {
         ctx.save();
         ctx.translate(pivotX, pivotY);
         ctx.rotate(angle);
-        ctx.drawImage(image, x, y, width, height, x - pivotX, y - pivotY, width, height);
+        ctx.drawImage(image, source.x + x * scaleX, y * scaleY,
+            width * scaleX, height * scaleY, x - pivotX, y - pivotY, width, height);
         ctx.restore();
     };
     // Feet shift a few pixels between idle frames, so include the full bottom row.
