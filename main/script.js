@@ -74,6 +74,7 @@ function renderPriorityBoard() {
 // Redraws the checklist (today), the day panel (selected date) and the calendar.
 function renderLists() {
     renderPriorityBoard();
+    renderMissedBanner();
 
     const dayTitle = document.getElementById("dayPanelTitle");
     const dayList = document.getElementById("dayTaskList");
@@ -180,6 +181,76 @@ function renderTask(task, target) {
     target.appendChild(li);
 }
 
+// ---------- Missed quests ----------
+// Unfinished quests from earlier days. The board only shows today, so without
+// this they would disappear from view.
+const missedBanner = document.getElementById("missedBanner");
+const missedText = document.getElementById("missedText");
+const missedList = document.getElementById("missedList");
+const missedToggle = document.getElementById("missedToggle");
+const missedMoveAll = document.getElementById("missedMoveAll");
+
+function getMissedTasks() {
+    const user = getCurrentUser();
+    if (!user) return [];
+    const today = todayStr();
+    // Dates are YYYY-MM-DD strings, so comparing them as text works.
+    return allTasks.filter(t =>
+        t.userID === user.id && !t.completed && t.date && t.date < today);
+}
+
+function renderMissedBanner() {
+    if (!missedBanner) return;
+    const missed = getMissedTasks();
+    missedBanner.hidden = missed.length === 0;
+    if (missed.length === 0) return;
+
+    missedText.textContent = `⚠️ ${missed.length} missed quest${missed.length > 1 ? "s" : ""}`;
+    missedList.replaceChildren();
+    missed.forEach(t => renderTask(t, missedList));
+}
+
+missedToggle?.addEventListener("click", () => {
+    const show = missedList.hidden;
+    missedList.hidden = !show;
+    missedToggle.textContent = show ? "Hide" : "View";
+    missedToggle.setAttribute("aria-expanded", String(show));
+});
+
+missedMoveAll?.addEventListener("click", async () => {
+    const missed = getMissedTasks();
+    if (missed.length === 0) return;
+    missedMoveAll.disabled = true;
+    try {
+        for (const task of missed) {
+            const row = await updateTask(task.taskID, { task_date: todayStr() });
+            const updated = QuestObject.fromRow(row);
+            allTasks = allTasks.map(t => t.taskID === task.taskID ? updated : t);
+        }
+        renderLists();
+    } catch (error) {
+        console.error(error);
+        alert("Couldn't move your missed quests: " + error.message);
+    } finally {
+        missedMoveAll.disabled = false;
+    }
+});
+
+// ---------- Form errors ----------
+const questFormError = document.getElementById("questFormError");
+const dueDateInput = document.getElementById("questDueDate");
+
+function showFormError(message, field) {
+    questFormError.textContent = message;
+    questFormError.hidden = false;
+    field?.focus();
+}
+
+function clearFormError() {
+    questFormError.textContent = "";
+    questFormError.hidden = true;
+}
+
 // ---------- Adding tasks ----------
 async function addTaskFor(title, difficulty, date, description = "", time = null, priority = "Medium", taskType = "personal") {
     // Save the description alongside the other task details.
@@ -192,10 +263,16 @@ async function addTask() {
     const user = getCurrentUser();
     if (!user || addButton.disabled) return;
     if (editingTask) return saveEdits();
+    clearFormError();
 
     const title = input.value.trim();
     if (title === "") {
-        input.focus();
+        showFormError("Your quest needs a name.", input);
+        return;
+    }
+    const pickedDate = dueDateInput.value;
+    if (pickedDate && pickedDate < todayStr()) {
+        showFormError("The due date can't be in the past.", dueDateInput);
         return;
     }
 
@@ -239,6 +316,8 @@ function openEditForm(task) {
         radio.disabled = task.rewarded;
     });
 
+    // Allow keeping an older date, but not picking a new past one.
+    dueDateInput.min = task.date && task.date < todayStr() ? task.date : todayStr();
     document.getElementById("questFormTitle").textContent = "Edit Quest";
     addButton.textContent = "Save Changes";
     setTaskFormOpen(true);
@@ -256,9 +335,16 @@ function resetFormMode() {
 
 async function saveEdits() {
     const task = editingTask;
+    clearFormError();
     const title = input.value.trim();
     if (title === "") {
-        input.focus();
+        showFormError("Your quest needs a name.", input);
+        return;
+    }
+    // Only check the date if it was changed, so an overdue quest can still be edited.
+    const pickedDate = dueDateInput.value;
+    if (pickedDate && pickedDate !== task.date && pickedDate < todayStr()) {
+        showFormError("The due date can't be in the past.", dueDateInput);
         return;
     }
 
@@ -344,7 +430,9 @@ async function syncTaskSession() {
     input.value = "";
     descriptionInput.value = "";
     questForm.reset();
-    document.getElementById("image").src = "assets/my_character.jpg";
+    // The old #image element was removed from the page, so only reset it if it exists.
+    const characterImage = document.getElementById("image");
+    if (characterImage) characterImage.src = "assets/my_character.jpg";
     activeUserId = nextUserId;
 
     if (!user) return;
@@ -480,6 +568,7 @@ function setTaskFormOpen(open) {
         if (!getCurrentUser()) return;
 
         if (!taskForm.open) {
+            if (!editingTask) dueDateInput.min = todayStr();
             // On Journal the Home page is hidden, which would hide the dialog too.
             // Keep Home rendered off-screen while the dialog is open.
             if (homePage.hidden) {
@@ -496,6 +585,7 @@ function setTaskFormOpen(open) {
 
 // Runs on Add, the X button, and Escape.
 taskForm.addEventListener("close", () => {
+    clearFormError();
     resetFormMode();
     if (homePage.classList.contains("home-offscreen")) {
         homePage.classList.remove("home-offscreen");
