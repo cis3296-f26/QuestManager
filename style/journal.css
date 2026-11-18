@@ -335,39 +335,3 @@
 #questDueTime::-webkit-calendar-picker-indicator {
     cursor: pointer !important;
 }
-/* Edit / Delete buttons on quest cards (home board and journal board) */
-#priorityBoard .quest-actions,
-#dayTaskList .quest-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-#priorityBoard .quest-actions button,
-#dayTaskList .quest-actions button {
-    padding: 3px 12px;
-    border: 1px solid #b9a77f;
-    border-radius: 999px;
-    background: #fff8ee;
-    color: #403725;
-    font-family: Arial, sans-serif;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-#priorityBoard .quest-actions .quest-delete,
-#dayTaskList .quest-actions .quest-delete {
-    border-color: #c62828;
-    color: #c62828;
-}
-
-#priorityBoard .quest-actions button:hover,
-#dayTaskList .quest-actions button:hover {
-    filter: brightness(0.95);
-}
-
-#priorityBoard .quest-actions button:disabled,
-#dayTaskList .quest-actions button:disabled {
-    opacity: 0.6;
-    cursor: wait;
-}
