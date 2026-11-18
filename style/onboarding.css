@@ -1,0 +1,88 @@
+#onboardingDialog {
+    width: min(640px, calc(100vw - 2rem));
+    padding: 0;
+    border: 3px solid #6e4a2a;
+    border-radius: 14px;
+    background: #faf0e6;
+    color: inherit;
+}
+#onboardingDialog::backdrop { background: rgba(40, 28, 14, 0.55); }
+
+.onb-form { padding: 1.25rem 1.5rem; }
+.onb-form h2 { margin: 0; font-size: 1.5rem; }
+.onb-sub { margin: 0.25rem 0 1rem; color: #6b5a44; text-decoration: none; }
+
+.onb-layout { display: grid; grid-template-columns: 200px 1fr; gap: 1.25rem; }
+
+.onb-preview { display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+.onb-stage {
+    position: relative;
+    width: 200px;
+    aspect-ratio: 1 / 1;
+    background: #fff;
+    border: 2px solid #c4a464;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.onb-options fieldset { border: 0; padding: 0; margin: 0 0 0.8rem; min-width: 0; }
+.onb-options legend { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; float: none; width: auto; }
+.onb-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.onb-swatch {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--swatch);
+    border: 3px solid #fff;
+    outline: 2px solid #c4a464;
+    cursor: pointer;
+    padding: 0;
+}
+.onb-swatch:hover { outline-color: #6e4a2a; }
+.onb-swatch.is-selected { outline: 3px solid #3d8b37; }
+
+.onb-style {
+    padding: 0;
+    background: #fff;
+    border: 2px solid #c4a464;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.onb-style:hover { border-color: #6e4a2a; }
+.onb-style.is-selected { border-color: #3d8b37; background: #eaf6e6; }
+.onb-thumb { position: relative; display: block; width: 60px; height: 60px; overflow: hidden; }
+
+.onb-error { min-height: 1.4rem; margin: 0.4rem 0 0; color: #a8322a; }
+.onb-actions { display: flex; justify-content: flex-end; gap: 0.5rem; }
+
+@media (max-width: 560px) {
+    .onb-layout { grid-template-columns: 1fr; }
+}
+
+#onboardingDialog .onb-actions .btn-primary { 
+   background-color: #3d8b37;
+   border-color: #3d8b37;
+   color: #fff;
+}
+
+#onboardingDialog .onb-actions .btn-primary:hover {
+   background-color: #2e6b2a;
+   border-color: #2e6b2a;
+}
+
+#showcasePanel [data-edit-look]{
+    background-color: #3d8b37;
+    border-color: #3d8b37;
+    color: #fff;
+}
+
+#showcasePanel [data-edit-look]:hover {
+    background-color: #2e6b2a;
+    border-color: #2e6b2a;
+    color: #fff;
+}
+
+
+
+

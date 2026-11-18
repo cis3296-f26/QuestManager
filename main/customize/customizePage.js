@@ -83,7 +83,7 @@ function renderInventory(user) {
         <div class="inv-scroll">${body}</div>`;
 
     inventoryPanel.querySelectorAll("[data-preview-item]").forEach((preview) => {
-        renderStage(preview, preview.dataset.previewCategory, [preview.dataset.previewItem]);
+        renderStage(preview, preview.dataset.previewCategory, [preview.dataset.previewItem], "", true, user.appearance);
     });
 }
 
@@ -119,13 +119,18 @@ function renderShowcase(user) {
         <div class="showcase-stage-wrap">
             <div class="showcase-stage" id="showcaseStage"></div>
         </div>
+        ${showcase === "avatar"
+            ? `<button class="btn btn-outline-secondary btn-sm mt-2" type="button" data-edit-look>Edit look</button>`
+            : ""}
         <ul class="slot-summary" aria-label="Equipped ${category.label.toLowerCase()} slots">${slots}</ul>`;
 
     renderStage(
         document.getElementById("showcaseStage"),
         showcase,
         equippedIds,
-        describeStage(showcase, equippedIds)
+        describeStage(showcase, equippedIds),
+        true,
+        user.appearance
     );
 }
 
@@ -133,7 +138,7 @@ function renderShowcase(user) {
 function renderHomeAvatar(user) {
     const homeAvatar = document.getElementById("homeAvatar");
     const equippedIds = user ? ownedEquipped(user) : [];
-    renderStage(homeAvatar, "avatar", equippedIds, describeStage("avatar", equippedIds));
+    renderStage(homeAvatar, "avatar", equippedIds, describeStage("avatar", equippedIds), true, user?.appearance);
 }
 
 function renderHomeRoom(user) {
@@ -208,6 +213,11 @@ page.addEventListener("click", (event) => {
     if (filterButton) {
         slotFilter = filterButton.dataset.slotFilter;
         renderCustomize();
+        return;
+    }
+
+    if (event.target.closest("[data-edit-look]")) {
+        document.dispatchEvent(new CustomEvent("questmanager:editLook"));
         return;
     }
 
