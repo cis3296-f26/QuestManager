@@ -6,6 +6,9 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Current reviews and level guides
 
+- [Level 10: Volcano Castle — The Ember Crown and final encounter](LEVEL10_PLAYTEST.md)
+- [Level 9: Volcano — The Inferno's Edge](LEVEL9_PLAYTEST.md)
+- [Level 8: Mountain Cliffs — The Skyward Ascent](LEVEL8_PLAYTEST.md)
 - [Level 7: Frozen Peaks design, previews and playtest](LEVEL7_PLAYTEST.md)
 
 - [Level 6: The Lost Sun Temple design, previews and playtest](LEVEL6_PLAYTEST.md)
@@ -23,6 +26,7 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Feature testing
 
+- [Customized character rendering and sprite-sheet compatibility](AVATAR_RENDER_PLAYTEST.md)
 - [Biome soundtrack and listening room](BIOME_MUSIC_REVIEW.md)
 - [Collectible coins](COIN_PLAYTEST.md)
 - [Enemy stomping](STOMP_PLAYTEST.md)
