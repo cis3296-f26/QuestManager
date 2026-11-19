@@ -1,0 +1,359 @@
+// Run the actual game entry point with a small DOM/auth boundary, without network or DB access.
+const fs = require("node:fs"), path = require("node:path"), vm = require("node:vm"), assert = require("node:assert/strict");
+const root = path.resolve(__dirname, "../../..");
+const turn = () => new Promise((resolve) => setImmediate(resolve));
+
+(async () => {
+    const elements = new Map(), windowEvents = new Map(), disk = new Map();
+    let document;
+    const node = (id = "") => ({ id, hidden: false, disabled: false, open: false, children: [], handlers: new Map(),
+        classList: { add() {}, toggle() {} }, setAttribute() {},
+        replaceChildren(...children) { this.children = children; }, appendChild(child) { this.children.push(child); if (child.id) elements.set(child.id, child); },
+        querySelector() { return null; },
+        addEventListener(type, handler) { this.handlers.set(type, [...(this.handlers.get(type) ?? []), handler]); },
+        emit(type, extra = {}) { const event = { target: this, preventDefault() { this.prevented = true; }, ...extra }; for (const fn of this.handlers.get(type) ?? []) fn(event); return event; },
+        focus() { document.activeElement = this; }, showModal() { this.open = true; this.focus(); },
+        close() { if (this.open) { this.open = false; this.emit("close"); } }
+    });
+    const nodes = Array.from({ length: 10 }, (_, i) => Object.assign(node(), { dataset: { level: String(i + 1) } }));
+    document = { activeElement: null, getElementById(id) { if (!elements.has(id)) elements.set(id, node(id)); return elements.get(id); }, createElement: () => node(), querySelectorAll: () => nodes };
+    const element = (id) => document.getElementById(id);
+    const ctx = new Proxy({ globalAlpha: 1, measureText: (text) => ({ width: text.length * 8 }) }, { get: (o, key) => o[key] ?? (() => {}) });
+    Object.assign(element("gameCanvas"), { width: 960, height: 540, getContext: () => ctx });
+    const window = { addEventListener: (key, handler) => windowEvents.set(key, handler),
+        removeEventListener(key,handler) { if(windowEvents.get(key)===handler)windowEvents.delete(key); }, localStorage: {
+        getItem: (key) => disk.get(key) ?? null, setItem: (key, value) => disk.set(key, value)
+    } };
+    if (process.env.QUESTMANAGER_TEST_AUDIO === "1") window.AudioContext = require("./fakeAudioContext.cjs").FakeAudioContext;
+    const location = { value: "#level-1", get hash() { return this.value; }, set hash(value) { this.value = value; queueMicrotask(() => windowEvents.get("hashchange")?.()); } };
+    let account = "pause-A", authCallback;
+    const supabase = { auth: { onAuthStateChange(fn) { authCallback = fn; return { data: { subscription: { unsubscribe() {} } } }; },
+        async getSession() { return { data: { session: account ? { user: { id: account } } : null } }; } } };
+    const context = vm.createContext({ document, window, location, requestAnimationFrame() {}, console, performance, setTimeout, clearTimeout });
+    const client = new vm.SyntheticModule(["supabase"], function () { this.setExport("supabase", supabase); }, { context });
+    await client.link(() => {}); await client.evaluate();
+    const cache = new Map();
+    const resolve = (specifier, ref) => path.posix.normalize(path.posix.join(path.posix.dirname(ref.identifier), specifier));
+    const load = (id) => {
+        if (!cache.has(id)) cache.set(id, create(id === "game/rendering/AvatarRenderer.js"
+            ? "export class AvatarRenderer {load(){} draw(){}}" :
+            id === "game/dev/buildConfig.js" && process.env.QUESTMANAGER_TEST_DEV === "1"
+                ? "export const developmentBuild = true;" : fs.readFileSync(path.join(root, id), "utf8"), id));
+        return cache.get(id);
+    };
+    const linker = (specifier, ref) => load(resolve(specifier, ref));
+    const create = (source, id) => new vm.SourceTextModule(source, { context, identifier: id,
+        importModuleDynamically: async (specifier, ref) => {
+            const target = resolve(specifier, ref);
+            if (target.endsWith("supabaseClient.js")) return client;
+            const module = load(target);
+            if (module.status === "unlinked") await module.link(linker);
+            if (module.status === "linked") await module.evaluate();
+            return module;
+        }
+    });
+    const source = fs.readFileSync(path.join(root, "game/game.js"), "utf8") +
+        "\nglobalThis.api={level,pause,settings,audio,developer,keys,clock,gameLoop,restartLevel,startDeath,progress,get coins(){return coins},get camera(){return cameraX},get deathTime(){return deathTimeLeft},get map(){return worldMap},get playing(){return playing}};";
+    const entry = create(source, "game/game.js");
+    await entry.link(linker);
+    await entry.evaluate(); await turn();
+    const a = context.api, canvas = element("gameCanvas");
+    const click = (id) => element(id).emit("click");
+    const escapeDialog = () => element("pauseDialog").emit("cancel");
+    const key = (code, extra = {}) => canvas.emit("keydown", { code, repeat: false, ...extra });
+    let time = 0;
+    const frame = (seconds = 1 / 60) => { time += seconds * 1000; a.audio.context?.advance(seconds); a.gameLoop(time); };
+    const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, sunPulses:a.level.sunPulses, geysers:a.level.geysers, warden:a.level.warden, checkpoint:a.level.checkpointIndex, puzzle: a.level.puzzle, wind: a.level.wind,
+        coins: { time: a.coins.time, pending: [...a.coins.pending], saved: [...a.coins.saved], effects: a.coins.effects },
+        reveal: [...a.level.exploration.reveal], notice: a.level.exploration.noticeTime, camera: a.camera });
+
+    if (process.env.QUESTMANAGER_TEST_DEV === "1") {
+        const dev = a.developer;
+        assert.ok(dev); assert.equal(dev.enabled, false);
+        const snapshotDisk = () => JSON.stringify([...disk].filter(([k]) => !k.includes("settings")));
+        const baseline = snapshotDisk();
+        const openTools = () => {
+            key("Escape"); click("pauseSettings"); click("openDeveloperMode");
+            assert.equal(a.pause.screen, "developer");
+            if (!dev.enabled) {
+                element("enableDeveloperTools").checked = true;
+                element("enableDeveloperTools").emit("change");
+            }
+            click("openAdminTools"); assert.equal(a.pause.screen, "admin");
+        };
+        const toggle = (id, checked) => { element(id).checked = checked; element(id).emit("change"); };
+        canvas.focus(); frame(); openTools();
+        assert.equal(element("pauseMainPanel").hidden, true); assert.equal(element("adminToolsPanel").hidden, false);
+        toggle("devFly", true); toggle("devHitboxes", true);
+        const frozen = snapshot();canvas.focus();key("KeyW");key("KeyD");
+        for (let i = 0; i < 20; i++) frame();assert.equal(snapshot(), frozen);assert.equal(a.keys.size, 0);
+        escapeDialog();assert.equal(a.pause.screen, "developer");click("openAdminTools");click("adminClose");click("pauseResume");
+        frame();const startY = a.level.player.y;key("KeyW");key("KeyD");
+        for (let i = 0; i < 12; i++) frame();canvas.emit("keyup", { code: "KeyW" });canvas.emit("keyup", { code: "KeyD" });
+        assert.ok(a.level.player.y < startY);assert.equal(a.level.developerAssisted, true);
+        openTools();element("devLevel").value = "4";click("devLoad");await turn();
+        assert.equal(a.level.config.id, 4);assert.equal(a.playing, true);assert.equal(a.progress.getLevel(4).unlocked, false);
+        assert.equal(a.level.developerAssisted, true);assert.equal(snapshotDisk(), baseline);
+        frame();openTools();element("devLocation").value = "level-4-coin-2";click("devTeleport");
+        assert.ok(a.level.player.x > 3500 && a.level.player.x < 4100);assert.equal(a.pause.screen, "admin");
+        assert.ok(a.level.player.x >= a.camera && a.level.player.x + 32 <= a.camera + 960, "teleport camera cut is visible before resume");
+        element("devSpeed").value = "2";element("devSpeed").emit("change");assert.equal(dev.speed, 2);
+        // Disable every assistance setting BEFORE the flag. The attempt must remain tainted.
+        element("devSpeed").value = "1";element("devSpeed").emit("change");toggle("devFly", false);toggle("devHitboxes", false);
+        click("adminClose");click("pauseResume");assert.equal(a.level.developerAssisted, true);
+        a.coins.pending.add(a.level.config.coins[2].id);
+        const finish = a.level.player;finish.x = a.level.flagX;finish.y = 460 - finish.height;finish.grounded = true;
+        finish.supportPlatform = a.level.config.finish.platform;finish.velocityY = 0;frame();frame();await turn();
+        assert.equal(element("levelCompleteDialog").open, true);
+        assert.equal(element("completionSaveStatus").textContent, "TEST RUN — PROGRESS NOT SAVED");
+        assert.equal(snapshotDisk(), baseline);assert.equal(a.progress.getLevel(4).completed, false);assert.equal(a.progress.getLevel(5).unlocked, false);
+        element("levelCompleteDialog").returnValue = "replay";element("levelCompleteDialog").close();
+        assert.equal(a.level.developerAssisted, true, "a locked-level bypass remains a test context on restart");
+        a.map.openMap();await turn();a.map.openLevel(1);await turn();
+        assert.equal(a.level.config.id, 1);a.restartLevel();assert.equal(a.level.developerAssisted, false);
+        // A normal attempt after all cheats are disabled may save normally.
+        const normal = a.level.player;a.coins.pending.add(a.level.config.coins[0].id);
+        normal.x = a.level.flagX;normal.y = a.level.config.finish.platform.y - normal.height;normal.velocityY = 0;normal.grounded = true;normal.supportPlatform = a.level.config.finish.platform;
+        canvas.focus();frame();frame();await turn();
+        assert.equal(a.progress.getLevel(1).completed, true);assert.equal(a.progress.getLevel(1).coinIds.length, 1);
+        assert.notEqual(snapshotDisk(), baseline);
+        element("levelCompleteDialog").returnValue = "replay";element("levelCompleteDialog").close();
+        frame();openTools();
+        a.progress.completeLevel(2, ["level-2-coin-2"]);
+        const beforeReset = snapshotDisk();
+        click("devClearCurrentCoins"); assert.equal(element("devCoinResetConfirmation").hidden, false);
+        assert.equal(snapshotDisk(), beforeReset, "opening confirmation must not clear coins");
+        click("devCancelCoinReset"); assert.equal(snapshotDisk(), beforeReset);
+        // A cancelled asynchronous identity verification must not clear anything.
+        click("devClearCurrentCoins");click("devConfirmCoinReset");click("devCancelCoinReset");await turn();
+        assert.equal(snapshotDisk(), beforeReset);
+        click("devClearCurrentCoins");click("devConfirmCoinReset");await turn();
+        assert.equal(a.progress.getLevel(1).coinIds.length, 0);assert.equal(a.coins.saved.size, 0);
+        assert.equal(a.progress.getLevel(1).completed, true);assert.equal(a.progress.getLevel(2).coinIds.length, 1);
+        assert.equal(a.level.developerAssisted, true);assert.equal(a.pause.screen, "admin");
+        click("devClearAllCoins");click("devConfirmCoinReset");await turn();
+        assert.equal(a.progress.totalCoins.earned, 0);assert.equal(a.progress.getLevel(2).completed, true);
+        assert.equal(a.progress.getLevel(3).unlocked, true);
+        // Esc also cancels an open confirmation, preserving all current data.
+        const afterReset = snapshotDisk();click("devClearAllCoins");escapeDialog();
+        assert.equal(element("devCoinResetConfirmation").hidden, true);click("devConfirmCoinReset");await turn();
+        assert.equal(snapshotDisk(), afterReset);click("openAdminTools");
+        toggle("devFly", true);
+        click("devClearAllCoins");
+        account = "developer-B";authCallback("SIGNED_IN", { user: { id: account } });await turn();
+        assert.equal(dev.enabled, false);assert.equal(dev.fly, false);assert.equal(a.coins.pending.size, 0);
+        assert.equal(a.progress.getLevel(1).completed, false);
+        click("devConfirmCoinReset");await turn();assert.equal(a.progress.getLevel(1).completed, false);
+        console.log("PASS development entry wiring: gated panels, pause, flight, locked bypass, safe teleport, sticky no-save completion, clean normal save and account reset.");
+        a.audio.dispose();
+        return;
+    }
+    assert.equal(a.developer, null);
+    assert.ok(!cache.has("game/dev/installDeveloperTools.js"), "production never loads developer implementation");
+    if (process.env.QUESTMANAGER_TEST_AUDIO === "1") {
+        await a.audio.unlock();
+        await a.audio.waitForMusic();
+        const played = (name) => a.audio.context.sources.filter((source) => source.starts.length && source.buffer === a.audio.assets.effect(name)).length;
+        a.restartLevel(); canvas.focus(); frame(); frame();
+        const jumps = played("jump"); key("Space"); key("Space", { repeat: true }); key("KeyW");
+        assert.equal(played("jump"), jumps + 1);
+        const landings = played("land"); for (let i = 0; i < 70; i++) frame();
+        assert.equal(played("land"), landings + 1);
+        for (let i = 0; i < 10; i++) frame(); assert.equal(played("land"), landings + 1);
+        a.restartLevel(); canvas.focus(); frame();
+        const coin = a.level.config.coins[0], p = a.level.player;
+        p.x = coin.x - 10; p.y = coin.y - 35; p.grounded = false; p.velocityY = 0;
+        const pickups = played("coin"); frame(); frame(); assert.equal(played("coin"), pickups + 1);
+        for (let i = 0; i < 10; i++) frame(); assert.equal(played("coin"), pickups + 1);
+        a.progress.completeLevel(1, [coin.id]); a.restartLevel(); canvas.focus(); frame();
+        p.x = coin.x - 10; p.y = coin.y - 35; p.grounded = false; p.velocityY = 0; frame(); frame();
+        assert.equal(played("coin"), pickups + 1, "earned faded coins are silent");
+        a.restartLevel(); canvas.focus(); frame(); const slime = a.level.enemies.find((enemy) => enemy.stompable);
+        p.x = slime.x; p.y = slime.feetY - slime.height - p.height - 8; p.velocityY = 500; p.grounded = false;
+        const stomps = played("stomp"); for (let i = 0; i < 10 && slime.active; i++) frame();
+        assert.equal(played("stomp"), stomps + 1);
+        const deaths = played("death"); a.startDeath("Audio test"); a.startDeath("Audio test");
+        assert.equal(played("death"), deaths + 1); for (let i = 0; i < 50; i++) frame();
+        p.x = a.level.flagX; p.y = a.level.config.finish.platform.y - p.height; p.velocityY = 0; p.grounded = true;
+        p.supportPlatform = a.level.platforms.find((surface) => surface.id === a.level.config.finish.platform.id);
+        const victories = played("victory"); frame(); await turn(); frame();
+        assert.equal(played("victory"), victories + 1); assert.equal(a.audio.music, null);
+        element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
+        assert.equal(a.audio.scene, "grassland"); assert.ok(a.audio.music);
+        console.log("PASS actual audio wiring: single jump, landing, pickup, stomp, death and victory; earned coins silent; replay music restored.");
+    }
+    for (const id of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+        if (id > 1) { a.progress.completeLevel(id - 1, []); a.map.refresh(); a.map.openLevel(id); await turn(); }
+        assert.equal(a.level.config.id, id);
+        assert.equal(a.audio.scene, a.level.config.audio.music);
+        if (id === 4 && process.env.QUESTMANAGER_TEST_AUDIO === "1") {
+            const played = name => a.audio.context.sources.filter(source => source.starts.length && source.buffer === a.audio.assets.effect(name)).length;
+            a.restartLevel(); canvas.focus(); frame(); frame();
+            const p = a.level.player, rock = a.level.stalactites[0];
+            const warnings = played("crack"), impacts = played("break");
+            p.reset({ x: rock.x, feetY: 460 }); frame();
+            assert.equal(played("crack"), warnings + 1);
+            p.reset({ x: rock.x - 200, feetY: 460 });
+            for (let i = 0; i < 130; i++) frame();
+            assert.equal(played("break"), impacts + 1);
+            assert.equal(played("crack"), warnings + 1);
+            const switches = played("switch"), gates = played("gate");
+            const switchConfig = a.level.puzzle.switches[0];
+            p.reset({ x: switchConfig.x + 10, feetY: switchConfig.y + switchConfig.height - 1 });
+            p.grounded = false; p.velocityY = 200;
+            frame(); frame(); assert.equal(a.level.puzzle.gates[0].open, true);
+            assert.equal(played("switch"), switches + 1); assert.equal(played("gate"), gates + 1);
+        }
+        for (const fps of [30, 60, 120]) {
+            a.restartLevel(); canvas.focus(); frame(); frame(1 / fps);
+            a.coins.pending.add(a.level.config.coins[1].id);
+            const board = a.level.platforms.find((p) => p.type === "collapsing");
+            if (board) board.onLand();
+            if (id === 4) {
+                Object.assign(a.level.stalactites[0], { state: "warning", warningTime: .2, warningCount: 1 });
+                Object.assign(a.level.puzzle.switches[0], { active: true, remainingTime: 2.5 });
+                Object.assign(a.level.puzzle.gates[0], { open: true, remainingTime: 2.5 });
+            }
+            if (id === 5) {
+                a.level.player.reset({ x: a.level.platforms.find(p => p.id === "l5-lookout").x + 260, feetY: 440 });
+                a.level.player.supportPlatform = a.level.platforms.find(p => p.id === "l5-lookout");
+                a.level.wind.time = 1.2; a.level.wind.velocity = 5;
+            }
+            if(id===6){a.level.sunPulses[0].time=4.2;assert.equal(a.level.sunPulses[0].state,"charging");a.level.sunPulses[1].time=4.9;assert.equal(a.level.sunPulses[1].state,"active");}
+            if(id===7){a.level.player.reset({x:500,feetY:430});a.level.player.supportPlatform=a.level.platforms.find(p=>p.id==="l7-practice-ice");a.level.player.velocityX=180;a.level.player.iceAirborne=true;Object.assign(a.level.stalactites[0],{state:"warning",warningTime:.2});}
+            if(id===8){
+                const c=a.level.config.climbables[0];a.level.player.reset({x:c.x-16,feetY:c.bottomFeet});
+                key("KeyE");assert.equal(a.level.player.climbingId,c.id);key("KeyW");
+                frame(1/fps);assert.ok(a.level.player.y+64<c.bottomFeet);canvas.emit("keyup",{code:"KeyW"});
+                Object.assign(a.level.stalactites[0],{state:"warning",warningTime:.2});
+            }
+            if(id===9){a.level.geysers[0].time=2.4;assert.equal(a.level.geysers[0].state,"warning");}
+            key("Escape"); assert.equal(a.pause.screen, "main");
+            const before = snapshot();
+            // Deliberately retain canvas focus here: the explicit pause gate must freeze independently of the DOM.
+            canvas.focus(); key("KeyR"); key("KeyD"); key("KeyW");
+            for (let i = 0; i < fps; i++) frame(1 / fps);
+            frame(100);
+            assert.equal(snapshot(), before); assert.equal(a.keys.size, 0);
+            click("pauseSettings"); escapeDialog();
+            assert.equal(a.pause.screen, "main");
+            escapeDialog(); assert.equal(a.pause.paused, false); assert.equal(document.activeElement, canvas);
+            frame(100); assert.equal(snapshot(), before, "resume must not consume paused wall time");
+            frame(1 / fps); assert.notEqual(snapshot(), before); assert.equal(a.coins.pending.size, 1);
+            if (board) assert.ok(board.warningTime < .1);
+            if (id === 5) assert.ok(a.level.wind.time > 1.2 && a.level.wind.time < 1.24, "pause freezes an active desert gust");
+            if (id === 4) assert.ok(a.level.puzzle.switches[0].remainingTime < 2.5 && a.level.puzzle.switches[0].remainingTime > 2.4, "only the resumed tick advances the vault countdown");
+        }
+        if(id===9){
+            a.restartLevel();canvas.focus();frame();
+            const c=a.level.config.checkpoints[0];a.level.player.reset({x:c.x,feetY:c.feetY});a.level.player.supportPlatform=a.level.platforms.find(p=>p.id===c.platformId);
+            frame();assert.equal(a.level.checkpointIndex,0);a.coins.pending.add(a.level.config.coins[0].id);a.level.developerAssisted=true;
+            a.startDeath("checkpoint test","lava");for(let i=0;i<50;i++)frame();
+            assert.equal(a.level.player.x,c.x);assert.equal(a.level.checkpointIndex,0);assert.equal(a.coins.pending.size,0);assert.equal(a.level.developerAssisted,true);assert.ok(a.camera>9000);
+            a.restartLevel();assert.equal(a.level.player.x,a.level.config.spawn.x);assert.equal(a.level.checkpointIndex,-1);assert.equal(a.level.developerAssisted,false);
+        }
+        key("Escape"); click("pauseRestart");
+        const pending = [...a.coins.pending]; click("pauseCancel"); assert.deepEqual([...a.coins.pending], pending);
+        click("pauseRestart"); key("KeyR"); assert.equal(a.pause.screen, "restart"); click("pauseConfirm");
+        assert.equal(a.level.player.x, a.level.config.spawn.x); assert.equal(a.coins.pending.size, 0);
+        assert.ok(a.level.enemies.every((e) => e.x === e.startX));
+        assert.ok(a.level.stalactites.every(r => r.state === "hanging" && r.warningTime === 0));
+        assert.ok(a.level.sunPulses.every(t=>t.time===0&&t.state==="cooldown"));
+        assert.ok(a.level.puzzle.gates.every(g => !g.open));
+        assert.ok(a.level.platforms.filter((p) => p.type).every((p) => p.elapsed === 0 && p.state === "stable"));
+        a.coins.pending.add(a.level.config.coins[2].id);
+        key("Escape"); click("pauseWorldMap"); click("pauseCancel"); assert.equal(a.coins.pending.size, 1);
+        click("pauseWorldMap"); click("pauseConfirm"); await turn();
+        assert.equal(a.playing, false); assert.equal(a.coins.pending.size, 0); assert.equal(a.pause.paused, false);
+        canvas.focus(); key("Escape"); assert.equal(a.pause.paused, false);
+        a.map.openLevel(id); await turn(); canvas.focus();
+        // Header navigation must use the same confirmation path.
+        click("backToMap"); assert.equal(a.pause.screen, "map"); escapeDialog(); click("pauseResume");
+    }
+    // These are UI boundary setups, not continuous gameplay proofs. Preserve
+    // the existing cave completion check and extend it through the desert.
+    for (const id of [4, 5, 6, 7, 8, 9]) {
+        a.map.openLevel(id); await turn(); a.restartLevel(); canvas.focus(); frame();
+        const finish = async () => {
+            const p = a.level.player;
+            p.x = a.level.flagX; p.y = a.level.config.finish.platform.y - p.height;
+            p.grounded = true; p.velocityY = 0; p.supportPlatform = a.level.config.finish.platform;
+            frame(); await turn();
+        };
+        a.coins.pending.add(a.level.config.coins[2].id); await finish();
+        assert.equal(element("levelCompleteDialog").open, true);
+        assert.equal(element("levelCompleteTitle").textContent, `Level ${id} Complete!`);
+        assert.equal(a.level.config.id, id, "completion does not automatically advance");
+        assert.deepEqual([...a.progress.getLevel(id).coinIds], [a.level.config.coins[2].id]);
+        assert.equal(a.progress.getLevel(id + 1).unlocked, true);
+        assert.equal(element("nextLevel").disabled, false);
+        if (id === 9) assert.equal(element("nextLevel").textContent, "Next Level");
+        element("levelCompleteDialog").returnValue = "replay"; element("levelCompleteDialog").close();
+        assert.equal(a.level.complete, false); assert.equal(a.level.player.x, a.level.config.spawn.x);
+        assert.equal(a.audio.scene, id === 4 ? "cave" : id === 5 ? "desert" : id === 6 ? "temple" : id === 7 ? "frozen" : id === 8 ? "mountain" : "volcano");
+        assert.ok(a.coins.saved.has(a.level.config.coins[2].id));
+        if(id===8){await finish();click("nextLevel");await turn();assert.equal(a.level.config.id,9);assert.equal(a.audio.scene,"volcano");assert.match(element("levelHeading").textContent,/Inferno/);}
+        if(id===7){await finish();click("nextLevel");await turn();assert.equal(a.level.config.id,8);assert.equal(a.audio.scene,"mountain");assert.match(element("levelHeading").textContent,/Skyward Ascent/);}
+        if(id===6){await finish();click("nextLevel");await turn();assert.equal(a.level.config.id,7);assert.equal(a.audio.scene,"frozen");assert.match(element("levelHeading").textContent,/Frozen Peaks/);}
+        if (id === 5) {
+            await finish();click("nextLevel");await turn();
+            assert.equal(a.level.config.id,6);assert.equal(a.audio.scene,"temple");
+            assert.match(element("levelHeading").textContent,/Lost Sun Temple/);
+        }
+        if (id === 4) {
+            await finish(); click("nextLevel"); await turn();
+            assert.equal(a.level.config.id, 5); assert.equal(a.audio.scene, "desert");
+            assert.match(element("levelHeading").textContent, /Sunscorched Dunes/);
+        }
+    }
+    // Actual entry-point keyboard replay from a declared local boss entrance.
+    // This is not the full-level proof (those start at spawn in level10.test).
+    for (const config of a.map.levels.slice(0,9)) a.progress.completeLevel(config.id,config.coins.map(c=>c.id));
+    a.map.refresh();a.map.openLevel(10);await turn();
+    const bossRoute=JSON.parse(fs.readFileSync(path.join(root,"game/tests/fixtures/level10-boss-route.json"),"utf8"));
+    const bossRun=async({assisted=false,pending=[]}={})=>{
+        a.restartLevel();canvas.focus();frame();
+        const p=a.level.player;p.reset({x:26950,feetY:430});p.supportPlatform=a.level.platforms.find(p=>p.id==="l10-throne-approach");
+        // The flag alone is rejected, including a test flight beyond its lock.
+        const savedX=p.x;p.x=a.level.flagX;assert.equal(a.level.checkCompletion(),false);p.x=savedX;
+        a.level.developerAssisted=assisted;for(const id of pending)a.coins.pending.add(id);
+        for(let f=0;f<bossRoute.totalFrames&&!a.level.complete;f++){
+            a.keys.clear();const dir=bossRoute.inputs.find(i=>f>=i.from&&f<i.to)?.direction??1;
+            if(dir)key(dir>0?"KeyD":"KeyA");const v=bossRoute.climbInputs.find(i=>f>=i.from&&f<i.to)?.vertical??0;
+            if(v)key(v>0?"KeyS":"KeyW");if(bossRoute.interactFrames.includes(f))key("KeyE");if(bossRoute.jumpFrames.includes(f))key("Space");
+            frame();assert.equal(a.deathTime,0,`boss keyboard frame ${f}`);
+            if(f===60){key("Escape");const frozen=snapshot();for(let k=0;k<30;k++)frame(.1);assert.equal(snapshot(),frozen);click("pauseResume");canvas.focus();frame();}
+        }
+        a.keys.clear();await turn();assert.equal(a.level.warden.defeated,true);assert.equal(element("levelCompleteDialog").open,true);
+        assert.equal(element("nextLevel").hidden,true);assert.equal(a.audio.scene,"ending");
+    };
+    const finalCoins=a.level.config.coins.map(c=>c.id);
+    await bossRun({pending:finalCoins.slice(0,1)});assert.equal(element("levelCompleteTitle").textContent,"QUEST COMPLETE!");assert.match(element("adventureTotals").textContent,/10\/10.*28\/30/);assert.equal(element("perfectAdventure").hidden,true);
+    click("viewCredits");assert.equal(element("creditsPanel").hidden,false);click("closeCredits");assert.equal(element("creditsPanel").hidden,true);assert.equal(document.activeElement.id,"viewCredits");
+    element("levelCompleteDialog").returnValue="replay";element("levelCompleteDialog").close();assert.equal(a.level.warden.state,"dormant");assert.equal(a.level.player.x,80);
+    await bossRun({pending:finalCoins.slice(1)});assert.match(element("adventureTotals").textContent,/30\/30/);assert.equal(element("perfectAdventure").hidden,false);assert.equal(a.progress.getLevel(11).unlocked,false);
+    element("levelCompleteDialog").returnValue="replay";element("levelCompleteDialog").close();
+    const banked=JSON.stringify(a.progress.data);await bossRun({assisted:true});assert.equal(element("levelCompleteTitle").textContent,"TEST RUN — PROGRESS NOT SAVED");assert.equal(element("perfectAdventure").hidden,true);assert.equal(JSON.stringify(a.progress.data),banked);
+    element("levelCompleteDialog").returnValue="map";element("levelCompleteDialog").close();await turn();assert.equal(a.playing,false);a.map.openLevel(10);await turn();
+    console.log("PASS final castle: real keyboard boss, frozen phases, verified ending totals, credits, replay, map and assisted non-saving.");
+    console.log("PASS mountain-to-volcano navigation, Level 9 save/replay, paused geysers and Level 10 navigation.");
+    a.startDeath("Test transition"); canvas.focus(); key("Escape"); assert.equal(a.pause.paused, false);
+    for (let i = 0; i < 50; i++) frame();
+    assert.equal(a.deathTime, 0);
+    a.level.complete = true; element("levelCompleteDialog").showModal();
+    canvas.focus(); key("Escape"); assert.equal(a.pause.paused, false); key("KeyR"); assert.equal(a.level.complete, true);
+    element("levelCompleteDialog").close(); a.restartLevel(); canvas.focus();
+    const x = a.level.player.x, input = node("unrelated-text-input"); input.focus();
+    key("KeyR", { target: input }); key("Escape", { target: input }); frame(100);
+    assert.equal(a.level.player.x, x); assert.equal(a.pause.paused, false);
+    canvas.focus(); frame(); key("Escape"); click("pauseSettings");
+    element("masterVolume").emit("input", { target: { value: "35" } });
+    element("muted").emit("change", { target: { checked: true } });
+    account = "pause-B"; authCallback("SIGNED_IN", { user: { id: account } }); await turn();
+    assert.equal(a.pause.paused, false); assert.equal(a.settings.values.masterVolume, 80); assert.equal(a.settings.values.muted, false);
+    assert.equal(a.coins.pending.size, 0); assert.equal(a.playing, false, "different account must unlock Level 2 for itself");
+    account = "pause-A"; authCallback("SIGNED_IN", { user: { id: account } });
+    assert.equal(a.settings.values.masterVolume, 35); assert.equal(a.settings.values.muted, true);
+    console.log("PASS actual game wiring: frame freeze/resume at 30/60/120 FPS, menu shortcuts, confirmations, map, focus, completion/death and account changes.");
+    a.audio.dispose(); // Terminate pending score work when this browser fixture closes.
+})().catch((error) => { console.error(error); process.exitCode = 1; });

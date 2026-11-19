@@ -1,5 +1,6 @@
 import { User } from "./users.js";
 import { loadPlayer } from "./playerData.js";
+import { normalizeAppearance } from "../customize/avatar/appearance.js";
 
 // null means no account is currently signed in.
 let currentUser = null;
@@ -32,7 +33,8 @@ export async function refreshCurrentUser() {
             saved.username || account.user_metadata?.player_name || account.email,
             saved.balance,
             saved.inventory,
-            saved.equipped
+            saved.equipped,
+            normalizeAppearance(account.user_metadata?.appearance)
         );
     } catch (error) {
         if (thisLoad !== loadCounter) return null;
@@ -50,6 +52,17 @@ export function setCurrentEquipped(equippedIds) {
     notify();  // fires "questmanager:userChanged"
 }
 
+
+// Called after the new look has been saved to the account.
+export function setCurrentAppearance(appearance) {
+    if (!currentUser) return;
+    currentUser.appearance = { ...appearance };
+    // Keep the cached account in step so a later reload doesn't bring the old look back.
+    if (currentAccount) {
+        currentAccount.user_metadata = { ...currentAccount.user_metadata, appearance: { ...appearance } };
+    }
+    notify();
+}
 
 export async function setUserFromSession(session) {
     const account = session?.user;
