@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="style/home.css">
     <link rel="stylesheet" href="style/journal.css">
     <link rel="stylesheet" href="style/customize.css">
+    <link rel="stylesheet" href="style/onboarding.css">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -47,22 +48,23 @@
     <div id="appView" hidden>
         <h1>Welcome to Quest Manager</h1>
 
+        <div id="accountView" hidden>
+                    <strong id="account-name"></strong>
+                    <button class="btn btn-outline-secondary btn-sm" id="signout-button" type="button">
+                        Sign Out
+                    </button>
+        </div>
+
         <nav class="nav nav-pills nav-tabs-custom" id="mainNav">
             <a class="nav-link" href="#home">Home</a>
             <a class="nav-link" href="#journal">Journal</a>
             <a class="nav-link" href="#shop">Shop</a>
             <a class="nav-link" href="#customize">Customize</a>
+            <a class="nav-link" href="./game/">Adventure</a>
         </nav>
 
         <div class="app page" id="home">
             <aside class="sidebar" id="questSidebar">
-
-                <div id="accountView" hidden>
-                    <p><strong id="account-name"></strong></p>
-                    <button class="btn btn-outline-secondary btn-sm" id="signout-button" type="button">
-                        Sign Out
-                    </button>
-                </div>
 
                 <div class="quest-board-header">
                     <h2>Today’s Quest Board</h2>
@@ -139,10 +141,29 @@
                                 </div>
                             </fieldset>
 
+                            <p id="questFormError" class="form-error" role="alert" hidden></p>
                             <button id="addButton" type="submit">Add Quest</button>
                         </form>
                     </dialog>
-
+                    <div class="quest-filter">
+                        <label for="typeFilter">Show</label>
+                        <select id="typeFilter">
+                            <option value="all">All types</option>
+                            <option value="school">School</option>
+                            <option value="work">Work</option>
+                            <option value="personal">Personal</option>
+                            <option value="health">Health</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div id="missedBanner" class="missed-banner" hidden>
+                        <div class="missed-banner-row">
+                            <span id="missedText"></span>
+                            <button id="missedToggle" type="button" aria-expanded="false">View</button>
+                            <button id="missedMoveAll" type="button">Move all to today</button>
+                        </div>
+                        <ul id="missedList" class="task-grid" hidden></ul>
+                    </div>
                     <div id="priorityBoard">
                         <section class="priority-section" data-priority="high">
                             <button class="priority-toggle" type="button" aria-expanded="true">
@@ -176,10 +197,11 @@
                     Your Points: <span id="counter">0</span>
                 </p>
                     <figure>
-                        <div class="avatar-stage" id="homeAvatar">
-                            <img id="image" src="assets/character/1Idle01.png"
-                            " class="stage-layer stage-base" alt="Your character">
+                        <div class="home-scene">
+                            <div class="avatar-stage" id="homeRoom"></div>
+                            <div class="avatar-stage" id="homeAvatar"></div>
                         </div>
+                        
                     </figure>
                 <a class="shop-link" href="#shop">Go to shop!</a>
             </main>
@@ -233,40 +255,45 @@
                         </div>
                         <ul id="dayTaskList"></ul>
                     </div> -->
-  
-                    
-    <section class="page" id="customize" hidden>
-        <!-- Tab on the left edge that opens the quest drawer -->
-        <button class="quest-drawer-tab" id="questDrawerTab" type="button"
-                aria-expanded="false" aria-controls="questDrawer">
-            <span>Quests</span>
-        </button>
 
-        <aside class="quest-drawer" id="questDrawer" aria-label="Quest board" hidden>
-            <div class="quest-drawer-header">
-                <span>Quest Board</span>
-                <button id="questDrawerClose" type="button" aria-label="Close quest board">&times;</button>
+
+        <section class="page" id="customize" hidden>
+            <!-- Tab on the left edge that opens the quest drawer -->
+            <button class="quest-drawer-tab" id="questDrawerTab" type="button" aria-expanded="false"
+                aria-controls="questDrawer">
+                <span>Quests</span>
+            </button>
+
+            <aside class="quest-drawer" id="questDrawer" aria-label="Quest board" hidden>
+                <div class="quest-drawer-header">
+                    <span>Quest Board</span>
+                    <button id="questDrawerClose" type="button" aria-label="Close quest board">&times;</button>
+                </div>
+                <div id="questDrawerBody"></div>
+            </aside>
+
+            <div class="customize-frame">
+                <section class="inventory-panel" id="inventoryPanel" aria-label="Inventory"></section>
+                <section class="showcase-panel" id="showcasePanel" aria-label="Showcase"></section>
             </div>
-            <div id="questDrawerBody"></div>
-        </aside>
 
-        <div class="customize-frame">
-            <section class="inventory-panel" id="inventoryPanel" aria-label="Inventory"></section>
-            <section class="showcase-panel" id="showcasePanel" aria-label="Showcase"></section>
-        </div>
+            <p class="customize-status" id="customizeStatus" role="status" aria-live="polite"></p>
+        </section>
 
-        <p class="customize-status" id="customizeStatus" role="status" aria-live="polite"></p>
-    </section>
-
-    <section class="page" id="shop" hidden>
-        <h2>Shop</h2>
-    </section>
+        <section class="page" id="shop" hidden>
+            <h2>Shop</h2>
+        </section>
 
     </div> <!-- End appView -->
+
+    <!-- Avatar creator: opens on first login, and from Customize > Edit look. -->
+    <dialog id="onboardingDialog" aria-labelledby="onboardingTitle"></dialog>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script type="module" src="./main/shop/shopPage.js"></script>
     <script type="module" src="./main/customize/customizePage.js"></script>
+    <script type="module" src="./main/onboarding/onboarding.js"></script>
     <script type="module" src="./main/script.js"></script>
 
 </body>

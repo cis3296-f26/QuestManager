@@ -1,0 +1,1125 @@
+[
+  {
+    "fps": 30,
+    "totalFrames": 2736,
+    "jumpFrames": [
+      33,
+      81,
+      123,
+      174,
+      216,
+      288,
+      318,
+      330,
+      372,
+      423,
+      450,
+      474,
+      507,
+      612,
+      648,
+      696,
+      771,
+      777,
+      798,
+      927,
+      966,
+      1002,
+      1056,
+      1095,
+      1170,
+      1179,
+      1197,
+      1257,
+      1299,
+      1407,
+      1416,
+      1434,
+      1491,
+      1533,
+      1566,
+      1587,
+      1614,
+      1635,
+      1677,
+      1719,
+      1758,
+      1779,
+      1824,
+      1869,
+      1899,
+      1959,
+      2001,
+      2043,
+      2049,
+      2067,
+      2097,
+      2163,
+      2190,
+      2211,
+      2259,
+      2331,
+      2373,
+      2421,
+      2460,
+      2508,
+      2559,
+      2565,
+      2586,
+      2634,
+      2673
+    ],
+    "interactFrames": [
+      774,
+      1176,
+      1410,
+      2046,
+      2562
+    ],
+    "inputs": [
+      {
+        "from": 288,
+        "to": 291,
+        "direction": -1
+      },
+      {
+        "from": 291,
+        "to": 294,
+        "direction": -1
+      },
+      {
+        "from": 294,
+        "to": 297,
+        "direction": -1
+      },
+      {
+        "from": 297,
+        "to": 300,
+        "direction": -1
+      },
+      {
+        "from": 300,
+        "to": 303,
+        "direction": -1
+      },
+      {
+        "from": 303,
+        "to": 306,
+        "direction": -1
+      },
+      {
+        "from": 306,
+        "to": 309,
+        "direction": -1
+      },
+      {
+        "from": 774,
+        "to": 777,
+        "direction": 0
+      },
+      {
+        "from": 789,
+        "to": 792,
+        "direction": 0
+      },
+      {
+        "from": 855,
+        "to": 858,
+        "direction": 0
+      },
+      {
+        "from": 858,
+        "to": 861,
+        "direction": 0
+      },
+      {
+        "from": 861,
+        "to": 864,
+        "direction": 0
+      },
+      {
+        "from": 864,
+        "to": 867,
+        "direction": 0
+      },
+      {
+        "from": 867,
+        "to": 870,
+        "direction": 0
+      },
+      {
+        "from": 870,
+        "to": 873,
+        "direction": 0
+      },
+      {
+        "from": 873,
+        "to": 876,
+        "direction": 0
+      },
+      {
+        "from": 876,
+        "to": 879,
+        "direction": 0
+      },
+      {
+        "from": 879,
+        "to": 882,
+        "direction": 0
+      },
+      {
+        "from": 882,
+        "to": 885,
+        "direction": 0
+      },
+      {
+        "from": 885,
+        "to": 888,
+        "direction": 0
+      },
+      {
+        "from": 888,
+        "to": 891,
+        "direction": 0
+      },
+      {
+        "from": 891,
+        "to": 894,
+        "direction": 0
+      },
+      {
+        "from": 894,
+        "to": 897,
+        "direction": 0
+      },
+      {
+        "from": 897,
+        "to": 900,
+        "direction": 0
+      },
+      {
+        "from": 900,
+        "to": 903,
+        "direction": 0
+      },
+      {
+        "from": 903,
+        "to": 906,
+        "direction": 0
+      },
+      {
+        "from": 906,
+        "to": 909,
+        "direction": 0
+      },
+      {
+        "from": 909,
+        "to": 912,
+        "direction": 0
+      },
+      {
+        "from": 912,
+        "to": 915,
+        "direction": 0
+      },
+      {
+        "from": 915,
+        "to": 918,
+        "direction": 0
+      },
+      {
+        "from": 918,
+        "to": 921,
+        "direction": 0
+      },
+      {
+        "from": 921,
+        "to": 924,
+        "direction": 0
+      },
+      {
+        "from": 924,
+        "to": 927,
+        "direction": 0
+      },
+      {
+        "from": 1176,
+        "to": 1179,
+        "direction": 0
+      },
+      {
+        "from": 1194,
+        "to": 1197,
+        "direction": 0
+      },
+      {
+        "from": 1296,
+        "to": 1299,
+        "direction": 0
+      },
+      {
+        "from": 1404,
+        "to": 1407,
+        "direction": -1
+      },
+      {
+        "from": 1407,
+        "to": 1410,
+        "direction": -1
+      },
+      {
+        "from": 1410,
+        "to": 1413,
+        "direction": 0
+      },
+      {
+        "from": 1413,
+        "to": 1416,
+        "direction": -1
+      },
+      {
+        "from": 1428,
+        "to": 1431,
+        "direction": 0
+      },
+      {
+        "from": 1761,
+        "to": 1764,
+        "direction": 0
+      },
+      {
+        "from": 2046,
+        "to": 2049,
+        "direction": 0
+      },
+      {
+        "from": 2052,
+        "to": 2055,
+        "direction": 0
+      },
+      {
+        "from": 2055,
+        "to": 2058,
+        "direction": 0
+      },
+      {
+        "from": 2058,
+        "to": 2061,
+        "direction": 0
+      },
+      {
+        "from": 2061,
+        "to": 2064,
+        "direction": 0
+      },
+      {
+        "from": 2064,
+        "to": 2067,
+        "direction": -1
+      },
+      {
+        "from": 2412,
+        "to": 2415,
+        "direction": 0
+      },
+      {
+        "from": 2415,
+        "to": 2418,
+        "direction": 0
+      },
+      {
+        "from": 2418,
+        "to": 2421,
+        "direction": 0
+      },
+      {
+        "from": 2562,
+        "to": 2565,
+        "direction": 0
+      },
+      {
+        "from": 2577,
+        "to": 2580,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 774,
+        "to": 777,
+        "vertical": -1
+      },
+      {
+        "from": 1176,
+        "to": 1179,
+        "vertical": -1
+      },
+      {
+        "from": 1410,
+        "to": 1413,
+        "vertical": -1
+      },
+      {
+        "from": 1413,
+        "to": 1416,
+        "vertical": -1
+      },
+      {
+        "from": 2046,
+        "to": 2049,
+        "vertical": -1
+      },
+      {
+        "from": 2562,
+        "to": 2565,
+        "vertical": -1
+      }
+    ]
+  },
+  {
+    "fps": 60,
+    "totalFrames": 5476,
+    "jumpFrames": [
+      66,
+      162,
+      246,
+      348,
+      432,
+      576,
+      636,
+      660,
+      744,
+      846,
+      900,
+      948,
+      1014,
+      1224,
+      1296,
+      1392,
+      1542,
+      1554,
+      1596,
+      1848,
+      1920,
+      1998,
+      2106,
+      2184,
+      2340,
+      2352,
+      2388,
+      2502,
+      2598,
+      2670,
+      2820,
+      2832,
+      2868,
+      2982,
+      3066,
+      3126,
+      3174,
+      3228,
+      3276,
+      3354,
+      3438,
+      3504,
+      3552,
+      3648,
+      3732,
+      3798,
+      3924,
+      4008,
+      4116,
+      4152,
+      4206,
+      4338,
+      4404,
+      4452,
+      4530,
+      4674,
+      4836,
+      4908,
+      5010,
+      5112,
+      5124,
+      5166,
+      5262,
+      5346
+    ],
+    "interactFrames": [
+      1548,
+      2346,
+      2826,
+      4104,
+      5118
+    ],
+    "inputs": [
+      {
+        "from": 576,
+        "to": 582,
+        "direction": -1
+      },
+      {
+        "from": 582,
+        "to": 588,
+        "direction": 0
+      },
+      {
+        "from": 588,
+        "to": 594,
+        "direction": -1
+      },
+      {
+        "from": 594,
+        "to": 600,
+        "direction": -1
+      },
+      {
+        "from": 600,
+        "to": 606,
+        "direction": -1
+      },
+      {
+        "from": 606,
+        "to": 612,
+        "direction": -1
+      },
+      {
+        "from": 612,
+        "to": 618,
+        "direction": -1
+      },
+      {
+        "from": 1548,
+        "to": 1554,
+        "direction": 0
+      },
+      {
+        "from": 1578,
+        "to": 1584,
+        "direction": 0
+      },
+      {
+        "from": 1710,
+        "to": 1716,
+        "direction": 0
+      },
+      {
+        "from": 1716,
+        "to": 1722,
+        "direction": 0
+      },
+      {
+        "from": 1722,
+        "to": 1728,
+        "direction": 0
+      },
+      {
+        "from": 1728,
+        "to": 1734,
+        "direction": 0
+      },
+      {
+        "from": 1734,
+        "to": 1740,
+        "direction": 0
+      },
+      {
+        "from": 1740,
+        "to": 1746,
+        "direction": 0
+      },
+      {
+        "from": 1746,
+        "to": 1752,
+        "direction": 0
+      },
+      {
+        "from": 1752,
+        "to": 1758,
+        "direction": 0
+      },
+      {
+        "from": 1758,
+        "to": 1764,
+        "direction": 0
+      },
+      {
+        "from": 1764,
+        "to": 1770,
+        "direction": 0
+      },
+      {
+        "from": 1770,
+        "to": 1776,
+        "direction": 0
+      },
+      {
+        "from": 1776,
+        "to": 1782,
+        "direction": 0
+      },
+      {
+        "from": 1782,
+        "to": 1788,
+        "direction": 0
+      },
+      {
+        "from": 1788,
+        "to": 1794,
+        "direction": 0
+      },
+      {
+        "from": 1794,
+        "to": 1800,
+        "direction": 0
+      },
+      {
+        "from": 1800,
+        "to": 1806,
+        "direction": 0
+      },
+      {
+        "from": 1806,
+        "to": 1812,
+        "direction": 0
+      },
+      {
+        "from": 1812,
+        "to": 1818,
+        "direction": 0
+      },
+      {
+        "from": 1818,
+        "to": 1824,
+        "direction": 0
+      },
+      {
+        "from": 1824,
+        "to": 1830,
+        "direction": 0
+      },
+      {
+        "from": 1830,
+        "to": 1836,
+        "direction": 0
+      },
+      {
+        "from": 1836,
+        "to": 1842,
+        "direction": 0
+      },
+      {
+        "from": 1842,
+        "to": 1848,
+        "direction": 0
+      },
+      {
+        "from": 2346,
+        "to": 2352,
+        "direction": 0
+      },
+      {
+        "from": 2580,
+        "to": 2586,
+        "direction": 0
+      },
+      {
+        "from": 2586,
+        "to": 2592,
+        "direction": 0
+      },
+      {
+        "from": 2592,
+        "to": 2598,
+        "direction": 0
+      },
+      {
+        "from": 2808,
+        "to": 2814,
+        "direction": 0
+      },
+      {
+        "from": 2814,
+        "to": 2820,
+        "direction": -1
+      },
+      {
+        "from": 2820,
+        "to": 2826,
+        "direction": -1
+      },
+      {
+        "from": 2826,
+        "to": 2832,
+        "direction": 0
+      },
+      {
+        "from": 2856,
+        "to": 2862,
+        "direction": 0
+      },
+      {
+        "from": 3522,
+        "to": 3528,
+        "direction": 0
+      },
+      {
+        "from": 3840,
+        "to": 3846,
+        "direction": 0
+      },
+      {
+        "from": 4104,
+        "to": 4110,
+        "direction": 0
+      },
+      {
+        "from": 4110,
+        "to": 4116,
+        "direction": -1
+      },
+      {
+        "from": 4122,
+        "to": 4128,
+        "direction": 0
+      },
+      {
+        "from": 4128,
+        "to": 4134,
+        "direction": 0
+      },
+      {
+        "from": 4134,
+        "to": 4140,
+        "direction": -1
+      },
+      {
+        "from": 4176,
+        "to": 4182,
+        "direction": 0
+      },
+      {
+        "from": 5118,
+        "to": 5124,
+        "direction": 0
+      },
+      {
+        "from": 5148,
+        "to": 5154,
+        "direction": 0
+      },
+      {
+        "from": 5334,
+        "to": 5340,
+        "direction": 0
+      },
+      {
+        "from": 5340,
+        "to": 5346,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 1548,
+        "to": 1554,
+        "vertical": -1
+      },
+      {
+        "from": 2346,
+        "to": 2352,
+        "vertical": -1
+      },
+      {
+        "from": 2826,
+        "to": 2832,
+        "vertical": -1
+      },
+      {
+        "from": 4104,
+        "to": 4110,
+        "vertical": -1
+      },
+      {
+        "from": 4110,
+        "to": 4116,
+        "vertical": -1
+      },
+      {
+        "from": 5118,
+        "to": 5124,
+        "vertical": -1
+      }
+    ]
+  },
+  {
+    "fps": 120,
+    "totalFrames": 10929,
+    "jumpFrames": [
+      132,
+      324,
+      492,
+      696,
+      864,
+      1152,
+      1272,
+      1320,
+      1488,
+      1692,
+      1800,
+      1896,
+      2028,
+      2448,
+      2592,
+      2784,
+      3084,
+      3108,
+      3192,
+      3696,
+      3840,
+      3996,
+      4212,
+      4368,
+      4680,
+      4704,
+      4764,
+      4992,
+      5184,
+      5616,
+      5640,
+      5712,
+      5940,
+      6108,
+      6228,
+      6324,
+      6420,
+      6516,
+      6684,
+      6852,
+      6984,
+      7080,
+      7260,
+      7440,
+      7572,
+      7812,
+      7992,
+      8196,
+      8268,
+      8364,
+      8640,
+      8760,
+      8856,
+      9024,
+      9312,
+      9660,
+      9804,
+      10008,
+      10212,
+      10236,
+      10320,
+      10500,
+      10668
+    ],
+    "interactFrames": [
+      3096,
+      4692,
+      5628,
+      8172,
+      10224
+    ],
+    "inputs": [
+      {
+        "from": 1152,
+        "to": 1164,
+        "direction": -1
+      },
+      {
+        "from": 1164,
+        "to": 1176,
+        "direction": 0
+      },
+      {
+        "from": 1176,
+        "to": 1188,
+        "direction": -1
+      },
+      {
+        "from": 1188,
+        "to": 1200,
+        "direction": -1
+      },
+      {
+        "from": 1200,
+        "to": 1212,
+        "direction": -1
+      },
+      {
+        "from": 1212,
+        "to": 1224,
+        "direction": -1
+      },
+      {
+        "from": 1224,
+        "to": 1236,
+        "direction": -1
+      },
+      {
+        "from": 3096,
+        "to": 3108,
+        "direction": 0
+      },
+      {
+        "from": 3156,
+        "to": 3168,
+        "direction": 0
+      },
+      {
+        "from": 3420,
+        "to": 3432,
+        "direction": 0
+      },
+      {
+        "from": 3432,
+        "to": 3444,
+        "direction": 0
+      },
+      {
+        "from": 3444,
+        "to": 3456,
+        "direction": 0
+      },
+      {
+        "from": 3456,
+        "to": 3468,
+        "direction": 0
+      },
+      {
+        "from": 3468,
+        "to": 3480,
+        "direction": 0
+      },
+      {
+        "from": 3480,
+        "to": 3492,
+        "direction": 0
+      },
+      {
+        "from": 3492,
+        "to": 3504,
+        "direction": 0
+      },
+      {
+        "from": 3504,
+        "to": 3516,
+        "direction": 0
+      },
+      {
+        "from": 3516,
+        "to": 3528,
+        "direction": 0
+      },
+      {
+        "from": 3528,
+        "to": 3540,
+        "direction": 0
+      },
+      {
+        "from": 3540,
+        "to": 3552,
+        "direction": 0
+      },
+      {
+        "from": 3552,
+        "to": 3564,
+        "direction": 0
+      },
+      {
+        "from": 3564,
+        "to": 3576,
+        "direction": 0
+      },
+      {
+        "from": 3576,
+        "to": 3588,
+        "direction": 0
+      },
+      {
+        "from": 3588,
+        "to": 3600,
+        "direction": 0
+      },
+      {
+        "from": 3600,
+        "to": 3612,
+        "direction": 0
+      },
+      {
+        "from": 3612,
+        "to": 3624,
+        "direction": 0
+      },
+      {
+        "from": 3624,
+        "to": 3636,
+        "direction": 0
+      },
+      {
+        "from": 3636,
+        "to": 3648,
+        "direction": 0
+      },
+      {
+        "from": 3648,
+        "to": 3660,
+        "direction": 0
+      },
+      {
+        "from": 3660,
+        "to": 3672,
+        "direction": 0
+      },
+      {
+        "from": 3672,
+        "to": 3684,
+        "direction": 0
+      },
+      {
+        "from": 3684,
+        "to": 3696,
+        "direction": 0
+      },
+      {
+        "from": 4692,
+        "to": 4704,
+        "direction": 0
+      },
+      {
+        "from": 5160,
+        "to": 5172,
+        "direction": 0
+      },
+      {
+        "from": 5172,
+        "to": 5184,
+        "direction": 0
+      },
+      {
+        "from": 5604,
+        "to": 5616,
+        "direction": -1
+      },
+      {
+        "from": 5616,
+        "to": 5628,
+        "direction": -1
+      },
+      {
+        "from": 5628,
+        "to": 5640,
+        "direction": 0
+      },
+      {
+        "from": 5688,
+        "to": 5700,
+        "direction": 0
+      },
+      {
+        "from": 7020,
+        "to": 7032,
+        "direction": 0
+      },
+      {
+        "from": 7656,
+        "to": 7668,
+        "direction": 0
+      },
+      {
+        "from": 8172,
+        "to": 8184,
+        "direction": 0
+      },
+      {
+        "from": 8184,
+        "to": 8196,
+        "direction": -1
+      },
+      {
+        "from": 8208,
+        "to": 8220,
+        "direction": 0
+      },
+      {
+        "from": 8220,
+        "to": 8232,
+        "direction": 0
+      },
+      {
+        "from": 8232,
+        "to": 8244,
+        "direction": -1
+      },
+      {
+        "from": 8316,
+        "to": 8328,
+        "direction": 0
+      },
+      {
+        "from": 9636,
+        "to": 9648,
+        "direction": 0
+      },
+      {
+        "from": 9648,
+        "to": 9660,
+        "direction": 0
+      },
+      {
+        "from": 10224,
+        "to": 10236,
+        "direction": 0
+      },
+      {
+        "from": 10284,
+        "to": 10296,
+        "direction": 0
+      },
+      {
+        "from": 10656,
+        "to": 10668,
+        "direction": 0
+      }
+    ],
+    "climbInputs": [
+      {
+        "from": 3096,
+        "to": 3108,
+        "vertical": -1
+      },
+      {
+        "from": 4692,
+        "to": 4704,
+        "vertical": -1
+      },
+      {
+        "from": 5628,
+        "to": 5640,
+        "vertical": -1
+      },
+      {
+        "from": 8172,
+        "to": 8184,
+        "vertical": -1
+      },
+      {
+        "from": 8184,
+        "to": 8196,
+        "vertical": -1
+      },
+      {
+        "from": 10224,
+        "to": 10236,
+        "vertical": -1
+      }
+    ]
+  }
+]

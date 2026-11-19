@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@700&display=swap");
+
 /* Reuse the landscape from the login design. */
 body {
     min-height: 100vh;
@@ -9,18 +11,58 @@ body {
     width: 100%;
     max-width: 1440px;
     margin: 0 auto;
+    position: relative;
+}
+
+.app-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 16px 12px;
+}
+
+.app-header h1 {
+    margin: 0;
+    color: #3d5f26;
+    font-family: "Abril Fatface", Georgia, serif;
+    font-size: 1.5rem;
+}
+
+#accountView {
+    position: absolute;
+    top: 0;
+    right: 16px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: #cbb69f;
+    color: #3d5f26;
+    font-family: "Abril Fatface", Georgia, serif;
+}
+
+#accountView[hidden] {
+    display: none;
+}
+
+#appView h1{
+    padding-right: 200px
 }
 
 /* Green tabs above the main panel. */
 #mainNav {
-    display: flex;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: clamp(8px, 1.4vw, 20px);
     margin: 0 16px;
 }
 
 #mainNav .nav-link {
-    flex: 1;
-    max-width: 280px;
+    min-width: 0;
+    min-height: 44px;
     padding: 12px 20px;
     border: 2px solid #51452b;
     border-bottom: none;
@@ -34,6 +76,26 @@ body {
 #mainNav .nav-link.active {
     background: #3d5f26;
     color: white;
+}
+
+#mainNav .nav-link:focus-visible {
+    outline: 3px solid #51452b;
+    outline-offset: 3px;
+}
+
+/* Keep labels readable and targets comfortable on narrow phones. */
+@media (max-width: 520px) {
+    #mainNav {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    #mainNav .nav-link {
+        grid-column: span 2;
+    }
+
+    #mainNav .nav-link:nth-child(n + 4) {
+        grid-column: span 3;
+    }
 }
 
 /* Cream panel with two equal columns. */
@@ -106,6 +168,20 @@ body {
     #home #taskInput {
         min-width: 0;
         flex: 1 1 160px;
+    }
+
+    .app-header {
+        flex-wrap: wrap;
+        margin: 0 8px 12px;
+    }
+
+    #appView h1 {
+        padding-right: 0;
+        margin-top: 44px;
+    }
+
+    #accountView{
+        right: 8px;
     }
 }
 
@@ -456,24 +532,26 @@ body {
         padding: 18px;
     }
 }
-/* .task-grid uses display:grid, which overrides "hidden", so force it. */
-.priority-list[hidden] {
-    display: none !important;
-}
 
-/* Arrow points down when open, right when collapsed. */
-.priority-caret {
-    display: inline-block;
-    transition: transform 0.15s;
-}
-
-.priority-section.is-collapsed .priority-caret {
-    transform: rotate(-90deg);
-}
 /* ---------- Priority sections ---------- */
+/* High / Medium / Low side by side */
 #priorityBoard {
-    display: grid;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 14px;
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    #priorityBoard { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Drag feedback */
+#priorityBoard li[draggable="true"] { cursor: grab; }
+#priorityBoard li.is-dragging { opacity: 0.4; }
+.priority-section.is-drop-target {
+    outline: 3px dashed var(--priority-color);
+    outline-offset: 2px;
 }
 
 /* Each section gets a colored left edge. */
@@ -498,4 +576,192 @@ body {
     border: none;
     background: none;
     color: #3d5f26;
-    font-family: "Abril
+    font-family: "Abril Fatface", Georgia, serif;
+    font-size: 18px;
+    text-align: left;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Count bubble on the right. */
+.priority-count {
+    margin-left: auto;
+    min-width: 26px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--priority-color);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Smaller gap above the cards inside a section. */
+#home #priorityBoard .priority-list {
+    margin: 8px 0 0;
+    list-style: none;
+}
+
+/* Task type filter above the board. */
+.quest-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    color: #403725;
+}
+
+#typeFilter {
+    padding: 6px 12px;
+    border: 2px solid #51452b;
+    border-radius: 999px;
+    background: #faf0e6;
+    color: #304c1e;
+    font: inherit;
+}
+
+.home-scene {
+    position: relative;
+    width: 350px;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.home-scene > .avatar-stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+}
+
+/* ---------- UI edits ---------- */
+
+/* 1. Title font (pixel-style to match the sprites) */
+#appView h1 {
+    font-family: "Pixelify Sans", "Abril Fatface", Georgia, serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* 2. Center the + inside the circle */
+#home #toggleTaskForm {
+    position: relative;
+    padding: 0;
+    font-size: 0;          /* hides the "+" character */
+    line-height: 0;
+}
+#home #toggleTaskForm::before,
+#home #toggleTaskForm::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: #fff;
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
+}
+#home #toggleTaskForm::before { width: 18px; height: 3px; }  /* horizontal bar */
+#home #toggleTaskForm::after  { width: 3px; height: 18px; }  /* vertical bar */
+
+/* 3. Space between the description box and the fields below it */
+#home #taskForm #taskDescription {
+    margin-bottom: 20px;
+}
+
+/* 4. Time, task type and priority match the deadline field */
+#home .quest-field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+#home .quest-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #fff8ee;
+    font-size: 15px;
+}
+#home #questDueDate,
+#home #questDueTime,
+#home #questType,
+#home #questPriority {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 999px;
+    background: #faf0e6;
+    color: #3d5f26;
+    opacity: 1;
+    cursor: pointer;
+}
+
+/* 5. Difficulty colors: green / blue / red when selected */
+#home .difficulty-choices #difficultyEasy:checked + label {
+    background: var(--diff-easy);
+    border-color: var(--diff-easy);
+    color: #fff;
+}
+#home .difficulty-choices #difficultyMedium:checked + label {
+    background: var(--diff-medium);
+    border-color: var(--diff-medium);
+    color: #fff;
+}
+#home .difficulty-choices #difficultyHard:checked + label {
+    background: var(--diff-hard);
+    border-color: var(--diff-hard);
+    color: #fff;
+}
+
+:root {
+    --title-font: "Pixelify Sans", "Abril Fatface", Georgia, serif;
+}
+
+#appView h1,
+#mainNav .nav-link {
+    font-family: var(--title-font);
+}
+
+/* Priority columns: one neutral tone, so color only means difficulty */
+/* Priority columns: sand shades, darker = more urgent */
+.priority-section[data-priority="high"]   { --priority-color: #b9a283; }
+.priority-section[data-priority="medium"] { --priority-color: #cbb69f; }
+.priority-section[data-priority="low"]    { --priority-color: #ddcdb8; }
+
+/* Dark text so the count stays readable on the light bubbles */
+.priority-count { color: #3d5f26; }
+
+.priority-section[data-priority="high"] { border-left-width: 10px; }
+.priority-section[data-priority="low"]  { border-left-width: 3px; }
+
+/* ---------- Missed quests banner ---------- */
+.missed-banner {
+    margin: 0.75rem 0;
+    padding: 0.75rem 1rem;
+    border: 2px solid #d9534f;
+    border-radius: 10px;
+    background: #fdecea;
+}
+.missed-banner-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.missed-banner-row span {
+    font-weight: bold;
+    color: #a12622;
+    margin-right: auto;
+}
+.missed-banner button {
+    cursor: pointer;
+}
+#missedList {
+    margin-top: 0.75rem;
+}
+
+/* ---------- Quest form errors ---------- */
+.form-error {
+    color: #c0392b;
+    font-size: 0.9rem;
+    margin: 0.5rem 0;
+}
