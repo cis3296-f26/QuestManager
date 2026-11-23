@@ -121,8 +121,19 @@
     <dialog id="levelCompleteDialog" class="completion-dialog"
         aria-labelledby="levelCompleteTitle" aria-describedby="levelCompleteDescription">
         <p class="game-eyebrow">Quest complete</p>
-        <h2 id="levelCompleteTitle">Level 1 Complete!</h2>
+        <h2 id="levelCompleteTitle" tabindex="-1">Level 1 Complete!</h2>
         <p id="levelCompleteDescription">You reached the flag! Replay The First Adventure to try again.</p>
+        <section class="run-results" aria-labelledby="runResultsTitle">
+            <h3 id="runResultsTitle">Your run</h3>
+            <dl class="run-results-grid">
+                <div><dt>Time</dt><dd id="resultTime">—</dd></div>
+                <div><dt>Deaths</dt><dd id="resultDeaths">0</dd></div>
+                <div><dt>New coins at flag</dt><dd id="resultRunCoins">0/3</dd></div>
+                <div><dt id="resultBestLabel">Personal best</dt><dd id="resultBestTime">—</dd></div>
+            </dl>
+            <p id="resultRecordNotice" class="run-record-notice" role="status" hidden></p>
+            <p class="run-results-note">Time includes deaths and retries. Pauses are excluded. Any coin total can set a time record.</p>
+        </section>
         <section class="completion-coins" aria-label="Saved collectible progress">
             <p id="completionCoinCount">Coin Collection: 0/3</p>
             <div id="completionCoins"></div>
