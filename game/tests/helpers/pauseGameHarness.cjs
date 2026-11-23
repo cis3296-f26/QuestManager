@@ -4,7 +4,7 @@ const root = path.resolve(__dirname, "../../..");
 const turn = () => new Promise((resolve) => setImmediate(resolve));
 
 (async () => {
-    const elements = new Map(), windowEvents = new Map(), disk = new Map();
+    const elements = new Map(), windowEvents = new Map(), documentEvents = new Map(), disk = new Map();
     let document;
     const node = (id = "") => ({ id, hidden: false, disabled: false, open: false, children: [], handlers: new Map(),
         classList: { add() {}, toggle() {} }, setAttribute() {},
@@ -16,7 +16,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         close() { if (this.open) { this.open = false; this.emit("close"); } }
     });
     const nodes = Array.from({ length: 10 }, (_, i) => Object.assign(node(), { dataset: { level: String(i + 1) } }));
-    document = { activeElement: null, getElementById(id) { if (!elements.has(id)) elements.set(id, node(id)); return elements.get(id); }, createElement: () => node(), querySelectorAll: () => nodes };
+    document = { activeElement: null, visibilityState: "visible", addEventListener: (key,handler)=>documentEvents.set(key,handler), getElementById(id) { if (!elements.has(id)) elements.set(id, node(id)); return elements.get(id); }, createElement: () => node(), querySelectorAll: () => nodes };
     const element = (id) => document.getElementById(id);
     const ctx = new Proxy({ globalAlpha: 1, measureText: (text) => ({ width: text.length * 8 }) }, { get: (o, key) => o[key] ?? (() => {}) });
     Object.assign(element("gameCanvas"), { width: 960, height: 540, getContext: () => ctx });
@@ -26,9 +26,9 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     } };
     if (process.env.QUESTMANAGER_TEST_AUDIO === "1") window.AudioContext = require("./fakeAudioContext.cjs").FakeAudioContext;
     const location = { value: "#level-1", get hash() { return this.value; }, set hash(value) { this.value = value; queueMicrotask(() => windowEvents.get("hashchange")?.()); } };
-    let account = "pause-A", authCallback;
+    let account = "pause-A", authCallback, verificationUnavailable = false, verificationGate = null;
     const supabase = { auth: { onAuthStateChange(fn) { authCallback = fn; return { data: { subscription: { unsubscribe() {} } } }; },
-        async getSession() { return { data: { session: account ? { user: { id: account } } : null } }; } } };
+        async getSession() { if (verificationGate) await verificationGate; return { data: { session: account ? { user: { id: account } } : null }, error: verificationUnavailable ? new Error("Unavailable") : null }; } } };
     const context = vm.createContext({ document, window, location, requestAnimationFrame() {}, console, performance, setTimeout, clearTimeout });
     const client = new vm.SyntheticModule(["supabase"], function () { this.setExport("supabase", supabase); }, { context });
     await client.link(() => {}); await client.evaluate();
@@ -53,7 +53,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         }
     });
     const source = fs.readFileSync(path.join(root, "game/game.js"), "utf8") +
-        "\nglobalThis.api={level,pause,settings,audio,developer,keys,clock,gameLoop,restartLevel,startDeath,progress,get coins(){return coins},get camera(){return cameraX},get deathTime(){return deathTimeLeft},get map(){return worldMap},get playing(){return playing}};";
+        "\nglobalThis.api={level,pause,settings,audio,developer,keys,clock,runStats,gameLoop,restartLevel,startDeath,progress,get coins(){return coins},get camera(){return cameraX},get deathTime(){return deathTimeLeft},get map(){return worldMap},get playing(){return playing}};";
     const entry = create(source, "game/game.js");
     await entry.link(linker);
     await entry.evaluate(); await turn();
@@ -63,9 +63,58 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
     const key = (code, extra = {}) => canvas.emit("keydown", { code, repeat: false, ...extra });
     let time = 0;
     const frame = (seconds = 1 / 60) => { time += seconds * 1000; a.audio.context?.advance(seconds); a.gameLoop(time); };
-    const snapshot = () => JSON.stringify({ player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, sunPulses:a.level.sunPulses, geysers:a.level.geysers, warden:a.level.warden, checkpoint:a.level.checkpointIndex, puzzle: a.level.puzzle, wind: a.level.wind,
+    const snapshot = () => JSON.stringify({ run: a.runStats, player: a.level.player, enemies: a.level.enemies, platforms: a.level.platforms, rocks: a.level.stalactites, sunPulses:a.level.sunPulses, geysers:a.level.geysers, warden:a.level.warden, checkpoint:a.level.checkpointIndex, puzzle: a.level.puzzle, wind: a.level.wind,
         coins: { time: a.coins.time, pending: [...a.coins.pending], saved: [...a.coins.saved], effects: a.coins.effects },
         reveal: [...a.level.exploration.reveal], notice: a.level.exploration.noticeTime, camera: a.camera });
+
+    if (process.env.QUESTMANAGER_TEST_STATS === "1") {
+        const restart=()=>{a.restartLevel();canvas.focus();frame();};
+        const finish=async()=>{
+            const p=a.level.player;p.reset({x:a.level.flagX,feetY:a.level.config.finish.platform.y});
+            p.supportPlatform=a.level.platforms.find(s=>s.id===a.level.config.finish.platform.id);
+            frame();frame();await turn();assert.equal(element("levelCompleteDialog").open,true);assert.equal(document.activeElement,element("levelCompleteTitle"));assert.equal(element("levelCompleteDialog").scrollTop,0);
+        };
+        const replay=()=>{element("levelCompleteDialog").returnValue="replay";element("levelCompleteDialog").close();canvas.focus();frame();};
+        for(const fps of[30,60,120]){
+            restart();for(let i=0;i<fps*2;i++)frame(1/fps);assert.ok(Math.abs(a.runStats.elapsed-2)<1e-8);
+            key("Escape");const paused=snapshot();canvas.focus();for(let i=0;i<fps;i++)frame(1/fps);frame(100);assert.equal(snapshot(),paused);
+            click("pauseResume");canvas.focus();frame(100);assert.equal(snapshot(),paused);
+            const unfocused=JSON.stringify(a.runStats);element("unrelated").focus();frame(100);canvas.focus();frame(100);assert.equal(JSON.stringify(a.runStats),unfocused);
+            windowEvents.get("blur")();const blurred=snapshot();for(let i=0;i<fps;i++)frame(1/fps);assert.equal(snapshot(),blurred);
+            windowEvents.get("focus")();frame(100);assert.equal(snapshot(),blurred);
+            document.visibilityState="hidden";documentEvents.get("visibilitychange")();time+=100000;
+            document.visibilityState="visible";documentEvents.get("visibilitychange")();frame(100);assert.equal(JSON.stringify(a.runStats),unfocused);
+            windowEvents.get("pageshow")();frame(100);assert.equal(JSON.stringify(a.runStats),unfocused);
+            a.coins.pending.add(a.level.config.coins[0].id);a.startDeath("stats test");a.startDeath("duplicate death");assert.equal(a.runStats.deaths,1);
+            for(let i=0;i<fps;i++)frame(1/fps);assert.equal(a.runStats.deaths,1);assert.ok(a.runStats.elapsed>2.9);assert.equal(a.coins.pending.size,0);
+            key("KeyR");assert.equal(a.runStats.deaths,0);assert.equal(a.runStats.elapsed,0);
+        }
+        restart();for(let i=0;i<60;i++)frame();a.startDeath("run death");for(let i=0;i<60;i++)frame();
+        a.coins.pending.add(a.level.config.coins[1].id);await finish();
+        assert.equal(element("resultDeaths").textContent,"1");assert.equal(element("resultRunCoins").textContent,"1/3");
+        assert.match(element("resultRecordNotice").textContent,/New personal best/);assert.ok(a.progress.getBestTime(1)>=1900);
+        const frozen=JSON.stringify(a.runStats);for(let i=0;i<120;i++)frame();assert.equal(JSON.stringify(a.runStats),frozen,'completion and saving do not advance time');
+        replay();assert.equal(a.runStats.deaths,0);assert.equal(a.runStats.elapsed,0);for(let i=0;i<15;i++)frame();await finish();
+        const faster=a.progress.getBestTime(1);assert.ok(faster<1000);assert.match(element("resultRecordNotice").textContent,/New personal best/);
+        replay();for(let i=0;i<60;i++)frame();await finish();assert.equal(a.progress.getBestTime(1),faster);assert.equal(element("resultRecordNotice").hidden,true);
+        replay();a.level.developerAssisted=true;frame();a.startDeath("assisted death");for(let i=0;i<60;i++)frame();assert.equal(a.runStats.assisted,true);assert.equal(a.level.developerAssisted,true);
+        const before=JSON.stringify([...disk]);await finish();assert.equal(JSON.stringify([...disk]),before);assert.match(element("resultRecordNotice").textContent,/did not save/);
+        replay();for(let i=0;i<10;i++)frame();verificationUnavailable=true;await finish();assert.equal(a.progress.getBestTime(1),faster);assert.match(element("resultRecordNotice").textContent,/did not save/);verificationUnavailable=false;
+        replay();for(let i=0;i<10;i++)frame();let release;verificationGate=new Promise(resolve=>release=resolve);
+        const p=a.level.player;p.reset({x:a.level.flagX,feetY:a.level.config.finish.platform.y});p.supportPlatform=a.level.config.finish.platform;frame();frame();await turn();
+        assert.ok(a.runStats.result);assert.equal(element("levelCompleteDialog").open,false);const oldResult=a.runStats.result;
+        a.restartLevel();verificationGate=null;release();await turn();assert.equal(element("levelCompleteDialog").open,false);assert.equal(a.progress.getBestTime(1),faster);assert.equal(a.runStats.elapsed,0);assert.ok(oldResult.timeMs>0);
+        for(const l of a.map.levels.slice(0,8))a.progress.completeLevel(l.id,[]);a.map.refresh();a.map.openLevel(9);await turn();restart();for(let i=0;i<60;i++)frame();
+        const checkpoint=a.level.config.checkpoints[0];a.level.player.reset({x:checkpoint.x,feetY:checkpoint.feetY});a.level.player.supportPlatform=a.level.platforms.find(s=>s.id===checkpoint.platformId);frame();
+        const elapsed=a.runStats.elapsed;a.startDeath("checkpoint death");for(let i=0;i<60;i++)frame();assert.equal(a.level.checkpointIndex,0);assert.equal(a.runStats.deaths,1);assert.ok(a.runStats.elapsed>elapsed+.9);assert.equal(a.level.player.x,checkpoint.x);
+        key("KeyR");assert.equal(a.level.checkpointIndex,-1);assert.equal(a.runStats.deaths,0);assert.equal(a.runStats.elapsed,0);
+        for(let i=0;i<10;i++)frame();a.map.openMap();await turn();assert.equal(a.runStats.elapsed,0);assert.equal(a.runStats.deaths,0);
+        account="pause-B";authCallback("SIGNED_IN",{user:{id:account}});await turn();a.map.openLevel(1);await turn();restart();assert.equal(a.progress.getBestTime(1),null);
+        for(let i=0;i<10;i++)frame();await finish();assert.match(element("resultRecordNotice").textContent,/New personal best/);
+        account=null;authCallback("SIGNED_OUT",null);await turn();a.map.openLevel(1);await turn();restart();for(let i=0;i<10;i++)frame();await finish();
+        assert.equal(element("resultBestLabel").textContent,"Session best");assert.match(element("resultRecordNotice").textContent,/New session best/);assert.equal(a.progress.persistent,false);
+        a.audio.dispose();console.log("PASS results wiring: timing/focus, retries/deaths, checkpoints, replay, best times, test runs, account verification and session records.");return;
+    }
 
     if (process.env.QUESTMANAGER_TEST_DEV === "1") {
         const dev = a.developer;
@@ -283,6 +332,8 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         a.coins.pending.add(a.level.config.coins[2].id); await finish();
         assert.equal(element("levelCompleteDialog").open, true);
         assert.equal(element("levelCompleteTitle").textContent, `Level ${id} Complete!`);
+        assert.match(element("resultTime").textContent,/^\d+:\d{2}\.\d{2}$/);
+        assert.equal(element("resultDeaths").textContent,String(a.runStats.result.deaths));
         assert.equal(a.level.config.id, id, "completion does not automatically advance");
         assert.deepEqual([...a.progress.getLevel(id).coinIds], [a.level.config.coins[2].id]);
         assert.equal(a.progress.getLevel(id + 1).unlocked, true);
@@ -326,6 +377,7 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         }
         a.keys.clear();await turn();assert.equal(a.level.warden.defeated,true);assert.equal(element("levelCompleteDialog").open,true);
         assert.equal(element("nextLevel").hidden,true);assert.equal(a.audio.scene,"ending");
+        assert.equal(element("resultDeaths").textContent,"0");assert.ok(a.runStats.result.timeMs>16000);
     };
     const finalCoins=a.level.config.coins.map(c=>c.id);
     await bossRun({pending:finalCoins.slice(0,1)});assert.equal(element("levelCompleteTitle").textContent,"QUEST COMPLETE!");assert.match(element("adventureTotals").textContent,/10\/10.*28\/30/);assert.equal(element("perfectAdventure").hidden,true);
