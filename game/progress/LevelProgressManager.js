@@ -1,3 +1,5 @@
+import { fastestTime, validCompletionTime } from "./RunStats.js";
+
 const emptyProgress = () => ({ version: 1, levels: {} });
 
 // Permanent achievements, separate from CoinManager's current attempt.
@@ -27,6 +29,7 @@ export class LevelProgressManager {
                     coin.length > 0 && coin.length < 100 && (!allowed || allowed.includes(coin))))].slice(0, 3)
                 : [];
             clean.levels[id] = { completed: true, coinIds };
+            if (validCompletionTime(record.bestTimeMs)) clean.levels[id].bestTimeMs = record.bestTimeMs;
             if (Number.isSafeInteger(record.coinRevision) && record.coinRevision > 0)
                 clean.levels[id].coinRevision = record.coinRevision;
         }
@@ -52,6 +55,8 @@ export class LevelProgressManager {
         };
     }
 
+    getBestTime(id) { return this.getLevel(id).completed ? this.data.levels[id]?.bestTimeMs ?? null : null; }
+
     get totalCoins() {
         let count = 0;
         for (let id = 1; id <= this.totalLevels; id++) count += this.getLevel(id).coinIds.length;
@@ -64,6 +69,9 @@ export class LevelProgressManager {
             const record = latest.levels[id], current = this.data.levels[id];
             if (!record) continue;
             const revision = record.coinRevision ?? 0, currentRevision = current?.coinRevision ?? 0;
+            // Coin resets and time records are independent. A newer coin reset
+            // must not erase a best time, nor may a stale tab replace a faster one.
+            const bestTimeMs = fastestTime(record.bestTimeMs, current?.bestTimeMs);
             // An explicit reset supersedes older banked coins. A stale tab's next
             // completion must not silently union its old collection back in.
             if (revision > currentRevision || !current) this.data.levels[id] = record;
@@ -71,6 +79,7 @@ export class LevelProgressManager {
                 completed: true, coinIds: [...new Set([...(current.coinIds ?? []), ...record.coinIds])].slice(0, 3),
                 ...(revision ? { coinRevision: revision } : {})
             };
+            if (bestTimeMs !== null) this.data.levels[id].bestTimeMs = bestTimeMs;
         }
     }
 
@@ -91,18 +100,23 @@ export class LevelProgressManager {
     }
 
     // Call only after reaching the flag. Merge IDs, never increment a counter.
-    completeLevel(id, attemptIds, { developerAssisted = false } = {}) {
+    completeLevel(id, attemptIds, { developerAssisted = false, completionTimeMs = null } = {}) {
         // Defense at the persistence boundary as well as the completion UI.
         if (developerAssisted) return this.getLevel(id);
         const allowed = this.definitions.get(id);
         if (!allowed) throw new Error("Register the level before saving its achievements.");
         this.mergeStoredProgress();
+        const previousBest = this.getBestTime(id);
+        const bestTimeMs = fastestTime(previousBest, completionTimeMs);
         const existing = this.getLevel(id).coinIds;
         const coinIds = allowed.filter((coin) => existing.includes(coin) || attemptIds.includes(coin));
         const coinRevision = this.data.levels[id]?.coinRevision;
-        this.data.levels[id] = { completed: true, coinIds, ...(coinRevision ? { coinRevision } : {}) };
+        this.data.levels[id] = { completed: true, coinIds, ...(coinRevision ? { coinRevision } : {}),
+            ...(bestTimeMs !== null ? { bestTimeMs } : {}) };
         this.persistent = this.store.save(this.userId, this.data);
-        return this.getLevel(id);
+        return { ...this.getLevel(id), ...(validCompletionTime(completionTimeMs) ? {
+            newPersonalBest: previousBest === null || completionTimeMs < previousBest
+        } : {}) };
     }
 }
 
