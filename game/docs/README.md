@@ -26,6 +26,8 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Feature testing
 
+- [Completion stats and personal-best times](RUN_RESULTS_PLAYTEST.md)
+
 - [Customized character rendering and sprite-sheet compatibility](AVATAR_RENDER_PLAYTEST.md)
 - [Biome soundtrack and listening room](BIOME_MUSIC_REVIEW.md)
 - [Collectible coins](COIN_PLAYTEST.md)
