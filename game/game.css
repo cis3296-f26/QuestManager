@@ -362,3 +362,13 @@ h1 {
 #adventureTotals, #perfectAdventure { color: #3d5f26; font-weight: bold; }
 #creditsPanel { padding: 16px; margin: 14px 0; border: 1px solid #b49b63; border-radius: 10px; }
 #viewCredits, #closeCredits { padding: 10px 18px; border: 2px solid #65543b; border-radius: 8px; background: #f6ebcd; color: #3d5f26; }
+
+/* A compact result card shared by ordinary completion and the final ending. */
+.completion-dialog { max-height: calc(100dvh - 32px); overflow-y: auto; }
+.run-results { margin: 18px 0; padding: 14px; border: 1px solid #cbb69f; border-radius: 10px; background: #f6ebd5; }
+.run-results h3 { margin: 0 0 12px; color: #3d5f26; font-family: Georgia, serif; }
+.run-results-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.run-results-grid dt { font-size: .85rem; color: #65543d; }
+.run-results-grid dd { margin: 3px 0 0; font-size: 1.3rem; font-weight: bold; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; color: #3d5f26; }
+.run-record-notice { margin: 12px 0 0; color: #3d5f26; font-weight: bold; }
+.run-results-note { margin: 12px 0 0; font-size: .8rem; line-height: 1.45; color: #65543d; }
