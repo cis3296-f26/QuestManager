@@ -19,6 +19,7 @@ import { drawInteractivePlatforms } from "./rendering/PlatformRenderer.js";
 import { drawExplorationFoliage, drawDiscoveryNotice } from "./rendering/ExplorationRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { levels } from "./levels/levels.js";
+import { Leaderboard } from "./ui/Leaderboard.js";
 import { WorldMap } from "./ui/WorldMap.js";
 import { drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
@@ -71,6 +72,7 @@ const progress = new LevelProgressManager(new LocalProgressStore(storage));
 levels.forEach((config) => progress.registerLevel(config));
 let coins = new CoinManager(level.config.coins);
 let worldMap;
+let leaderboard;
 let playing = false;
 let windowFocused = true;
 let accountSession;
@@ -148,6 +150,7 @@ function changeAccount(userId) {
     }
     restartLevel(); // Discard the previous account's unfinished attempt, including coins.
     worldMap?.refresh();
+    if (leaderboard) void leaderboard.refresh();
     if (worldMap && playing && !worldMap.isPlayable(level.config.id)) {
         playing = false;
         worldMap.openMap(); // A different account must unlock this level for itself.
@@ -515,6 +518,7 @@ connectGameSession(changeAccount).then((session) => {
     accountSession = session;
     sessionReady = true;
     updateCoinHUD();
+    leaderboard = new Leaderboard({ document, progress, levels, onPlay: id => worldMap.openLevel(id) });
     worldMap = new WorldMap({
         levels,
         getProgress: (id) => progress.getLevel(id),
@@ -523,6 +527,7 @@ connectGameSession(changeAccount).then((session) => {
         getTestLevel: (id) => developer?.available && developer.enabled && developer.testLevelId === id
             ? levels.find(config => config.id === id) ?? null : null,
         onMap: showMap,
+        onLeaderboard: () => { void leaderboard.refresh(); },
         onMapRequest: () => {
             if (pause.canPause()) pause.open("map");
             else if (!pause.paused) worldMap.openMap();

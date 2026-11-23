@@ -113,6 +113,23 @@ const turn = () => new Promise((resolve) => setImmediate(resolve));
         for(let i=0;i<10;i++)frame();await finish();assert.match(element("resultRecordNotice").textContent,/New personal best/);
         account=null;authCallback("SIGNED_OUT",null);await turn();a.map.openLevel(1);await turn();restart();for(let i=0;i<10;i++)frame();await finish();
         assert.equal(element("resultBestLabel").textContent,"Session best");assert.match(element("resultRecordNotice").textContent,/New session best/);assert.equal(a.progress.persistent,false);
+        a.map.openMap();await turn();
+        const boardDisk=JSON.stringify([...disk]), boardStats=JSON.stringify(a.runStats);
+        location.hash="#leaderboard";await turn();
+        assert.equal(element("leaderboardView").hidden,false);assert.equal(element("worldMapView").hidden,true);
+        assert.equal(element("levelView").hidden,true);assert.equal(a.playing,false);
+        assert.equal(JSON.stringify(a.runStats),boardStats);assert.equal(JSON.stringify([...disk]),boardDisk);
+        click("leaderboardTab-level");assert.equal(element("leaderboardSelector").hidden,false);
+        click("leaderboardTab-full");assert.equal(element("leaderboardBreakdown").children.length,10);
+        account="leaderboard-new-account";authCallback("SIGNED_IN",{user:{id:account}});await turn();
+        assert.equal(element("leaderboardName").textContent,"Adventurer");
+        assert.equal(a.progress.totalCoins.earned,0);assert.equal(a.progress.getBestTime(1),null);
+        assert.match(element("leaderboardPersonal").children[1].textContent,/0\/10 times recorded/);
+        account=null;authCallback("SIGNED_OUT",null);await turn();
+        assert.equal(element("leaderboardName").textContent,"Guest adventurer");
+        assert.match(element("leaderboardScope").textContent,/Sign in/);
+        location.hash="#map";await turn();assert.equal(element("worldMapView").hidden,false);
+        assert.equal(element("leaderboardView").hidden,true);assert.equal(a.playing,false);
         a.audio.dispose();console.log("PASS results wiring: timing/focus, retries/deaths, checkpoints, replay, best times, test runs, account verification and session records.");return;
     }
 

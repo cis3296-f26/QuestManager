@@ -20,9 +20,10 @@
                     <a href="../#home">Home</a>
                     <a href="../#journal">Journal</a>
                     <a href="../#shop">Shop</a>
+                    <a href="#leaderboard">Leaderboard</a>
                 </nav>
             </header>
-            <p id="mapDescription" class="map-help">Complete each level to unlock the next adventure. Levels 1–4 are playable, with three special coins to collect in each. Levels 5–10 are coming soon.</p>
+            <p id="mapDescription" class="map-help">Complete each level to unlock the next adventure. All ten levels are playable, with three special gold coins in each — 30 achievement coins across the adventure.</p>
             <div class="map-scroll">
                 <div class="world-map" role="group" aria-label="Adventure levels" aria-describedby="mapDescription">
                     <img class="map-art" src="./assets/adventure-map.webp" alt="" draggable="false">
@@ -70,20 +71,20 @@
                     </button>
                     <button type="button" class="map-node" data-level="8"
                         style="left:55.3828%;top:30.3116%"
-                        aria-label="Level 8: Mountain Cliffs, coming soon" disabled
-                        title="Mountain Cliffs — coming soon">
+                        aria-label="Level 8: Mountain Cliffs, complete Level 7 to unlock" disabled
+                        title="Mountain Cliffs — complete Level 7 to unlock">
                         <span>8</span><span class="map-lock" aria-hidden="true">🔒</span>
                     </button>
                     <button type="button" class="map-node" data-level="9"
                         style="left:35.2871%;top:32.0113%"
-                        aria-label="Level 9: Volcanic Kingdom, coming soon" disabled
-                        title="Volcanic Kingdom — coming soon">
+                        aria-label="Level 9: Volcanic Kingdom, complete Level 8 to unlock" disabled
+                        title="Volcanic Kingdom — complete Level 8 to unlock">
                         <span>9</span><span class="map-lock" aria-hidden="true">🔒</span>
                     </button>
                     <button type="button" class="map-node" data-level="10"
                         style="left:22.0096%;top:24.7875%"
-                        aria-label="Level 10: Volcanic Castle, coming soon" disabled
-                        title="Volcanic Castle — coming soon">
+                        aria-label="Level 10: Volcanic Castle, complete Level 9 to unlock" disabled
+                        title="Volcanic Castle — complete Level 9 to unlock">
                         <span>10</span><span class="map-lock" aria-hidden="true">🔒</span>
                     </button>
                 </div>
@@ -97,6 +98,38 @@
                 </div>
                 <button type="button" id="playLevel" class="adventure-button">Play Level</button>
             </footer>
+        </section>
+
+        <section id="leaderboardView" class="leaderboard" hidden aria-labelledby="leaderboardHeading">
+            <header class="leaderboard-header">
+                <p class="game-eyebrow">Adventure · Speed · Glory</p>
+                <h1 id="leaderboardHeading" tabindex="-1"><span aria-hidden="true">🏆</span> Quest Leaderboard</h1>
+                <p>The greatest adventurers of QuestManager</p>
+                <a href="#map" class="leaderboard-back">← Back to World Map</a>
+            </header>
+            <div class="leaderboard-tabs" role="tablist" aria-label="Leaderboard categories">
+                <button type="button" id="leaderboardTab-adventure" role="tab" aria-controls="leaderboardPanel" aria-selected="true">Adventure Rankings</button>
+                <button type="button" id="leaderboardTab-level" role="tab" aria-controls="leaderboardPanel" aria-selected="false" tabindex="-1">Level Times</button>
+                <button type="button" id="leaderboardTab-full" role="tab" aria-controls="leaderboardPanel" aria-selected="false" tabindex="-1">Full Game</button>
+            </div>
+            <div id="leaderboardPanel" role="tabpanel" aria-labelledby="leaderboardTab-adventure" tabindex="0">
+                <h2 id="leaderboardTitle">Your Adventure</h2>
+                <p id="leaderboardDescription"></p>
+                <aside class="leaderboard-unavailable">
+                    <span aria-hidden="true">🏆</span><div><strong>Global rankings aren't available yet.</strong>
+                    <p>Your personal records are still accessible. Global ranks and podium places will appear when verified online rankings are supported.</p></div>
+                </aside>
+                <div id="leaderboardSelector" hidden><label for="leaderboardLevel">Choose a level</label><select id="leaderboardLevel"></select></div>
+                <section class="leaderboard-card" aria-label="Your personal records">
+                    <div class="leaderboard-player"><canvas id="leaderboardAvatar" width="100" height="100" role="img" aria-label="Your QuestManager character"></canvas><div><p class="game-eyebrow">My records · Global rank unavailable</p><h3 id="leaderboardName">Adventurer</h3></div></div>
+                    <p id="leaderboardScope"></p>
+                    <p id="leaderboardIdentityStatus" role="status"></p>
+                    <div id="leaderboardPersonal" aria-live="polite"></div>
+                    <button type="button" id="leaderboardPlay" class="adventure-button" hidden>Play this level</button>
+                </section>
+                <div class="leaderboard-table-wrap"><table id="leaderboardBreakdownTable" hidden><caption>Your ten-level time breakdown</caption><thead><tr><th scope="col">Level</th><th scope="col">Best time</th></tr></thead><tbody id="leaderboardBreakdown"></tbody></table></div>
+                <p class="leaderboard-footnote">Records come from your existing eligible completions. Developer-assisted runs cannot set records. Historical death counts are not attached to personal bests.</p>
+            </div>
         </section>
 
         <section id="levelView" hidden aria-labelledby="levelHeading">

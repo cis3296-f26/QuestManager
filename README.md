@@ -29,6 +29,7 @@ Built for **CIS 3296 at Temple University** with HTML, CSS, JavaScript, Canvas a
 - Later environments add wind, ice, climbing, timed energy hazards, lava and geysers.
 - Exactly three special gold coins per level, for **30 achievement coins** across the adventure.
 - A final three-seal environmental guardian encounter with the Ember Warden, followed by an adventure-ending screen and credits.
+- Local leaderboard with Adventure, Level Times and Combined Best Times tabs; online rankings remain unavailable.
 - End-of-level results with active play time, deaths, new coins carried to the flag and personal-best times.
 - Pause menu, settings, music and sound-effect controls, and Reduce Motion.
 

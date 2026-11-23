@@ -16,7 +16,7 @@ function fixture(hash = "") {
         showModal() { this.open = true; }, close() { this.open = false; }
     });
     const elements = Object.fromEntries([
-        "worldMapView", "levelView", "mapHeading", "playLevel", "levelSelectionDialog",
+        "leaderboardView", "leaderboardHeading", "worldMapView", "levelView", "mapHeading", "playLevel", "levelSelectionDialog",
         "levelSelectionContent", "backToMap", "mapLevelTitle", "mapLevelStatus",
         "mapLevelCoins", "mapTotalCoins"
     ].map((id) => [id, element()]));
@@ -167,4 +167,28 @@ test("Crystal Cave completion unlocks Sunscorched Dunes with three indicators; L
         f.completeSixth();assert.equal(f.nodes[6].disabled,false);f.nodes[6].listeners.click();assert.match(f.elements.levelSelectionContent.children[0].textContent,/Frozen Peaks/);
         f.route("#level-7");assert.equal(f.map.playing,true);assert.equal(f.map.hasNext(),false);f.route("#level-8");assert.equal(f.map.playing,false);assert.ok(f.nodes.slice(7).every(n=>n.disabled));
     } finally {f.restore();}
+});
+
+test("leaderboard hash navigation preserves selection without replaying or resetting map state", () => {
+    const f = fixture();
+    try {
+        const returns = f.returns;
+        f.map.select(1);
+        f.route("#leaderboard");
+        assert.equal(f.elements.leaderboardView.hidden, false);
+        assert.equal(f.elements.worldMapView.hidden, true);
+        assert.equal(f.elements.levelView.hidden, true);
+        assert.equal(f.returns, returns);
+        assert.equal(f.plays, 0);
+        f.route("#map");
+        assert.equal(f.elements.leaderboardView.hidden, true);
+        assert.equal(f.elements.worldMapView.hidden, false);
+        assert.equal(f.returns, returns);
+        f.route("#level-1");
+        f.route("#leaderboard");
+        assert.equal(f.returns, returns + 1, "leaving gameplay abandons once through existing map path");
+        f.route("#map");
+        assert.equal(f.returns, returns + 1);
+        assert.equal(f.plays, 1);
+    } finally { f.restore(); }
 });

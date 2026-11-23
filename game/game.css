@@ -372,3 +372,42 @@ h1 {
 .run-results-grid dd { margin: 3px 0 0; font-size: 1.3rem; font-weight: bold; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; color: #3d5f26; }
 .run-record-notice { margin: 12px 0 0; color: #3d5f26; font-weight: bold; }
 .run-results-note { margin: 12px 0 0; font-size: .8rem; line-height: 1.45; color: #65543d; }
+
+/* Local records share the adventure palette; global podiums await real verified data. */
+.leaderboard { color: #4c432f; }
+.leaderboard-header { position: relative; padding: 28px; border-radius: 20px; background: #345b3e; color: #fff4df; text-align: center; }
+.leaderboard-header h1 { margin: 6px 0 12px; font-size: clamp(1.6rem, 4vw, 2.2rem); }
+.leaderboard-header h1 span { color: #f4c455; }
+.leaderboard-header p { margin: 6px 0 18px; }
+.leaderboard-back { display: inline-block; color: #fff4df; padding: 9px 15px; border: 1px solid #a2b89c; border-radius: 20px; text-decoration: none; }
+.leaderboard-tabs { display: flex; gap: 8px; margin: 22px 0 28px; padding: 5px; background: #e9e6da; border-radius: 28px; }
+.leaderboard-tabs button { flex: 1; border: 0; background: transparent; color: #455544; border-radius: 24px; padding: 13px 8px; font: inherit; font-weight: bold; cursor: pointer; }
+.leaderboard-tabs [aria-selected="true"] { background: #345b3e; color: #fff4df; box-shadow: 0 2px 4px #42361a26; }
+.leaderboard h2, .leaderboard h3 { color: #345b3e; }
+.leaderboard p { line-height: 1.6; }
+.leaderboard-unavailable { display: flex; gap: 16px; align-items: center; margin: 22px 0; padding: 18px 22px; background: #ede7da; border: 1px dashed #9c886a; border-radius: 16px; }
+.leaderboard-unavailable > span { font-size: 2.5rem; color: #86641f; }
+.leaderboard-unavailable p { margin: 6px 0 0; }
+.leaderboard-card { padding: 24px; margin: 22px 0; border: 2px solid #a07b2b; border-radius: 20px; background: linear-gradient(120deg, #fff1c8, #f7f3e8 72%); }
+.leaderboard-player { display: flex; align-items: center; gap: 18px; }
+.leaderboard-player h3 { font-size: 1.4rem; margin: 8px 0; overflow-wrap: anywhere; }
+#leaderboardAvatar { width: 90px; height: 90px; flex-shrink: 0; background: #dfe6d6; border: 1px solid #a2b89c; border-radius: 50%; image-rendering: pixelated; }
+.record-value { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: bold; color: #345b3e; font-variant-numeric: tabular-nums; margin: 18px 0 8px; }
+.record-coins { color: #77541b; font-size: 1.15rem; font-weight: bold; }
+#leaderboardSelector label { display: block; margin-bottom: 8px; font-weight: bold; }
+#leaderboardLevel { width: 100%; padding: 14px; border-radius: 18px; background: #fffaf0; color: #403725; border: 1px solid #99876f; font: inherit; }
+.leaderboard-table-wrap { max-height: 420px; overflow: auto; }
+#leaderboardBreakdownTable { width: 100%; border-collapse: collapse; }
+#leaderboardBreakdownTable caption { text-align: left; font-weight: bold; color: #345b3e; padding: 14px 0; }
+#leaderboardBreakdownTable th, #leaderboardBreakdownTable td { padding: 14px 10px; border-bottom: 1px solid #d5c9b4; text-align: left; }
+#leaderboardBreakdownTable td { text-align: right; font-variant-numeric: tabular-nums; }
+.leaderboard-footnote { margin-top: 28px; padding-top: 16px; border-top: 1px solid #c7b99e; font-size: .9rem; }
+.leaderboard :focus-visible { outline: 3px solid #b47908; outline-offset: 4px; }
+@media (max-width: 540px) {
+    .leaderboard-header, .leaderboard-card { padding: 18px 14px; }
+    .leaderboard-tabs { gap: 2px; border-radius: 18px; }
+    .leaderboard-tabs button { font-size: .85rem; padding: 12px 4px; border-radius: 14px; }
+    .leaderboard-player { gap: 12px; }
+    #leaderboardAvatar { width: 68px; height: 68px; }
+    .leaderboard-unavailable { padding: 14px; }
+}
