@@ -1,12 +1,17 @@
+import { communityError } from "../leaderboard/CommunityStore.js";
 import { formatRunTime } from "./RunResults.js";
 
 // Real opt-in records only. Nothing is painted as a verified speedrun result.
 export class CommunityLeaderboard {
-    constructor({ document, store }) {
-        Object.assign(this, { document, store });
+    constructor({ document, store, onProfileChange = () => {} }) {
+        Object.assign(this, { document, store, onProfileChange });
         this.tab = "adventure"; this.levelId = 1; this.revision = 0; this.mutation = 0; this.busy = false;
         this.el("communityJoin").addEventListener("click", () => {
             if (this.el("communityConsent").checked) void this.changeParticipation(true);
+        });
+        this.el("communitySaveUsername").addEventListener("click", () => {
+            if (this.el("communityConsent").checked) void this.changeParticipation(true, this.el("communityUsername").value);
+            else this.el("communityStatus").textContent = "Check the sharing consent before saving your username and sharing records.";
         });
         this.el("communityLeave").addEventListener("click", () => { void this.changeParticipation(false); });
         this.el("communityRefresh").addEventListener("click", () => { void this.refresh(); });
@@ -19,27 +24,41 @@ export class CommunityLeaderboard {
     }
     accountChanged() {
         ++this.revision; ++this.mutation; this.busy = false; this.clear(); this.el("communityConsent").checked = false;
+        this.el("communityUsernameEditor").hidden = true; this.el("communityUsername").value = "";
         this.el("communityJoin").hidden = true; this.el("communityLeave").hidden = true;
         this.el("communityConsentLabel").hidden = true;
         this.el("communityStatus").textContent = "Community records will refresh when you open the leaderboard.";
     }
-    async changeParticipation(enabled) {
+    async changeParticipation(enabled, username = null) {
         if (this.busy) return;
         this.busy = true;
         const mutation = ++this.mutation;
         ++this.revision;
+        this.el("communitySaveUsername").disabled = true;
         this.el("communityJoin").disabled = true; this.el("communityLeave").disabled = true;
         this.el("communityStatus").textContent = enabled ? "Publishing your unverified community records…" : "Removing your online records…";
         try {
+            if (username !== null) await this.store.saveUsername(username);
             await this.store.participate(enabled);
             if (mutation !== this.mutation) return;
             this.busy = false;
             this.el("communityConsent").checked = false;
+            this.el("communityUsernameEditor").hidden = true;
+            this.el("communityUsername").value = "";
             await this.refresh();
-        } catch {
-            if (mutation === this.mutation) this.el("communityStatus").textContent = "Could not update community records. Sign in, check your username and connection, then refresh to retry. Your local records are unchanged.";
+            if (username !== null && mutation === this.mutation) await this.onProfileChange();
+        } catch (error) {
+            if (mutation !== this.mutation) return;
+            const reason = communityError(error);
+            const needsUsername = ["username_required", "username_invalid", "username_taken"].includes(reason);
+            this.el("communityUsernameEditor").hidden = !needsUsername;
+            this.el("communityStatus").textContent = reason === "username_taken" ? "That username is already taken. Choose another public username." :
+                needsUsername ? "Choose a public username (3–80 characters, not an email address) before sharing. This updates your existing QuestManager profile." :
+                reason === "sign_in" ? "Your sign-in changed or expired. Sign in again, then retry sharing." :
+                "Could not update community records. Check your connection and refresh to retry. Your local records are unchanged.";
+            if (needsUsername) this.el("communityUsername").focus?.();
         } finally {
-            if (mutation === this.mutation) { this.busy = false; this.el("communityJoin").disabled = false; this.el("communityLeave").disabled = false; }
+            if (mutation === this.mutation) { this.el("communitySaveUsername").disabled = false; this.busy = false; this.el("communityJoin").disabled = false; this.el("communityLeave").disabled = false; }
         }
     }
     async refresh(tab = this.tab, levelId = this.levelId) {

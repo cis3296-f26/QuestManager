@@ -428,3 +428,7 @@ h1 {
 .community-table td { font-variant-numeric: tabular-nums; }
 .community-current { background: #e1ead9; font-weight: bold; }
 #communityMine { padding: 16px; background: #e6ecdc; border-radius: 12px; }
+
+.community-username { margin: 16px 0; padding: 18px; border: 1px solid #a07b2b; border-radius: 14px; background: #fff5d9; }
+.community-username label { display: block; color: #345b3e; font-weight: bold; }
+#communityUsername { display: block; width: min(100%, 400px); box-sizing: border-box; margin: 12px 0; padding: 12px; color: #403725; background: #fffaf0; border: 1px solid #99876f; border-radius: 10px; font: inherit; }

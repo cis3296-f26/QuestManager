@@ -24,6 +24,15 @@ export function communityResponse(data) {
     return { rows: data.rows.map(row), mine: data.mine === null ? null : row(data.mine) };
 }
 
+// Whitelist actionable errors; never display raw database errors, IDs or connection details.
+export function communityError(error) {
+    if (error?.message === "Set a public username in your existing profile before joining.") return "username_required";
+    if (error?.code === "23505") return "username_taken";
+    if (error?.code === "USERNAME_INVALID" || error?.code === "23514") return "username_invalid";
+    if (error?.code === "42501" || error?.message === "Account changed" || error?.message === "Sign in first") return "sign_in";
+    return "unavailable";
+}
+
 // Cloud data never overwrites local progress, unlocks or timer state. Publication is opt-in.
 export class CommunityStore {
     constructor({ progress, levels, loadClient = () => import("../../main/users/supabaseClient.js") }) {
@@ -63,6 +72,22 @@ export class CommunityStore {
         return true;
     }
     async prime() { try { if (await this.status()) await this.sync(); } catch { /* Local saving remains available; retry from the board. */ } }
+    async saveUsername(value) {
+        const userId = this.userId, revision = this.revision;
+        const username = typeof value === "string" ? value.trim() : "";
+        if (!userId) throw new Error("Sign in first");
+        if (username.length < 3 || username.length > 80 || username.includes("@") || username === userId || /[\u0000-\u001f\u007f]/.test(username))
+            throw Object.assign(new Error("Invalid public username"), { code: "USERNAME_INVALID" });
+        const { supabase } = await this.loadClient();
+        const { data, error } = await supabase.auth.getSession();
+        if (error || data.session?.user?.id !== userId || revision !== this.revision) throw new Error("Account changed");
+        // Existing profiles table and owner-scoped UPDATE policy; no new display-name store or RPC.
+        const result = await supabase.from("profiles").update({ username }).eq("id", userId).select("id");
+        if (revision !== this.revision || userId !== this.userId) throw new Error("Account changed");
+        if (result.error) throw result.error;
+        if (result.data?.length !== 1 || result.data[0].id !== userId) throw new Error("Account changed");
+        return username;
+    }
     async participate(enabled) {
         if (!this.userId) throw new Error("Sign in first");
         const revision = this.revision;

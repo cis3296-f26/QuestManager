@@ -73,7 +73,7 @@ try { storage = window.localStorage; } catch { /* Restricted browsers use memory
 const progress = new LevelProgressManager(new LocalProgressStore(storage));
 levels.forEach((config) => progress.registerLevel(config));
 const communityStore = new CommunityStore({ progress, levels });
-const communityView = new CommunityLeaderboard({ document, store: communityStore });
+const communityView = new CommunityLeaderboard({ document, store: communityStore, onProfileChange: () => leaderboard?.refresh() });
 let coins = new CoinManager(level.config.coins);
 let worldMap;
 let leaderboard;

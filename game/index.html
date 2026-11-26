@@ -133,6 +133,12 @@
                     <p>Opt-in, browser-reported records. These are not server-verified competitive results.</p>
                     <p id="communityStatus" role="status">Open a tab to load community records.</p>
                     <label id="communityConsentLabel" hidden><input type="checkbox" id="communityConsent"> I want to publish my existing username, completed levels, permanent coins and best times as unverified community records. Sharing will continue for future eligible completions.</label>
+                    <div id="communityUsernameEditor" class="community-username" hidden>
+                        <label for="communityUsername">Your public QuestManager username</label>
+                        <p id="communityUsernameHelp">Choose 3–80 characters. Use a username, not your email. Saving updates the username on your existing QuestManager profile.</p>
+                        <input id="communityUsername" type="text" minlength="3" maxlength="80" autocomplete="nickname" aria-describedby="communityUsernameHelp">
+                        <button type="button" id="communitySaveUsername" class="adventure-button">Save username and share</button>
+                    </div>
                     <div class="community-actions">
                         <button type="button" id="communityJoin" class="adventure-button" hidden>Share my records</button>
                         <button type="button" id="communityLeave" class="adventure-button secondary" hidden>Leave board and remove online records</button>

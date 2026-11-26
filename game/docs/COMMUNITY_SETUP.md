@@ -49,7 +49,7 @@ Database steps 1–4 have been completed: project/profile structure checked, mig
 
 ## Validation and limits
 
-Validation completed: **321 JavaScript tests passed**, `npm run validate:levels` passed at 30/60/120 FPS, and the actual SQL migration plus all fixture assertions passed in disposable embedded PostgreSQL (PGlite 0.5.17; 81 statements). Live Supabase anonymous REST checks passed for all three categories (HTTP 200); anonymous submit and private-status calls were correctly denied (HTTP 401/403). Catalog checks confirmed fixed function search paths, RLS on all new tables, and no direct anonymous/authenticated table writes. Signed-in player publication still needs a real opt-in browser test.
+Validation completed: **325 JavaScript tests passed**, `npm run validate:levels` passed at 30/60/120 FPS, and the actual SQL migration plus all fixture assertions passed in disposable embedded PostgreSQL (PGlite 0.5.17; 81 statements). Live Supabase anonymous REST checks passed for all three categories (HTTP 200); anonymous submit and private-status calls were correctly denied (HTTP 401/403). Catalog checks confirmed fixed function search paths, RLS on all new tables, and no direct anonymous/authenticated table writes. Signed-in player publication still needs a real opt-in browser test.
 
 Run `npm test -- --test-concurrency=4` and `npm run validate:levels` from the root. Client transport tests use mocks and are not a claim that the live database is configured. SQL fixture results must be reported separately from live Supabase/RLS integration.
 
@@ -71,3 +71,12 @@ Supabase reports [RLS enabled without policies](https://supabase.com/docs/guides
 The advisor also flags [anonymous privileged-function execution](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) and [authenticated privileged-function execution](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable). For `qm_community_*`, these are the intentionally exposed, narrowly scoped RPCs: only the privacy-filtered read-only board is callable anonymously; writes/private-status require authenticated identity checks and opt-in. All use an empty search path and fully qualified tables. Direct table access remains denied.
 
 Existing unrelated advisor findings for older project functions and [leaked password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection) were present before this migration and were not changed as part of this feature.
+
+
+## Missing or email-like profile username
+
+A real player test showed `qm_community_participate` correctly rejecting a profile without a publishable username. The former UI hid that actionable error behind a generic failure. The repair now recognizes the server message and presents a public-username field only when needed.
+
+Choose a username (3–80 characters, not an email) and click **Save username and share**, keeping the publication consent checked. This updates only `public.profiles.username` for the current authenticated account through the existing owner-scoped UPDATE policy, then retries the normal opt-in flow. It does not create a separate display-name system, change your login email, touch balances, or choose a username automatically. Duplicate names and expired sessions get specific safe messages; raw database errors are never displayed. Account changes clear the field and discard stale responses.
+
+This repair requires no migration or policy changes. Live catalog checks confirmed the existing authenticated column grants and owner UPDATE policy. Player-specific name changes occur only after the player chooses and submits a name in the interface.

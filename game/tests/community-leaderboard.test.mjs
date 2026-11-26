@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { CommunityStore, communitySnapshot, communityResponse, COMMUNITY_COURSE } from "../leaderboard/CommunityStore.js";
+import { CommunityStore, communitySnapshot, communityResponse, communityError, COMMUNITY_COURSE } from "../leaderboard/CommunityStore.js";
 import { CommunityLeaderboard } from "../ui/CommunityLeaderboard.js";
 import { levels } from "../levels/levels.js";
 
@@ -19,7 +19,7 @@ function fixture() {
         return{data:{verification:'unverified',course:COMMUNITY_COURSE,rows:joined?[row]:[],mine:joined?row:null}};
     }};
     const store=new CommunityStore({progress,levels,loadClient:async()=>({supabase:client})});store.setUser(account);
-    return{store,progress,local,calls,row,set joined(v){joined=v},set failSync(v){failSync=v},set release(v){release=v},switch(id){account=id;progress.userId=id;store.setUser(id)}};
+    return{store,progress,local,calls,row,client,set joined(v){joined=v},set failSync(v){failSync=v},set release(v){release=v},switch(id){account=id;progress.userId=id;store.setUser(id)}};
 }
 function dom(){const all=new Map();const node=()=>({children:[],attributes:{},handlers:{},replaceChildren(...c){this.children=c},appendChild(c){this.children.push(c)},setAttribute(k,v){this.attributes[k]=v},addEventListener(k,cb){this.handlers[k]=cb}});const document={createElement:node,getElementById(id){if(!all.has(id))all.set(id,node());return all.get(id)}};return{document,el:id=>document.getElementById(id)}}
 
@@ -66,4 +66,46 @@ test('online UI uses actual rows, highlights current player, honors explicit con
  await view.changeParticipation(true);assert.equal(joins,1);
  view.accountChanged();assert.equal(d.el('communityRows').children.length,0);assert.equal(d.el('communityMine').textContent,'');assert.equal(d.el('communityConsent').checked,false);
  store.read=async()=>{throw Error('Backend not installed')};await view.refresh();assert.match(d.el('communityStatus').textContent,/unavailable/);
+});
+
+
+test('existing profile username update changes only the signed-in account username',async()=>{
+ const f=fixture();let write;
+ f.client.from=table=>({update:fields=>({eq:(column,id)=>({select:async projection=>{
+  write={table,fields,column,id,projection};return{data:[{id}]};
+ }})})});
+ assert.equal(await f.store.saveUsername('  PublicAdventurer  '),'PublicAdventurer');
+ assert.deepEqual(write,{table:'profiles',fields:{username:'PublicAdventurer'},column:'id',id:'account-a',projection:'id'});
+ for(const name of ['ab','private@example.com','account-a','x'.repeat(81),'\u0000name'])
+  await assert.rejects(f.store.saveUsername(name),error=>communityError(error)==='username_invalid');
+ assert.equal(f.calls.length,0,'saving a name alone neither joins nor publishes scores');
+});
+test('profile update rejects stale accounts and a zero-row RLS update',async()=>{
+ const f=fixture();let writes=0;
+ f.client.from=()=>({update:()=>({eq:()=>({select:async()=>{writes++;return{data:[]}}})})});
+ const pending=f.store.saveUsername('PublicName');f.switch('account-b');
+ await assert.rejects(pending,/Account changed/);assert.equal(writes,0);
+ await assert.rejects(f.store.saveUsername('PublicName'),/Account changed/);
+ assert.equal(writes,1);
+});
+test('missing-name error reveals existing-profile repair; explicit save then sharing succeeds',async()=>{
+ const d=dom();let hasName=false,savedName,profileChanges=0;
+ const store={userId:'account-a',read:async()=>({rows:[],mine:null,participating:hasName}),
+  participate:async()=>{if(!hasName)throw{code:'P0001',message:'Set a public username in your existing profile before joining.'}},
+  saveUsername:async name=>{savedName=name;hasName=true}};
+ const view=new CommunityLeaderboard({document:d.document,store,onProfileChange:()=>profileChanges++});
+ d.el('communityConsent').checked=true;
+ await view.changeParticipation(true);
+ assert.equal(d.el('communityUsernameEditor').hidden,false);
+ assert.match(d.el('communityStatus').textContent,/existing QuestManager profile/);
+ assert.equal(savedName,undefined);
+ await view.changeParticipation(true,'ChosenPublicName');
+ assert.equal(savedName,'ChosenPublicName');assert.equal(profileChanges,1);
+ assert.equal(d.el('communityUsernameEditor').hidden,true);assert.equal(d.el('communityConsent').checked,false);
+ d.el('communityUsername').value='another';view.accountChanged();assert.equal(d.el('communityUsername').value,'');
+});
+test('public error messages distinguish duplicate names and never show raw database errors',()=>{
+ assert.equal(communityError({code:'23505',message:'private SQL details'}),'username_taken');
+ assert.equal(communityError({code:'42501'}),'sign_in');
+ assert.equal(communityError({message:'SQL with private auth ID'}),'unavailable');
 });
