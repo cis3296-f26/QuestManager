@@ -1,5 +1,7 @@
 # Local leaderboard review
 
+This reviews the previously published local-only feature. The current staged community extension is documented in [Community setup](COMMUNITY_SETUP.md).
+
 Implemented on `game-prototype`, based on the live branch at `2f799335f60b6a70924fb9c39d2d1308a7a367e8`. Published to `game-prototype` after explicit approval. No merge or Supabase change.
 
 ## Interface and records

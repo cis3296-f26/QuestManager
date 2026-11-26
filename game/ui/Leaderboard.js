@@ -9,8 +9,8 @@ const copy = {
 };
 
 export class Leaderboard {
-    constructor({ document, progress, levels, onPlay, loadIdentity = loadLeaderboardIdentity }) {
-        Object.assign(this, { document, progress, levels, onPlay, loadIdentity });
+    constructor({ document, progress, levels, onPlay, community = null, loadIdentity = loadLeaderboardIdentity }) {
+        Object.assign(this, { document, progress, levels, onPlay, community, loadIdentity });
         this.tab = "adventure"; this.selectedId = levels[0].id; this.revision = 0;
         this.identity = { name: "Adventurer" }; this.identityStatus = "";
         this.tabs = ["adventure", "level", "full"].map(id => this.el(`leaderboardTab-${id}`));
@@ -26,7 +26,7 @@ export class Leaderboard {
         }));
         this.el("leaderboardLevel").addEventListener("change", event => {
             const id = Number(event.target.value);
-            if (this.levels.some(level => level.id === id)) { this.selectedId = id; this.render(); }
+            if (this.levels.some(level => level.id === id)) { this.selectedId = id; this.render(); this.refreshCommunity(); }
         });
         this.el("leaderboardPlay").addEventListener("click", () => {
             if (this.progress.getLevel(this.selectedId).unlocked) this.onPlay(this.selectedId);
@@ -36,9 +36,11 @@ export class Leaderboard {
     node(tag, text, className = "") {
         const element = this.document.createElement(tag); element.textContent = text; element.className = className; return element;
     }
-    selectTab(index) { this.tab = ["adventure", "level", "full"][index]; this.render(); }
+    selectTab(index) { this.tab = ["adventure", "level", "full"][index]; this.render(); this.refreshCommunity(); }
+    refreshCommunity() { if (this.community) void this.community.refresh(this.tab, this.selectedId); }
     async refresh() {
         const revision = ++this.revision, account = this.progress.userId;
+        this.refreshCommunity();
         this.identity = { name: account ? "Adventurer" : "Guest adventurer" };
         this.identityStatus = account ? "Loading your player profile…" : "";
         this.render();

@@ -19,6 +19,8 @@ import { drawInteractivePlatforms } from "./rendering/PlatformRenderer.js";
 import { drawExplorationFoliage, drawDiscoveryNotice } from "./rendering/ExplorationRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { levels } from "./levels/levels.js";
+import { CommunityStore } from "./leaderboard/CommunityStore.js";
+import { CommunityLeaderboard } from "./ui/CommunityLeaderboard.js";
 import { Leaderboard } from "./ui/Leaderboard.js";
 import { WorldMap } from "./ui/WorldMap.js";
 import { drawHazards } from "./engine/Hazards.js";
@@ -70,6 +72,8 @@ let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
 const progress = new LevelProgressManager(new LocalProgressStore(storage));
 levels.forEach((config) => progress.registerLevel(config));
+const communityStore = new CommunityStore({ progress, levels });
+const communityView = new CommunityLeaderboard({ document, store: communityStore });
 let coins = new CoinManager(level.config.coins);
 let worldMap;
 let leaderboard;
@@ -144,6 +148,9 @@ function changeAccount(userId) {
     developer?.panel.sync();
     settings.setUser(userId);
     progress.setUser(userId);
+    communityStore.setUser(userId);
+    communityView.accountChanged();
+    setTimeout(() => { void communityStore.prime(); }, 0);
     if (completionDialog.open) {
         completionDialog.returnValue = "";
         completionDialog.close();
@@ -171,6 +178,7 @@ async function finishLevel() {
     const saved = eligible
         ? progress.completeLevel(level.config.id, attemptIds, { developerAssisted: assisted, completionTimeMs: result.timeMs })
         : progress.getLevel(level.config.id);
+    if (eligible && userId) void communityStore.sync(userId).catch(() => {});
     renderRunResults(document, result, { coinCount: attemptIds.length,
         bestTimeMs: progress.getBestTime(level.config.id), eligible,
         newPersonalBest: saved.newPersonalBest, persistent: progress.persistent });
@@ -518,7 +526,7 @@ connectGameSession(changeAccount).then((session) => {
     accountSession = session;
     sessionReady = true;
     updateCoinHUD();
-    leaderboard = new Leaderboard({ document, progress, levels, onPlay: id => worldMap.openLevel(id) });
+    leaderboard = new Leaderboard({ document, progress, levels, community: communityView, onPlay: id => worldMap.openLevel(id) });
     worldMap = new WorldMap({
         levels,
         getProgress: (id) => progress.getLevel(id),

@@ -26,6 +26,8 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Feature testing
 
+- [Opt-in unverified community leaderboard setup](COMMUNITY_SETUP.md)
+
 - [Local leaderboard review and testing](LEADERBOARD_REVIEW.md)
 - [Future verified global ranking design](LEADERBOARD_BACKEND_DESIGN.md)
 

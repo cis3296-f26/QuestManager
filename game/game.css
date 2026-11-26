@@ -411,3 +411,20 @@ h1 {
     #leaderboardAvatar { width: 68px; height: 68px; }
     .leaderboard-unavailable { padding: 14px; }
 }
+
+.community-board { margin-top: 30px; padding-top: 24px; border-top: 2px solid #c7b99e; }
+.community-board h2 small { display: inline-block; padding: 5px 10px; font-size: .8rem; background: #f8e5ae; border-radius: 12px; color: #614b17; }
+.community-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; }
+#communityConsentLabel { display: block; padding: 16px; background: #eee7d7; border-radius: 12px; line-height: 1.6; }
+#communityConsent { width: 20px; height: 20px; vertical-align: middle; }
+.community-podium { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 14px; margin: 20px 0; }
+.community-place { border-radius: 18px; padding: 20px; border: 1px solid #bc9d62; text-align: center; overflow-wrap: anywhere; }
+.community-place.place-1 { background: #f9e7ac; border: 2px solid #b68a24; }
+.community-place.place-2 { background: #e5e9e7; }
+.community-place.place-3 { background: #ecd4bc; }
+.community-table { width: 100%; border-collapse: collapse; }
+.community-table caption { text-align: left; padding: 12px; color: #345b3e; font-weight: bold; }
+.community-table th, .community-table td { text-align: left; padding: 12px 8px; border-bottom: 1px solid #d5c9b4; overflow-wrap: anywhere; }
+.community-table td { font-variant-numeric: tabular-nums; }
+.community-current { background: #e1ead9; font-weight: bold; }
+#communityMine { padding: 16px; background: #e6ecdc; border-radius: 12px; }

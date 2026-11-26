@@ -1,6 +1,6 @@
 # Future verified global rankings — design only
 
-Status: **no backend changes, migrations, global reads, score uploads, or publication enabled**. The production leaderboard displays only the current player's browser/session records. Authentication and the private `profiles.username` access already provided by `main/users/playerData.js` do not turn local adventure records into shared records. Inventory and appearance are private current-player data, not a public avatar directory.
+Status: **verified competitive rankings remain unimplemented**. A separate opt-in, unverified community implementation is now prepared; see [Community setup](COMMUNITY_SETUP.md). Its community migration was approved and applied to the existing project on November 26, 2026; the matching frontend is published on `game-prototype`. This document describes the additional authoritative verification needed beyond browser-reported community records. Existing private inventory/appearance remain current-player data, not a public avatar directory.
 
 ## Proposed records, subject to approval
 
