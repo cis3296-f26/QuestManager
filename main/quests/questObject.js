@@ -164,6 +164,7 @@ export class QuestObject {
     }
     uncomplete() {
         this.#completed = false;
+        this.#rewarded = false;   // the database took the reward back too
     }
 
     markRewarded() {

@@ -94,6 +94,12 @@ export async function completeTask(taskId) {
     return data;
 }
 
+// Marks a finished task as not done and takes its reward back.
+export async function uncompleteTask(taskId) {
+    const { error } = await supabase.rpc("uncomplete_task", { p_task_id: taskId });
+    if (error) throw error;
+}
+
 // ---------- Shop ----------
 // The database checks price, balance and IF OWNED
 export async function buyItem(itemId) {
