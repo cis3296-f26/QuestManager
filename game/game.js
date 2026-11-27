@@ -1,3 +1,5 @@
+import { RunStats } from "./progress/RunStats.js";
+import { renderRunResults } from "./ui/RunResults.js";
 import { CastleRenderer, drawWarden } from "./rendering/CastleRenderer.js";
 import { renderAdventureEnding } from "./ui/Endgame.js";
 import { sceneForLevel } from "./levels/EmberWarden.js";
@@ -17,6 +19,9 @@ import { drawInteractivePlatforms } from "./rendering/PlatformRenderer.js";
 import { drawExplorationFoliage, drawDiscoveryNotice } from "./rendering/ExplorationRenderer.js";
 import { AvatarRenderer } from "./rendering/AvatarRenderer.js";
 import { levels } from "./levels/levels.js";
+import { CommunityStore } from "./leaderboard/CommunityStore.js";
+import { CommunityLeaderboard } from "./ui/CommunityLeaderboard.js";
+import { Leaderboard } from "./ui/Leaderboard.js";
 import { WorldMap } from "./ui/WorldMap.js";
 import { drawHazards } from "./engine/Hazards.js";
 import { LevelManager } from "./levels/LevelManager.js";
@@ -49,6 +54,7 @@ const jumpStrength = movement.jumpStrength;
 
 const keys = new Set();
 const clock = new GameClock();
+const runStats = new RunStats();
 let cameraX = 0;
 const deathDelay = 0.7;
 let deathTimeLeft = 0;
@@ -66,9 +72,13 @@ let storage = null;
 try { storage = window.localStorage; } catch { /* Restricted browsers use memory only. */ }
 const progress = new LevelProgressManager(new LocalProgressStore(storage));
 levels.forEach((config) => progress.registerLevel(config));
+const communityStore = new CommunityStore({ progress, levels });
+const communityView = new CommunityLeaderboard({ document, store: communityStore, onProfileChange: () => leaderboard?.refresh() });
 let coins = new CoinManager(level.config.coins);
 let worldMap;
+let leaderboard;
 let playing = false;
+let windowFocused = true;
 let accountSession;
 let sessionReady = false;
 let attemptRevision = 0;
@@ -90,6 +100,7 @@ if (developmentBuild) {
     const { installDeveloperTools } = await import("./dev/installDeveloperTools.js");
     developer = installDeveloperTools({ document, pause, pauseMenu, levels, getLevel: () => level,
         changed: () => {
+            if (level.developerAssisted) runStats.markAssisted();
             keys.clear(); clock.reset(); updateCoinHUD();
             // A teleport is a deliberate camera cut; ordinary travel still uses
             // smooth follow. The player must be visible even while paused.
@@ -137,12 +148,16 @@ function changeAccount(userId) {
     developer?.panel.sync();
     settings.setUser(userId);
     progress.setUser(userId);
+    communityStore.setUser(userId);
+    communityView.accountChanged();
+    setTimeout(() => { void communityStore.prime(); }, 0);
     if (completionDialog.open) {
         completionDialog.returnValue = "";
         completionDialog.close();
     }
     restartLevel(); // Discard the previous account's unfinished attempt, including coins.
     worldMap?.refresh();
+    if (leaderboard) void leaderboard.refresh();
     if (worldMap && playing && !worldMap.isPlayable(level.config.id)) {
         playing = false;
         worldMap.openMap(); // A different account must unlock this level for itself.
@@ -154,14 +169,19 @@ async function finishLevel() {
     const revision = attemptRevision;
     const userId = progress.userId;
     const attemptIds = [...coins.pending];
-    const assisted = level.developerAssisted;
+    const result = runStats.finish();
+    const assisted = level.developerAssisted || result.assisted;
     // Check identity again at the save boundary (including sign-outs in another tab).
     const verified = assisted ? false : await accountSession.verifyAccount(userId);
     if (revision !== attemptRevision || !level.complete) return;
     const eligible = verified && !assisted && !level.developerAssisted && (!level.warden || level.warden.defeated);
     const saved = eligible
-        ? progress.completeLevel(level.config.id, attemptIds, { developerAssisted: level.developerAssisted })
+        ? progress.completeLevel(level.config.id, attemptIds, { developerAssisted: assisted, completionTimeMs: result.timeMs })
         : progress.getLevel(level.config.id);
+    if (eligible && userId) void communityStore.sync(userId).catch(() => {});
+    renderRunResults(document, result, { coinCount: attemptIds.length,
+        bestTimeMs: progress.getBestTime(level.config.id), eligible,
+        newPersonalBest: saved.newPersonalBest, persistent: progress.persistent });
     worldMap.refresh();
     const nextButton = document.getElementById("nextLevel");
     nextButton.disabled = !worldMap.hasNext();
@@ -183,6 +203,8 @@ async function finishLevel() {
     status.textContent = `Level ${level.config.id} complete! Press R to play again.`;
     completionDialog.returnValue = "";
     completionDialog.showModal();
+    completionTitle.focus({ preventScroll: true });
+    completionDialog.scrollTop = 0; // Show the results first, even on a short screen.
 }
 
 
@@ -195,8 +217,17 @@ function restartLevel({ respawn = false } = {}) {
     pause.close();
     clock.reset();
     attemptRevision++;
-    if (respawn) level.respawn(); else level.restart();
+    if (respawn) {
+        if (level.developerAssisted) runStats.markAssisted();
+        level.respawn();
+        // A retry is still part of this measured run, even in levels without refuges.
+        if (runStats.assisted) level.developerAssisted = true;
+    } else {
+        level.restart();
+        runStats.reset();
+    }
     developer?.beginAttempt({ bypass: testingLevel && !progress.getLevel(level.config.id).unlocked });
+    if (level.developerAssisted) runStats.markAssisted();
     coins.reset(progress.getLevel(level.config.id).coinIds);
     updateCoinHUD();
     cameraX = respawn ? Math.max(0, Math.min(worldWidth-canvas.width, player.x-canvas.width*.45)) : 0;
@@ -308,13 +339,25 @@ canvas.addEventListener("keyup", event => {
 
 // Avoid stuck movement when switching tabs or clicking away.
 canvas.addEventListener("blur", () => keys.clear());
-window.addEventListener("blur", () => keys.clear());
-window.addEventListener("blur", () => audio.setActive(false));
-window.addEventListener("focus", () => audio.setActive(document.visibilityState !== "hidden"));
-window.addEventListener("pageshow", () => audio.setActive(document.visibilityState !== "hidden"));
+window.addEventListener("blur", () => {
+    windowFocused = false; keys.clear(); clock.reset(); audio.setActive(false);
+});
+window.addEventListener("focus", () => {
+    windowFocused = true; clock.reset(); audio.setActive(document.visibilityState !== "hidden");
+});
+document.addEventListener?.("visibilitychange", () => {
+    keys.clear(); clock.reset();
+    audio.setActive(windowFocused && document.visibilityState !== "hidden");
+});
+window.addEventListener("pageshow", () => {
+    windowFocused = document.hasFocus?.() ?? true;
+    clock.reset(); audio.setActive(windowFocused && document.visibilityState !== "hidden");
+});
 
 function startDeath(message, reason = "enemy") {
     if (deathTimeLeft > 0) return;
+    runStats.recordDeath();
+    if (level.developerAssisted) runStats.markAssisted();
     audio.die(reason);
     coins.discard();
     updateCoinHUD();
@@ -327,6 +370,7 @@ function startDeath(message, reason = "enemy") {
 
 function update(dt) {
     if (level.complete) return;
+    runStats.advance(dt, { assisted: level.developerAssisted });
     if (deathTimeLeft > 0) {
         deathTimeLeft -= dt;
         if (deathTimeLeft <= 0) restartLevel({ respawn: true });
@@ -448,7 +492,7 @@ function draw() {
 
 function gameLoop(time) {
     // All game state and animation time advance through this one gate.
-    const dt = clock.frame(time, sessionReady && playing && !pause.paused &&
+    const dt = clock.frame(time, sessionReady && playing && windowFocused && document.visibilityState !== "hidden" && !pause.paused &&
         !completionDialog.open && document.activeElement === canvas);
     if (dt !== null && dt > 0) {
         for (const step of developer ? developer.steps(dt) : [dt]) {
@@ -482,6 +526,7 @@ connectGameSession(changeAccount).then((session) => {
     accountSession = session;
     sessionReady = true;
     updateCoinHUD();
+    leaderboard = new Leaderboard({ document, progress, levels, community: communityView, onPlay: id => worldMap.openLevel(id) });
     worldMap = new WorldMap({
         levels,
         getProgress: (id) => progress.getLevel(id),
@@ -490,6 +535,7 @@ connectGameSession(changeAccount).then((session) => {
         getTestLevel: (id) => developer?.available && developer.enabled && developer.testLevelId === id
             ? levels.find(config => config.id === id) ?? null : null,
         onMap: showMap,
+        onLeaderboard: () => { void leaderboard.refresh(); },
         onMapRequest: () => {
             if (pause.canPause()) pause.open("map");
             else if (!pause.paused) worldMap.openMap();

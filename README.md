@@ -29,6 +29,8 @@ Built for **CIS 3296 at Temple University** with HTML, CSS, JavaScript, Canvas a
 - Later environments add wind, ice, climbing, timed energy hazards, lava and geysers.
 - Exactly three special gold coins per level, for **30 achievement coins** across the adventure.
 - A final three-seal environmental guardian encounter with the Ember Warden, followed by an adventure-ending screen and credits.
+- Local leaderboard with Adventure, Level Times and Combined Best Times tabs. Opt-in unverified community rankings use the reviewed Supabase setup; see [Community setup](game/docs/COMMUNITY_SETUP.md).
+- End-of-level results with active play time, deaths, new coins carried to the flag and personal-best times.
 - Pause menu, settings, music and sound-effect controls, and Reduce Motion.
 
 All ten levels are implemented. Visual refinement, difficulty balancing and player playtesting remain ongoing.
@@ -116,7 +118,7 @@ Land on stompable enemies from above while descending to defeat them and bounce.
 
 - **Quests, balances and purchases:** use the existing Supabase backend.
 - **Character appearance:** stored in the signed-in user's existing account metadata. Equipped items use the existing inventory/loadout system, with a local fallback where supported.
-- **Adventure achievements:** stored locally in the browser, scoped to the signed-in account. They are not currently synchronized to Supabase or other browsers/devices.
+- **Adventure achievements and personal-best times:** stored locally in the browser, scoped to the signed-in account. They are not currently synchronized to Supabase or other browsers/devices.
 - **Guest play or unavailable browser storage:** adventure progress is session-only.
 
 New adventure coins save only when you successfully reach the finish flag. Dying, restarting or leaving discards newly collected coins from that attempt. Previously saved coins remain credited and appear faded on replay. You can earn the three coins over multiple successful runs without duplicate rewards.
@@ -124,6 +126,8 @@ New adventure coins save only when you successfully reach the finish flag. Dying
 Completing a level unlocks the next even without all three coins. Level 10 additionally requires defeating the Ember Warden before the final flag can complete the adventure. Its ending shows saved totals; the perfect-adventure message requires all 30 legitimately earned coins.
 
 Later-level refuge checkpoints are temporary for the current attempt. They help with death recovery, but do not bank coins or survive a manual restart/replay.
+
+Completion time includes active gameplay, deaths and automatic retries; pauses, hidden tabs and unfocused windows do not advance it. Manual restart or replay starts a new measured run. A verified, unassisted completion can improve the level’s best time with any coin total. Guest/unavailable-storage records are session-only, and developer-assisted runs cannot set records.
 
 ## Development and testing
 

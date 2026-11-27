@@ -26,6 +26,13 @@ The game source remains in the parent `game/` directory. Project instructions st
 
 ## Feature testing
 
+- [Opt-in unverified community leaderboard setup](COMMUNITY_SETUP.md)
+
+- [Local leaderboard review and testing](LEADERBOARD_REVIEW.md)
+- [Future verified global ranking design](LEADERBOARD_BACKEND_DESIGN.md)
+
+- [Completion stats and personal-best times](RUN_RESULTS_PLAYTEST.md)
+
 - [Customized character rendering and sprite-sheet compatibility](AVATAR_RENDER_PLAYTEST.md)
 - [Biome soundtrack and listening room](BIOME_MUSIC_REVIEW.md)
 - [Collectible coins](COIN_PLAYTEST.md)
