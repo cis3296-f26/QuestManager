@@ -1,7 +1,7 @@
 import { initLogin } from "./users/login.js";
 import { getCurrentUser, refreshCurrentUser } from "./users/userSession.js";
 import { QuestObject, PRIORITIES } from "./quests/questObject.js";
-import { loadTasks, createTask, completeTask, updateTaskSchedule, updateTask, deleteTask } from "./users/playerData.js";
+import { loadTasks, createTask, completeTask, uncompleteTask, updateTaskSchedule, updateTask, deleteTask } from "./users/playerData.js";
 
 // Routing first, so the tabs work even if something below fails
 function route() {
@@ -96,7 +96,7 @@ function renderTask(task, target) {
     var checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = task.completed;
-    checkbox.disabled = !getCurrentUser() || task.rewarded;
+    checkbox.disabled = !getCurrentUser();
     checkbox.dataset.rewarded = String(task.rewarded);
 
     // Give the completion checkbox an accessible name.
@@ -124,25 +124,38 @@ function renderTask(task, target) {
 
     checkbox.onclick = async function () {
 
-        // Only the account that created this task can complete it, and only once.
+        // Only the account that created this task can check or uncheck it.
         const currentUser = getCurrentUser();
-        if (!currentUser || currentUser.id !== task.userID || task.rewarded) {
+        if (!currentUser || currentUser.id !== task.userID) {
             checkbox.checked = task.completed;
+            return;
+        }
+
+        // Unchecking a finished quest takes its coins back, so ask first.
+        const undoing = task.completed;
+        if (undoing && !confirm(`Mark "${task.title}" as not done? The coins you earned for it will be taken back.`)) {
+            checkbox.checked = true;
             return;
         }
 
         checkbox.disabled = true; // stop double-clicks
 
         try {
-            // The database marks it done and pays the reward exactly once.
-            await completeTask(task.taskID);
-            task.complete();
-            task.markRewarded();
+            if (undoing) {
+                // The database marks it not done and takes the reward back.
+                await uncompleteTask(task.taskID);
+                task.uncomplete();
+            } else {
+                // The database marks it done and pays the reward.
+                await completeTask(task.taskID);
+                task.complete();
+                task.markRewarded();
+            }
             await refreshCurrentUser(); // updates the coin counter and the shop
             renderLists();              // updates checklist, day panel and calendar
         } catch (error) {
             console.error(error);
-            checkbox.checked = false;
+            checkbox.checked = task.completed;
             checkbox.disabled = false;
             alert("Couldn't save that: " + error.message);
         }
@@ -416,7 +429,7 @@ async function syncTaskSession() {
     //if (toggleDayForm) toggleDayForm.disabled = !user;
     document.querySelectorAll("#priorityBoard input[type='checkbox'], #dayTaskList input[type='checkbox']")
         .forEach((checkbox) => {
-            checkbox.disabled = !user || checkbox.dataset.rewarded === "true";
+            checkbox.disabled = !user;
         });
 
     // Same account (e.g. a balance refresh): keep the list as it is.
