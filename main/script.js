@@ -75,6 +75,7 @@ function renderPriorityBoard() {
 function renderLists() {
     renderPriorityBoard();
     renderMissedBanner();
+    renderPastQuests();
 
     const dayTitle = document.getElementById("dayPanelTitle");
     const dayList = document.getElementById("dayTaskList");
@@ -189,6 +190,14 @@ const missedText = document.getElementById("missedText");
 const missedList = document.getElementById("missedList");
 const missedToggle = document.getElementById("missedToggle");
 const missedMoveAll = document.getElementById("missedMoveAll");
+const missedCount = document.getElementById("missedCount");
+const missedHint = document.getElementById("missedHint");
+const missedCaret = missedToggle?.querySelector(".priority-caret");
+
+// "2026-11-20" -> "Nov 20"
+function formatShortDate(dateStr) {
+    return new Date(dateStr + "T00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
 
 function getMissedTasks() {
     const user = getCurrentUser();
@@ -205,22 +214,38 @@ function renderMissedBanner() {
     missedBanner.hidden = missed.length === 0;
     if (missed.length === 0) return;
 
-    missedText.textContent = `⚠️ ${missed.length} missed quest${missed.length > 1 ? "s" : ""}`;
+    // Oldest first, so the most overdue quest is at the top.
+    missed.sort((a, b) => a.date.localeCompare(b.date));
+
+    missedText.textContent = missed.length === 1 ? "Missed Quest" : "Missed Quests";
+    missedCount.textContent = missed.length;
+    missedHint.textContent = missed.length === 1
+        ? `Unfinished from ${formatShortDate(missed[0].date)}. Finish it or move it to today.`
+        : `Unfinished since ${formatShortDate(missed[0].date)}. Finish them or move them to today.`;
+
     missedList.replaceChildren();
-    missed.forEach(t => renderTask(t, missedList));
+    missed.forEach(t => {
+        renderTask(t, missedList);
+        const due = document.createElement("p");
+        due.className = "missed-due";
+        due.textContent = `Was due ${formatShortDate(t.date)}`;
+        missedList.lastElementChild.appendChild(due);
+    });
 }
 
+// Clicking the header shows or hides the missed quests, like the priority sections.
 missedToggle?.addEventListener("click", () => {
     const show = missedList.hidden;
     missedList.hidden = !show;
-    missedToggle.textContent = show ? "Hide" : "View";
     missedToggle.setAttribute("aria-expanded", String(show));
+    missedCaret.textContent = show ? "▾" : "▸";
 });
 
 missedMoveAll?.addEventListener("click", async () => {
     const missed = getMissedTasks();
     if (missed.length === 0) return;
     missedMoveAll.disabled = true;
+    missedMoveAll.textContent = "Moving…";
     try {
         for (const task of missed) {
             const row = await updateTask(task.taskID, { task_date: todayStr() });
@@ -233,8 +258,38 @@ missedMoveAll?.addEventListener("click", async () => {
         alert("Couldn't move your missed quests: " + error.message);
     } finally {
         missedMoveAll.disabled = false;
+        missedMoveAll.textContent = "Move all to today";
     }
 });
+
+// ---------- Past quests ----------
+// Every finished quest, newest first. Shown on the Journal page.
+const pastList = document.getElementById("pastQuestsList");
+const pastEmpty = document.getElementById("pastQuestsEmpty");
+const pastCount = document.getElementById("pastQuestsCount");
+
+function renderPastQuests() {
+    if (!pastList) return;
+    const user = getCurrentUser();
+    const finished = user
+        ? allTasks
+            .filter(t => t.userID === user.id && t.completed)
+            .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+        : [];
+
+    pastCount.textContent = finished.length;
+    pastEmpty.hidden = finished.length > 0;
+    pastList.replaceChildren();
+
+    finished.forEach(t => {
+        renderTask(t, pastList);   // same card, so unchecking works here too
+        const info = document.createElement("p");
+        info.className = "quest-date";
+        const day = t.date ? formatShortDate(t.date) : "No date";
+        info.textContent = `${day} · +${t.giveReward()} coins`;
+        pastList.lastElementChild.appendChild(info);
+    });
+}
 
 // ---------- Form errors ----------
 const questFormError = document.getElementById("questFormError");
