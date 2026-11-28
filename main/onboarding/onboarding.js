@@ -1,9 +1,11 @@
 // Avatar creator. Opens by itself the first time a signed-in user has no saved
-// look, and again from Customize > "Edit look".
+// look, and again from Customize > "Edit look". After a new player creates their
+// hero, the tutorial (tutorial.js) starts and has to be finished once.
 
 import { getCurrentUser, setCurrentAppearance } from "../users/userSession.js";
 import { saveAppearance } from "../users/playerData.js";
 import { renderStage } from "../customize/avatar/stage.js";
+import { startTutorial } from "./tutorial.js";
 import {
     SKINS, HAIR_STYLES, HAIR_COLORS, EYES,
     DEFAULT_APPEARANCE, normalizeAppearance, randomAppearance
@@ -105,6 +107,7 @@ async function save(event) {
         await saveAppearance(draft);
         setCurrentAppearance(draft);
         dialog.close();
+        if (firstTime) startTutorial({ mustFinish: true });   // brand-new hero: tutorial next
     } catch (error) {
         console.error(error);
         errorText = "Couldn't save your look: " + error.message;
@@ -147,10 +150,18 @@ document.addEventListener("questmanager:userChanged", () => {
         if (dialog.open) dialog.close();
         return;
     }
-    if (!user.appearance && askedFor !== user.id) {
-        askedFor = user.id;
-        openOnboarding(true);
+    if (!user.appearance) {
+        if (askedFor !== user.id) {
+            askedFor = user.id;
+            openOnboarding(true);
+        }
+        return;
     }
+    // Has a hero but never finished the tutorial (e.g. closed the tab halfway): it's required.
+    if (!user.tutorialDone && !dialog.open) startTutorial({ mustFinish: true });
 });
+
+// "How to play" button next to Sign Out replays the tutorial (Skip allowed).
+document.getElementById("howToPlayButton")?.addEventListener("click", () => startTutorial());
 
 document.addEventListener("questmanager:editLook", () => openOnboarding(false));

@@ -36,6 +36,8 @@ export async function refreshCurrentUser() {
             saved.equipped,
             normalizeAppearance(account.user_metadata?.appearance)
         );
+        // New players have to finish the tutorial once; saved on the account.
+        currentUser.tutorialDone = Boolean(account.user_metadata?.tutorial_done);
     } catch (error) {
         if (thisLoad !== loadCounter) return null;
         console.error("Could not load player:", error);
@@ -52,6 +54,15 @@ export function setCurrentEquipped(equippedIds) {
     notify();  // fires "questmanager:userChanged"
 }
 
+
+// Called when the player finishes the tutorial, so it doesn't start again.
+export function markTutorialDone() {
+    if (!currentUser) return;
+    currentUser.tutorialDone = true;
+    if (currentAccount) {
+        currentAccount.user_metadata = { ...currentAccount.user_metadata, tutorial_done: true };
+    }
+}
 
 // Called after the new look has been saved to the account.
 export function setCurrentAppearance(appearance) {
