@@ -156,14 +156,21 @@
                             <option value="other">Other</option>
                         </select>
                     </div>
-                    <div id="missedBanner" class="missed-banner" hidden>
-                        <div class="missed-banner-row">
-                            <span id="missedText"></span>
-                            <button id="missedToggle" type="button" aria-expanded="false">View</button>
-                            <button id="missedMoveAll" type="button">Move all to today</button>
+                    <!-- Unfinished quests from earlier days. Same look as the priority
+                         sections below; collapsed until clicked. -->
+                    <section id="missedBanner" class="priority-section missed-section" hidden>
+                        <div class="missed-header">
+                            <button id="missedToggle" class="priority-toggle" type="button"
+                                    aria-expanded="false" aria-controls="missedList">
+                                <span class="priority-caret" aria-hidden="true">▸</span>
+                                <span id="missedText">Missed Quests</span>
+                                <span id="missedCount" class="priority-count">0</span>
+                            </button>
+                            <button id="missedMoveAll" class="missed-move-all" type="button">Move all to today</button>
                         </div>
+                        <p id="missedHint" class="missed-hint"></p>
                         <ul id="missedList" class="task-grid" hidden></ul>
-                    </div>
+                    </section>
                     <div id="priorityBoard">
                         <section class="priority-section" data-priority="high">
                             <button class="priority-toggle" type="button" aria-expanded="true">
@@ -242,6 +249,17 @@
                         </div>
 
                         <ul id="dayTaskList"></ul>
+                    </div>
+
+                    <!-- Every finished quest, newest first (filled in by renderPastQuests) -->
+                    <div class="quest-board past-quests">
+                        <div class="quest-board-header">
+                            <h2 id="pastQuestsTitle">Past Quests <span class="priority-count" id="pastQuestsCount">0</span></h2>
+                        </div>
+                        <p id="pastQuestsEmpty" class="past-quests-empty">
+                            No finished quests yet. Complete one to start your story!
+                        </p>
+                        <ul id="pastQuestsList"></ul>
                     </div>
                 </section>
             </div>

@@ -192,7 +192,7 @@
 }
 
 /* Task cards, matching the Home board */
-#journal #dayTaskList {
+#journal #dayTaskList, #journal #pastQuestsList {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -201,14 +201,14 @@
   list-style: none;
 }
 
-#journal #dayTaskList > li {
+#journal #dayTaskList > li, #journal #pastQuestsList > li {
   padding: 14px 16px;
   border: 1px solid #9e9278;
   background: #faedca;
   overflow-wrap: anywhere;
 }
 
-#journal #dayTaskList input[type="checkbox"] {
+#journal #dayTaskList input[type="checkbox"], #journal #pastQuestsList input[type="checkbox"] {
   width: 18px;
   height: 18px;
   margin-right: 8px;
@@ -279,17 +279,17 @@
 
 /* Quest cards (home board and journal board) */
 /* Difficulty colors on the Home board and the Journal board */
-#priorityBoard li[data-difficulty="easy"],   #dayTaskList li[data-difficulty="easy"]   { --diff: #2e7d32; }
-#priorityBoard li[data-difficulty="medium"], #dayTaskList li[data-difficulty="medium"] { --diff: #1565c0; }
-#priorityBoard li[data-difficulty="hard"],   #dayTaskList li[data-difficulty="hard"]   { --diff: #c62828; }
+#priorityBoard li[data-difficulty="easy"],   #dayTaskList li[data-difficulty="easy"], #pastQuestsList li[data-difficulty="easy"], #missedList li[data-difficulty="easy"] { --diff: #2e7d32; }
+#priorityBoard li[data-difficulty="medium"], #dayTaskList li[data-difficulty="medium"], #pastQuestsList li[data-difficulty="medium"], #missedList li[data-difficulty="medium"] { --diff: #1565c0; }
+#priorityBoard li[data-difficulty="hard"],   #dayTaskList li[data-difficulty="hard"], #pastQuestsList li[data-difficulty="hard"], #missedList li[data-difficulty="hard"] { --diff: #c62828; }
 
 #priorityBoard li[data-difficulty],
-#dayTaskList li[data-difficulty] {
+#dayTaskList li[data-difficulty], #pastQuestsList li[data-difficulty], #missedList li[data-difficulty] {
     border-left: 6px solid var(--diff) !important;
 }
 
 #priorityBoard li[data-difficulty] .quest-difficulty,
-#dayTaskList li[data-difficulty] .quest-difficulty {
+#dayTaskList li[data-difficulty] .quest-difficulty, #pastQuestsList li[data-difficulty] .quest-difficulty, #missedList li[data-difficulty] .quest-difficulty {
     color: var(--diff) !important;
     font-weight: 700;
 }
@@ -337,14 +337,14 @@
 }
 /* Edit / Delete buttons on quest cards (home board and journal board) */
 #priorityBoard .quest-actions,
-#dayTaskList .quest-actions {
+#dayTaskList .quest-actions, #pastQuestsList .quest-actions, #missedList .quest-actions {
     display: flex;
     gap: 8px;
     margin-top: 10px;
 }
 
 #priorityBoard .quest-actions button,
-#dayTaskList .quest-actions button {
+#dayTaskList .quest-actions button, #pastQuestsList .quest-actions button, #missedList .quest-actions button {
     padding: 3px 12px;
     border: 1px solid #b9a77f;
     border-radius: 999px;
@@ -356,18 +356,78 @@
 }
 
 #priorityBoard .quest-actions .quest-delete,
-#dayTaskList .quest-actions .quest-delete {
+#dayTaskList .quest-actions .quest-delete, #pastQuestsList .quest-actions .quest-delete, #missedList .quest-actions .quest-delete {
     border-color: #c62828;
     color: #c62828;
 }
 
 #priorityBoard .quest-actions button:hover,
-#dayTaskList .quest-actions button:hover {
+#dayTaskList .quest-actions button:hover, #pastQuestsList .quest-actions button:hover, #missedList .quest-actions button:hover {
     filter: brightness(0.95);
 }
 
 #priorityBoard .quest-actions button:disabled,
-#dayTaskList .quest-actions button:disabled {
+#dayTaskList .quest-actions button:disabled, #pastQuestsList .quest-actions button:disabled, #missedList .quest-actions button:disabled {
     opacity: 0.6;
     cursor: wait;
+}
+
+/* ---------- Past Quests (Journal) ---------- */
+/* Stack the day board and Past Quests inside the sand panel. The day board
+   keeps filling the space; Past Quests takes only what it needs. */
+#journal .journal-board {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+#journal .journal-board > .quest-board {
+  height: auto;
+  flex: 1 0 auto;
+}
+
+#journal .journal-board > .quest-board.past-quests {
+  --priority-color: #ddcdb8;   /* sand count bubble, like the priority sections */
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+/* Same heading style as "Today's Quest Board", one step smaller. */
+#journal #pastQuestsTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  color: #385026;
+  font-family: "Abril Fatface", Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+/* main.css underlines every <p>; the Home cards turn that off, so match them here. */
+#journal #dayTaskList > li p,
+#journal #pastQuestsList > li p {
+  text-decoration: none;
+}
+
+#journal #pastQuestsList {
+  max-height: 360px;   /* scrolls inside the box once the list gets long */
+  overflow-y: auto;
+}
+
+#journal #pastQuestsList > li { opacity: 0.85; }
+
+.past-quests-empty {
+  margin: 12px 0 0;
+  text-decoration: none;
+  color: #403725;
+  font-style: italic;
+}
+
+.quest-date {
+  margin: 6px 0 0;
+  text-decoration: none;
+  font-size: 0.85rem;
+  color: #403725;
 }
