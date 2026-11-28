@@ -151,3 +151,9 @@ export async function saveAppearance(appearance) {
     const { error } = await supabase.auth.updateUser({ data: { appearance } });
     if (error) throw error;
 }
+
+// Remembers on the account that this player finished the tutorial.
+export async function saveTutorialDone() {
+    const { error } = await supabase.auth.updateUser({ data: { tutorial_done: true } });
+    if (error) throw error;
+}
